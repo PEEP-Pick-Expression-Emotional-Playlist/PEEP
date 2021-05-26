@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:peep/sub/homePage.dart';
 import 'package:peep/sub/searchPage.dart';
 import 'package:peep/sub/userPage.dart';
+import 'MiniPlayerController.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,6 +31,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int screenIndex = 0;
   List<Widget> screenList = [HomePage(), SearchPage(), UserPage()];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,22 +53,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         ],
       ),
       body: screenList[screenIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: screenIndex,
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home, color: Colors.grey), label: '홈'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.search, color: Colors.grey), label: '검색'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person, color: Colors.grey), label: 'MY'),
-        ],
-        onTap: (value) {
-          setState(() {
-            screenIndex = value;
-          });
-        },
-      ),
+      bottomNavigationBar:
+          Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+        MiniPlayerController(), //하단 미니 음악 플레이어
+        BottomNavigationBar(
+          currentIndex: screenIndex,
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home, color: Colors.grey), label: '홈'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.search, color: Colors.grey), label: '검색'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.person, color: Colors.grey), label: 'MY'),
+          ],
+          onTap: (value) {
+            setState(() {
+              screenIndex = value;
+            });
+          },
+        )
+      ]),
     );
   }
 }
