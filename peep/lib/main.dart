@@ -58,7 +58,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               icon: Icon(Icons.camera_alt),
               onPressed: () {
                 print('Camera button is clicked');
-                // ref.child("abc").set("yoyoyo");
+                // ref.child("abc").set("yoyoyo"); //파이어베이스 데이터 보내기!!!
                 //감정인식 카메라 버튼 누르면 카메라 화면으로 이동
               })
         ],
