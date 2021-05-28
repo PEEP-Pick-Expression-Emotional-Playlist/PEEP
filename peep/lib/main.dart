@@ -1,10 +1,14 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:peep/sub/homePage.dart';
 import 'package:peep/sub/searchPage.dart';
 import 'package:peep/sub/userPage.dart';
 import 'MiniPlayerController.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -24,6 +28,10 @@ class MyApp extends StatelessWidget {
 }
 
 class Home extends StatefulWidget {
+  final FirebaseApp app;
+
+  const Home({Key key, this.app}) : super(key: key);
+
   @override
   _HomeState createState() => _HomeState();
 }
@@ -31,9 +39,11 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int screenIndex = 0;
   List<Widget> screenList = [HomePage(), SearchPage(), UserPage()];
+  final fb = FirebaseDatabase.instance;
 
   @override
   Widget build(BuildContext context) {
+    final ref = fb.reference();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -48,6 +58,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               icon: Icon(Icons.camera_alt),
               onPressed: () {
                 print('Camera button is clicked');
+                // ref.child("abc").set("yoyoyo");
                 //감정인식 카메라 버튼 누르면 카메라 화면으로 이동
               })
         ],

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1085806419277",
+    "firebase_url": "https://song-data-2bd13-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "song-data-2bd13",
+    "storage_bucket": "song-data-2bd13.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085806419277:android:27051527c67322de48ab04",
+        "android_client_info": {
+          "package_name": "com.example.peep"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085806419277-mgf8oe3cud42qh7bg1e3vl1the21p7d5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARRzsvNVea0HHvyYca4NPqqFxrW-6LdkQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085806419277-mgf8oe3cud42qh7bg1e3vl1the21p7d5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

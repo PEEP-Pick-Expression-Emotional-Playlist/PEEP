@@ -25,6 +25,10 @@ dependencies:
     sdk: flutter
   expansion_tile_card: ^1.1.0
   page_transition: "^2.0.2"
+  youtube_explode_dart: ^1.9.1
+  firebase_core: "^0.7.0"
+  firebase_database: "^6.0.0"
+
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
+import 'package:peep/PlayerPage/MyWaveClipper.dart';
 import 'AudioWave.dart';
 import 'DropdownDemo.dart';
 import 'PlayerController.dart';
@@ -9,7 +10,8 @@ class MusicPlayerPage extends StatefulWidget {
   _MusicPlayerPageState createState() => new _MusicPlayerPageState();
 }
 
-class _MusicPlayerPageState extends State<MusicPlayerPage> {
+class _MusicPlayerPageState extends State<MusicPlayerPage>
+    with SingleTickerProviderStateMixin {
   final List<String> _yearValues = [
     "2020",
     "2010",
@@ -25,6 +27,31 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
   ];
 
   String _emotionValue = "...";
+
+  Animation<double> animation;
+  AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        AnimationController(duration: Duration(seconds: 4), vsync: this);
+    _controller.repeat();
+    //we set animation duration, and repeat for infinity
+
+    animation = Tween<double>(begin: -400, end: 0).animate(_controller);
+    //we have set begin to -600 and end to 0, it will provide the value for
+    //left or right position for Positioned() widget to creat movement from left to right
+    animation.addListener(() {
+      setState(() {}); //update UI on every animation value update
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose(); //destory anmiation to free memory on last
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,18 +162,55 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
                         ),
                       ),
                       Expanded(
-                        child: Container(
-                            // color: Colors.yellow,
-                            decoration: new BoxDecoration(
-                                shape: BoxShape.circle, color: Colors.black12
-                                //
-                                // image: new DecorationImage(
-                                //     fit: BoxFit.fill,
-                                //     image: new NetworkImage(
-                                //         "https://i.imgur.com/BoN9kdC.png")
-                                // )
+                          child: Container(
+                        // color: Colors.yellow,
+                        decoration: new BoxDecoration(
+                            shape: BoxShape.circle, color: Colors.black12
+                            //
+                            // image: new DecorationImage(
+                            //     fit: BoxFit.fill,
+                            //     image: new NetworkImage(
+                            //         "https://i.imgur.com/BoN9kdC.png")
+                            // )
+                            ),
+                        child: Stack(
+                          children: [
+                            Positioned(
+                                bottom: 0,
+                                right: animation.value,
+                                child: ClipPath(
+                                  clipper: MyWaveClipper(),
+                                  child: Opacity(
+                                    opacity: 0.5,
+                                    child: Container(
+                                      color: Colors.black,
+                                      width: 900,
+                                      height: 200,
+                                    ),
+                                  ),
                                 )),
-                      ),
+                            Positioned(
+                              //helps to position widget where ever we want
+                              bottom: 0,
+                              //position at the bottom
+                              left: animation.value,
+                              //value of left from animation controller
+                              child: ClipPath(
+                                clipper: MyWaveClipper(),
+                                //applying our custom clipper
+                                child: Opacity(
+                                  opacity: 0.5,
+                                  child: Container(
+                                    color: Colors.black,
+                                    width: 900,
+                                    height: 200,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
                       AudioWave(),
                       Row(
                         children: <Widget>[
