@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:peep/sub/home_page.dart';
 import 'package:peep/sub/search_page.dart';
 import 'package:peep/sub/user_page.dart';
 import 'mini_player_controller.dart';
@@ -13,7 +14,7 @@ import 'dart:io';
 //   runApp(HomePage());
 // }
 
-class HomePage extends StatelessWidget {
+class AppFramePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,21 +24,21 @@ class HomePage extends StatelessWidget {
         primarySwatch: Colors.grey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Home(),
+      home: AppFrame(),
     );
   }
 }
 
-class Home extends StatefulWidget {
+class AppFrame extends StatefulWidget {
   final FirebaseApp app;
 
-  const Home({Key key, this.app}) : super(key: key);
+  const AppFrame({Key key, this.app}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
+  _AppFrameState createState() => _AppFrameState();
 }
 
-class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin {
   int screenIndex = 0;
   List<Widget> screenList = [HomePage(), SearchPage(), UserPage()];
   final fb = FirebaseDatabase.instance;

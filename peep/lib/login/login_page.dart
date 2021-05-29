@@ -20,7 +20,7 @@ class BasePage extends StatelessWidget{
                 return bulidLoading();
               }
               else if(snapshot.hasData){//로그인했으면, logged in widget 출력
-                return HomePage();//메인화면으로
+                return AppFramePage();//메인화면으로
               }
               else{
                 return SignUpWidget();//login 화면 출력
