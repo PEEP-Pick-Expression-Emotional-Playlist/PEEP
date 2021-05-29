@@ -6,7 +6,7 @@ import 'package:peep/login/logged_in_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:peep/app_frame.dart';
 //base page
-class HomePage extends StatelessWidget{
+class BasePage extends StatelessWidget{
   @override
   Widget build(BuildContext context) => Scaffold(
         body: ChangeNotifierProvider(
