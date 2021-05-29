@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
-import 'package:peep/PlayerPage/MyWaveClipper.dart';
-import 'AudioWave.dart';
-import 'DropdownDemo.dart';
-import 'PlayerController.dart';
+import 'audio_wave.dart';
+import 'dropdown_demo.dart';
+import 'my_wave_clipper.dart';
+import 'player_controller.dart';
 
 class MusicPlayerPage extends StatefulWidget {
   @override

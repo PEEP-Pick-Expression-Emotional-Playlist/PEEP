@@ -26,12 +26,18 @@ dependencies:
   expansion_tile_card: ^1.1.0
   page_transition: "^2.0.2"
   youtube_explode_dart: ^1.9.1
-  firebase_core: "^0.7.0"
-  firebase_database: "^6.0.0"
+  firebase_core: ^1.2.0 #0.7.0
+  firebase_database: ^6.0.0
   path_provider: ^2.0.1
   path: ^1.8.0
   image_picker: ^0.7.5+2
   web_socket_channel: ^2.1.0
+
+  # Add to login
+  provider: ^5.0.0
+  firebase_auth: ^1.2.0
+  google_sign_in: ^4.5.6
+  font_awesome_flutter: ^8.10.0
 
 
 

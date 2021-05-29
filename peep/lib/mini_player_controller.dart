@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'PlayerPage/MusicPlayerPage.dart';
-import 'PlayerPage/PlayerController.dart';
+import 'package:peep/player/music_player_page.dart';
+import 'package:peep/player/player_controller.dart';
 
 class MiniPlayerController extends StatelessWidget {
   @override

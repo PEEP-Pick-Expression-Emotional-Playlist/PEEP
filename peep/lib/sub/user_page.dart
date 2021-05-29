@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:peep/login/google_sign_in.dart';
+import 'package:provider/provider.dart';
 
 class UserPage extends StatefulWidget {
   @override
@@ -8,6 +11,14 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    var name, photo, email, uid;
+    if(user!=null){
+      uid=user.uid;
+      name=user.displayName;
+      photo=user.photoURL;
+      email=user.email;
+    }
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -16,12 +27,10 @@ class _UserPageState extends State<UserPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Center(
-                child: CircleAvatar(
-                  //사용자 프로필
-                  //현재는 임의의 고정 이미지로 넣어둠
-                  backgroundColor: Colors.grey,
-                  backgroundImage: AssetImage('assets/dataex.png'),
+                child:
+                CircleAvatar(//user 이미지
                   radius: 50,
+                  backgroundImage: NetworkImage(photo),
                 ),
               ),
               SizedBox(
@@ -29,7 +38,7 @@ class _UserPageState extends State<UserPage> {
               ),
               Center(
                 child: Text(
-                  'USERNAME',
+                  name, //user이름
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
@@ -49,6 +58,14 @@ class _UserPageState extends State<UserPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+              ),
+              ElevatedButton(//logout 버튼
+                onPressed: () {
+                  final provider =
+                  Provider.of<GoogleSignInProvider>(context, listen: false);
+                  provider.logout();//logout method 호출
+                },
+                child: Text('Logout'),
               ),
               SizedBox(
                 height: 35.0,
