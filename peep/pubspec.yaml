@@ -28,6 +28,10 @@ dependencies:
   youtube_explode_dart: ^1.9.1
   firebase_core: "^0.7.0"
   firebase_database: "^6.0.0"
+  path_provider: ^2.0.1
+  path: ^1.8.0
+  image_picker: ^0.7.5+2
+  web_socket_channel: ^2.1.0
 
 
 

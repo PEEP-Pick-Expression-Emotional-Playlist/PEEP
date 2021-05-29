@@ -1,10 +1,12 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:peep/sub/homePage.dart';
 import 'package:peep/sub/searchPage.dart';
 import 'package:peep/sub/userPage.dart';
 import 'MiniPlayerController.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'emotionDetect.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
