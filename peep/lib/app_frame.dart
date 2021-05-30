@@ -1,9 +1,11 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:peep/sub/home_page.dart';
 import 'package:peep/sub/search_page.dart';
 import 'package:peep/sub/user_page.dart';
+import 'home/emotion_detection.dart';
 import 'mini_player_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:io';
@@ -63,10 +65,16 @@ class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin
               icon: Icon(Icons.camera_alt),
               onPressed: () {
                 print('Camera button is clicked');
-                getImage(ImageSource.camera);
+                takePicture();
+                Navigator.push(
+                  //getImage(ImageSource.camera);
+                  context,
+                  MaterialPageRoute(builder: (context) => EmotionDetect())
+                  );
+                }
+                )
                 // ref.child("abc").set("yoyoyo"); //파이어베이스 데이터 보내기!!!
                 //감정인식 카메라 버튼 누르면 카메라 화면으로 이동
-              })
         ],
       ),
       body: screenList[screenIndex],
@@ -92,12 +100,18 @@ class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin
       ]),
     );
   }
-  Future getImage(ImageSource imageSource) async{
-    PickedFile image = await _picker.getImage(source: imageSource);
-    if(image == null)
+  Future<void> takePicture() async{
+    final File imageFile = (await _picker.getImage(source: ImageSource.camera)) as File;
+    if(imageFile == null){
+      print("no image");
       return;
+    }
+    final appDir = await getApplicationDocumentsDirectory();
+    //await File(appDir.path+'/test.jpg').create(recursive: true);
+    final File newImage = await imageFile.copy(appDir.path+'/test.jpg');
     setState(() {
-      _image = File(image.path);
+      _image = newImage;
     });
+
   }
 }
