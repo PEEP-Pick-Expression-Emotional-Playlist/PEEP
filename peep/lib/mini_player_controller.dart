@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:peep/player/music_player_page.dart';
 import 'package:peep/player/player_controller.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class MiniPlayerController extends StatelessWidget {
   @override
@@ -23,7 +24,7 @@ class MiniPlayerController extends StatelessWidget {
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     child: Container(
-                      padding: EdgeInsets.all(16.0),
+                      padding: EdgeInsets.only(left:16.0, top: 16.0,bottom: 16.0,right: 8.0),
                       child: Text('Beautiful Mistakes'),
                     ),
                     onTap: () {
@@ -39,11 +40,14 @@ class MiniPlayerController extends StatelessWidget {
                     flex: 4,
                     child: Container(
                         alignment: Alignment.center,
-                        margin: EdgeInsets.all(16.0),
+                        margin: EdgeInsets.only(left:8.0, top: 16.0,bottom: 16.0,right: 16.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
                             PlayerController(
+                              prevIconName: 'player_mini_prev',
+                              playIconName: 'player_mini_play',
+                              nextIconName: 'player_mini_next',
                               previousSize: 24.0,
                               playSize: 36.0,
                               nextSize: 24.0,
@@ -51,7 +55,7 @@ class MiniPlayerController extends StatelessWidget {
                             IconButton(
                               padding: EdgeInsets.zero,
                               constraints: BoxConstraints(),
-                              icon: Icon(Icons.list_rounded),
+                              icon: SvgPicture.asset('assets/icons/player_mini_list.svg'),
                               iconSize: 24.0,
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(

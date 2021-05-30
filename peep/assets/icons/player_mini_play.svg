@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px"
+	 y="0px" viewBox="0 0 18.5 24.2" style="enable-background:new 0 0 18.5 24.2;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#F7F8F9;}
+	.st1{fill:#D3D1D6;}
+	.st2{fill:none;stroke:#000000;stroke-width:1.5139;stroke-linecap:round;stroke-miterlimit:10;}
+	.st3{fill:none;stroke:#000000;stroke-width:1.5828;stroke-linecap:round;stroke-miterlimit:10;}
+</style>
+<g>
+	<rect x="-159.7" y="99.2" class="st0" width="375" height="61"/>
+	<rect x="-159.7" y="99.2" class="st1" width="375" height="3"/>
+	<g>
+		
+			<text transform="matrix(1 0 0 1 -144.7299 135.8533)" style="font-family:'NotoSansCJKkr-Medium-KSCpc-EUC-H'; font-size:13.9253px;">Beautiful Mistakes</text>
+	</g>
+	<g>
+		<g>
+			<path d="M124.7,131.5c0.7,0.5,0.7,1.2,0,1.7l-8.4,5.6l-8.1,5.4c-0.9,0.6-1.6,0.2-1.6-0.8v-11v-11c0-1,0.7-1.4,1.6-0.8l8.1,5.4
+				L124.7,131.5z"/>
+		</g>
+	</g>
+	<g>
+		<path d="M157.3,131.9c0.4,0.2,0.4,0.6,0,0.9l-4.4,2.9l-4.2,2.8c-0.5,0.3-0.8,0.1-0.8-0.4v-5.8v-5.8c0-0.5,0.4-0.7,0.8-0.4l4.2,2.8
+			L157.3,131.9z"/>
+		<line class="st2" x1="158.2" y1="127" x2="158.2" y2="137.6"/>
+	</g>
+	<g>
+		<path d="M70.5,132.7c-0.4-0.2-0.4-0.6,0-0.9l4.4-2.9l4.2-2.8c0.5-0.3,0.8-0.1,0.8,0.4v5.8v5.8c0,0.5-0.4,0.7-0.8,0.4l-4.2-2.8
+			L70.5,132.7z"/>
+		<line class="st2" x1="69.7" y1="137.6" x2="69.7" y2="127"/>
+	</g>
+	<line class="st2" x1="184.8" y1="125.9" x2="195.4" y2="125.9"/>
+	<line class="st2" x1="184.8" y1="130.9" x2="195.4" y2="130.9"/>
+	<line class="st2" x1="184.8" y1="135.9" x2="191.6" y2="135.9"/>
+	<circle cx="197" cy="137" r="2.6"/>
+	<line class="st3" x1="198.8" y1="125.6" x2="198.8" y2="137.2"/>
+	<path d="M-3.1,102.2h-156.6v-3H-3.1c0.8,0,1.5,0.7,1.5,1.5l0,0C-1.6,101.5-2.2,102.2-3.1,102.2z"/>
+</g>
+<g>
+	<g>
+		<path d="M18,11.3c0.7,0.5,0.7,1.2,0,1.7l-8.4,5.6L1.6,24C0.7,24.6,0,24.2,0,23.2v-11v-11c0-1,0.7-1.4,1.6-0.8l8.1,5.4L18,11.3z"/>
+	</g>
+</g>
+</svg>

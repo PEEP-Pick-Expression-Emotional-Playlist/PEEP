@@ -233,8 +233,11 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                               padding: EdgeInsets.symmetric(
                                   vertical: 16.0, horizontal: 48.0),
                               child: PlayerController(
+                                prevIconName: 'player_prev',
+                                playIconName: 'player_play',
+                                nextIconName: 'player_next',
                                 previousSize: 36.0,
-                                playSize: 48.0,
+                                playSize: 72.0,
                                 nextSize: 36.0,
                               ))),
                     ]))));
