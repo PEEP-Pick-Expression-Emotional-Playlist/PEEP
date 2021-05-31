@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:peep/home/emotion_chart.dart';
+import 'package:peep/home/play_cards.dart';
 
 //홈페이지
 
@@ -8,13 +10,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final List<ChartData> chartData = [
+    ChartData('HAPPY', 44),
+    ChartData('BLUE', 90),
+    ChartData('SURPRISED', 20),
+    ChartData('CALM', 30),
+    ChartData('TIRED', 55)
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
         padding: EdgeInsets.fromLTRB(15.0, 35.0, 0.0, 0.0),
-        child: Column(
+        child: SingleChildScrollView(
+          child: Container(
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
@@ -30,14 +42,9 @@ class _HomePageState extends State<HomePage> {
               height: 15.0,
             ),
             Center(
-              child: CircleAvatar(
-                //사용자 감상 통계 데이터 시각화 부분
-                //현재는 임의의 고정 이미지로 넣어둠
-                backgroundColor: Colors.grey,
-                backgroundImage: AssetImage('assets/dataex.png'),
-                radius: 200,
-              ),
-            ),
+                child: EmotionChart(
+              chartData: chartData,
+            )),
             SizedBox(
               height: 10.0,
             ),
@@ -52,89 +59,18 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: 10.0,
             ),
-            Row(
-              children: <Widget>[
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.grey,
-                  ),
-                  onPressed: () {
-                    //버튼 클릭 시 HAPPY 플레이리스트 재생
-                  },
-                  child: Text(
-                    'HAPPY',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.grey,
-                  ),
-                  onPressed: () {
-                    //버튼 클릭 시 BLUE 플레이리스트 재생
-                  },
-                  child: Text(
-                    'BLUE',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.grey,
-                  ),
-                  onPressed: () {
-                    //버튼 클릭 시 SURPRISED 플레이리스트 재생
-                  },
-                  child: Text(
-                    'SURPRISED',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.grey,
-                  ),
-                  onPressed: () {
-                    //버튼 클릭 시 CALM 플레이리스트 재생
-                  },
-                  child: Text(
-                    'CALM',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.grey,
-                  ),
-                  onPressed: () {
-                    //버튼 클릭 시 TIRED 플레이리스트 재생
-                  },
-                  child: Text(
-                    'TIRED',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            ),
+            PlayCards(
+              cards: [
+                Card(color: Colors.black26,shadowColor: Colors.transparent,),
+                Card(color: Colors.black26,shadowColor: Colors.transparent,),
+                Card(color: Colors.black26,shadowColor: Colors.transparent,),
+                Card(color: Colors.black26,shadowColor: Colors.transparent,),
+                Card(color: Colors.black26,shadowColor: Colors.transparent,)],),
           ],
-        ),
+        ))),
       ),
     );
   }
+
+
 }

@@ -24,6 +24,7 @@ class AppFramePage extends StatelessWidget {
       title: 'PEEP',
       theme: ThemeData(
         primarySwatch: Colors.grey,
+        primaryColor: Colors.black,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: AppFrame(),
@@ -85,11 +86,11 @@ class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin
           currentIndex: screenIndex,
           items: [
             BottomNavigationBarItem(
-                icon: Icon(Icons.home, color: Colors.grey), label: '홈'),
+                icon: Icon(Icons.home), label: '홈'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.search, color: Colors.grey), label: '검색'),
+                icon: Icon(Icons.search), label: '검색'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.person, color: Colors.grey), label: 'MY'),
+                icon: Icon(Icons.person), label: 'MY'),
           ],
           onTap: (value) {
             setState(() {

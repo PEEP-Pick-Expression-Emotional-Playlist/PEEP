@@ -26,6 +26,7 @@ dependencies:
   # UI
   expansion_tile_card: ^1.1.0
   page_transition: "^2.0.2"
+  syncfusion_flutter_charts: ^19.1.65
 
   # Custom Icon
   flutter_svg: ^0.22.0
