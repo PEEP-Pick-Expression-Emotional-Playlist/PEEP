@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -41,7 +42,8 @@ class AppFrame extends StatefulWidget {
   _AppFrameState createState() => _AppFrameState();
 }
 
-class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin {
+class _AppFrameState extends State<AppFrame>
+    with SingleTickerProviderStateMixin {
   int screenIndex = 0;
   List<Widget> screenList = [HomePage(), SearchPage(), UserPage()];
   final fb = FirebaseDatabase.instance;
@@ -51,6 +53,14 @@ class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    var name, photo, email, uid;
+    if (user != null) {
+      uid = user.uid;
+      name = user.displayName;
+      photo = user.photoURL;
+      email = user.email;
+    }
     final ref = fb.reference();
     return Scaffold(
       backgroundColor: Colors.white,
@@ -59,24 +69,65 @@ class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin
           'PEEP',
           style: TextStyle(color: Colors.grey),
         ),
+        iconTheme: IconThemeData(color: Colors.grey),
         backgroundColor: Colors.white,
         elevation: 0.0,
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.camera_alt),
-              onPressed: () {
-                print('Camera button is clicked');
-                takePicture();
-                Navigator.push(
-                  //getImage(ImageSource.camera);
-                  context,
-                  MaterialPageRoute(builder: (context) => EmotionDetect())
-                  );
-                }
-                )
-                // ref.child("abc").set("yoyoyo"); //파이어베이스 데이터 보내기!!!
-                //감정인식 카메라 버튼 누르면 카메라 화면으로 이동
-        ],
+        actions: <Widget>[],
+      ),
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: NetworkImage(photo),
+                backgroundColor: Colors.white,
+              ),
+              accountName: Text(
+                name,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              accountEmail: Text(
+                email,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13,
+                ),
+              ),
+              decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(40.0),
+                      bottomRight: Radius.circular(40.0))),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.settings,
+                color: Colors.grey[850],
+              ),
+              title: Text('설정'),
+              onTap: () {
+                //클릭 시 설정 탭으로 이동
+              },
+              trailing: Icon(Icons.add),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.question_answer,
+                color: Colors.grey[850],
+              ),
+              title: Text('도움말'),
+              onTap: () {
+                //클릭 시 도움말 탭으로 이동
+              },
+              trailing: Icon(Icons.add),
+            ),
+          ],
+        ),
       ),
       body: screenList[screenIndex],
       bottomNavigationBar:
@@ -85,12 +136,9 @@ class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin
         BottomNavigationBar(
           currentIndex: screenIndex,
           items: [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home), label: '홈'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.search), label: '검색'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.person), label: 'MY'),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
+            BottomNavigationBarItem(icon: Icon(Icons.search), label: '검색'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'MY'),
           ],
           onTap: (value) {
             setState(() {
@@ -101,18 +149,19 @@ class _AppFrameState extends State<AppFrame> with SingleTickerProviderStateMixin
       ]),
     );
   }
-  Future<void> takePicture() async{
-    final File imageFile = (await _picker.getImage(source: ImageSource.camera)) as File;
-    if(imageFile == null){
+
+  Future<void> takePicture() async {
+    final File imageFile =
+        (await _picker.getImage(source: ImageSource.camera)) as File;
+    if (imageFile == null) {
       print("no image");
       return;
     }
     final appDir = await getApplicationDocumentsDirectory();
     //await File(appDir.path+'/test.jpg').create(recursive: true);
-    final File newImage = await imageFile.copy(appDir.path+'/test.jpg');
+    final File newImage = await imageFile.copy(appDir.path + '/test.jpg');
     setState(() {
       _image = newImage;
     });
-
   }
 }

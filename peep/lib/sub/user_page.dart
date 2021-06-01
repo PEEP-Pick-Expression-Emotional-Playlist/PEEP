@@ -13,22 +13,23 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     var name, photo, email, uid;
-    if(user!=null){
-      uid=user.uid;
-      name=user.displayName;
-      photo=user.photoURL;
-      email=user.email;
+    if (user != null) {
+      uid = user.uid;
+      name = user.displayName;
+      photo = user.photoURL;
+      email = user.email;
     }
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
+        backgroundColor: Colors.white,
+        body: Padding(
           padding: EdgeInsets.fromLTRB(15.0, 35.0, 15.0, 0.0),
-          child: Column(
+          child: SingleChildScrollView(
+              child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Center(
-                child:
-                CircleAvatar(//user 이미지
+                child: CircleAvatar(
+                  //user 이미지
                   radius: 50,
                   backgroundImage: NetworkImage(photo),
                 ),
@@ -59,13 +60,16 @@ class _UserPageState extends State<UserPage> {
                   ),
                 ),
               ),
-              ElevatedButton(//logout 버튼
-                onPressed: () {
-                  final provider =
-                  Provider.of<GoogleSignInProvider>(context, listen: false);
-                  provider.logout();//logout method 호출
-                },
-                child: Text('Logout'),
+              Center(
+                child: ElevatedButton(
+                  //logout 버튼
+                  onPressed: () {
+                    final provider = Provider.of<GoogleSignInProvider>(context,
+                        listen: false);
+                    provider.logout(); //logout method 호출
+                  },
+                  child: Text('Logout'),
+                ),
               ),
               SizedBox(
                 height: 35.0,
@@ -186,6 +190,6 @@ class _UserPageState extends State<UserPage> {
               )
             ],
           )),
-    );
+        ));
   }
 }
