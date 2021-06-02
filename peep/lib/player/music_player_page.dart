@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
-import 'audio_wave.dart';
-import 'dropdown_demo.dart';
-import 'my_wave_clipper.dart';
+import 'ui/audio_wave.dart';
+import 'ui/dropdown_demo.dart';
+import 'ui/my_wave_clipper.dart';
 import 'player_controller.dart';
 
 class MusicPlayerPage extends StatefulWidget {
