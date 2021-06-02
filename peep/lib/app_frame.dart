@@ -2,15 +2,11 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:peep/sub/home_page.dart';
 import 'package:peep/sub/search_page.dart';
 import 'package:peep/sub/user_page.dart';
-import 'home/emotion_detection.dart';
 import 'mini_player_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'dart:io';
 
 // Future<void> main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
@@ -48,9 +44,6 @@ class _AppFrameState extends State<AppFrame>
   int screenIndex = 0;
   List<Widget> screenList = [HomePage(), SearchPage(), UserPage()];
   final fb = FirebaseDatabase.instance;
-
-  File _image;
-  final ImagePicker _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -149,20 +142,5 @@ class _AppFrameState extends State<AppFrame>
         )
       ]),
     );
-  }
-
-  Future<void> takePicture() async {
-    final File imageFile =
-        (await _picker.getImage(source: ImageSource.camera)) as File;
-    if (imageFile == null) {
-      print("no image");
-      return;
-    }
-    final appDir = await getApplicationDocumentsDirectory();
-    //await File(appDir.path+'/test.jpg').create(recursive: true);
-    final File newImage = await imageFile.copy(appDir.path + '/test.jpg');
-    setState(() {
-      _image = newImage;
-    });
   }
 }
