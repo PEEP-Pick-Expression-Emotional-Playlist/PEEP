@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:peep/sub/home_page.dart';
@@ -136,9 +137,9 @@ class _AppFrameState extends State<AppFrame>
         BottomNavigationBar(
           currentIndex: screenIndex,
           items: [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: '검색'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'MY'),
+            BottomNavigationBarItem(icon: SvgPicture.asset('assets/icons/home.svg'), label: '홈'),
+            BottomNavigationBarItem(icon: SvgPicture.asset('assets/icons/search.svg'), label: '검색'),
+            BottomNavigationBarItem(icon: SvgPicture.asset('assets/icons/folder.svg'), label: 'MY'),
           ],
           onTap: (value) {
             setState(() {
