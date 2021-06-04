@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:async/async.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -35,33 +36,24 @@ class PlayerController extends StatefulWidget {
 }
 
 class _PlayerController extends State<PlayerController> {
+  var _player = AudioManager.instance.player;
   final YoutubeExplode yt = YoutubeExplode();
   QueryVideo videoInfo;
   String query = "Beautiful Mistakes Maroon 5, Megan Thee Stallion";
-  AudioPlayer _player;
 
-  @override
-  void initState() {
-    super.initState();
-    _player = AudioPlayer();
-    _init();
-  }
-
-  Future<void> _init() async {
-    final session = await AudioSession.instance;
-    await session.configure(AudioSessionConfiguration.speech());
-    // Listen to errors during playback.
-    _player.playbackEventStream.listen((event) {},
-        onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
-    });
-  }
-
-  @override
-  void dispose() {
-    _player.dispose();
-    super.dispose();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  // }
+  //
+  //
+  //
+  // @override
+  // void dispose() {
+  //   _player.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -235,5 +227,39 @@ class BufferAudioSource extends StreamAudioSource {
             Stream.value(List<int>.from(_buffer.skip(start).take(end - start))),
       ),
     );
+  }
+}
+
+class AudioManager {
+  // Singleton pattern
+  static AudioManager _instance = AudioManager._();
+  // static final AudioManager _audioManager = new AudioManager._internal();
+  // AudioManager._internal();
+  // static AudioManager get instance => _audioManager;
+  static AudioManager get instance => _instance;
+  static AudioPlayer _player;
+  AudioManager._() {
+    _init();
+    _player = AudioPlayer();
+  }
+
+  // final _initPlayerMemoizer = AsyncMemoizer<AudioPlayer>();
+
+  AudioPlayer get player {
+    if(_player == null){
+      _init();
+      _player = AudioPlayer();
+    }
+    return _player;
+  }
+
+  Future<void> _init() async {
+    final session = await AudioSession.instance;
+    await session.configure(AudioSessionConfiguration.speech());
+    // Listen to errors during playback.
+    _player.playbackEventStream.listen((event) {},
+        onError: (Object e, StackTrace stackTrace) {
+          print('A stream error occurred: $e');
+        });
   }
 }
