@@ -41,12 +41,11 @@ class _AppFrameState extends State<AppFrame>
     with SingleTickerProviderStateMixin {
   int screenIndex = 0;
   List<Widget> screenList = [HomePage(), SearchPage(), UserPage()];
-  var ref = DBManager.instance.ref;
-  var userManager = UserManager.instance;
+  var ref = DBManager.instance.ref; //firebase
+  var user = UserManager.instance.user; //user
 
   @override
   Widget build(BuildContext context) {
-    final user = UserManager.instance.user;
     var name, photo, email, uid;
     if (user != null) {
       uid = user.uid;
