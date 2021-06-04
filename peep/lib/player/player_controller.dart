@@ -41,20 +41,6 @@ class _PlayerController extends State<PlayerController> {
   QueryVideo videoInfo;
   String query = "Beautiful Mistakes Maroon 5, Megan Thee Stallion";
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //
-  // }
-  //
-  //
-  //
-  // @override
-  // void dispose() {
-  //   _player.dispose();
-  //   super.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -233,17 +219,12 @@ class BufferAudioSource extends StreamAudioSource {
 class AudioManager {
   // Singleton pattern
   static AudioManager _instance = AudioManager._();
-  // static final AudioManager _audioManager = new AudioManager._internal();
-  // AudioManager._internal();
-  // static AudioManager get instance => _audioManager;
   static AudioManager get instance => _instance;
   static AudioPlayer _player;
   AudioManager._() {
     _init();
     _player = AudioPlayer();
   }
-
-  // final _initPlayerMemoizer = AsyncMemoizer<AudioPlayer>();
 
   AudioPlayer get player {
     if(_player == null){
@@ -261,5 +242,83 @@ class AudioManager {
         onError: (Object e, StackTrace stackTrace) {
           print('A stream error occurred: $e');
         });
+  }
+
+  static Genre genre = Genre.NEUTRAL;
+  static Year year = Year.ALL;
+
+
+  static List<String> passList = []; // parent of passed song info
+
+
+}
+
+enum Genre { HAPPINESS, SADNESS, FEAR, ANGER, NEUTRAL }
+enum Year { Y2020, Y2010, Y2000, Y1990, ALL }
+
+extension GenreExtension on Genre {
+
+  String get upperStr {
+    switch (this) {
+      case Genre.HAPPINESS:
+        return 'HAPPINESS';
+      case Genre.SADNESS:
+        return 'SADNESS';
+      case Genre.FEAR:
+        return 'FEAR';
+      case Genre.ANGER:
+        return 'ANGER';
+      default:
+        return 'NEUTRAL';
+    }
+  }
+
+  String get lowerStr {
+    switch (this) {
+      case Genre.HAPPINESS:
+        return 'happiness';
+      case Genre.SADNESS:
+        return 'sadness';
+      case Genre.FEAR:
+        return 'fear';
+      case Genre.ANGER:
+        return 'anger';
+      default:
+        return 'neutral';
+    }
+  }
+}
+
+
+extension YearExtension on Year {
+
+  String get str {
+    switch (this) {
+      case Year.Y1990:
+        return '1990';
+      case Year.Y2000:
+        return '2000';
+      case Year.Y2010:
+        return '2010';
+      case Year.Y2020:
+        return '2020';
+      default:
+        return 'null';
+    }
+  }
+
+  int get integer {
+    switch (this) {
+      case Year.Y1990:
+        return 1990;
+      case Year.Y2000:
+        return 2000;
+      case Year.Y2010:
+        return 2010;
+      case Year.Y2020:
+        return 2020;
+      default:
+        return -1;
+    }
   }
 }
