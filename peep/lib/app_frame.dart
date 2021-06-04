@@ -56,6 +56,9 @@ class _AppFrameState extends State<AppFrame>
       email = user.email;
     }
     final ref = fb.reference();
+    ref.child(uid).child("username").set(name);
+    ref.child(uid).child("email").set(email);
+    
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
