@@ -4,6 +4,7 @@ import 'package:peep/db_manager.dart';
 import 'package:peep/login/user_manager.dart';
 import 'package:peep/sub/home_page.dart';
 import 'package:peep/sub/search_page.dart';
+import 'package:peep/sub/search_screen.dart';
 import 'package:peep/sub/user_page.dart';
 import 'mini_player_controller.dart';
 
@@ -30,7 +31,6 @@ class AppFramePage extends StatelessWidget {
 }
 
 class AppFrame extends StatefulWidget {
-
   const AppFrame({Key key}) : super(key: key);
 
   @override
@@ -40,7 +40,7 @@ class AppFrame extends StatefulWidget {
 class _AppFrameState extends State<AppFrame>
     with SingleTickerProviderStateMixin {
   int screenIndex = 0;
-  List<Widget> screenList = [HomePage(), SearchPage(), UserPage()];
+  List<Widget> screenList = [HomePage(), SearchScreen(), UserPage()];
   var ref = DBManager.instance.ref; //firebase
   var user = UserManager.instance.user; //user
 
@@ -55,7 +55,7 @@ class _AppFrameState extends State<AppFrame>
     }
     ref.child("user").child(uid).child("username").set(name);
     ref.child("user").child(uid).child("email").set(email);
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -130,9 +130,12 @@ class _AppFrameState extends State<AppFrame>
         BottomNavigationBar(
           currentIndex: screenIndex,
           items: [
-            BottomNavigationBarItem(icon: SvgPicture.asset('assets/icons/home.svg'), label: '홈'),
-            BottomNavigationBarItem(icon: SvgPicture.asset('assets/icons/search.svg'), label: '검색'),
-            BottomNavigationBarItem(icon: SvgPicture.asset('assets/icons/folder.svg'), label: 'MY'),
+            BottomNavigationBarItem(
+                icon: SvgPicture.asset('assets/icons/home.svg'), label: '홈'),
+            BottomNavigationBarItem(
+                icon: SvgPicture.asset('assets/icons/search.svg'), label: '검색'),
+            BottomNavigationBarItem(
+                icon: SvgPicture.asset('assets/icons/folder.svg'), label: 'MY'),
           ],
           onTap: (value) {
             setState(() {
