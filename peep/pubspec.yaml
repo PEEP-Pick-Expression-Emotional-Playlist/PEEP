@@ -30,6 +30,7 @@ dependencies:
 
   # Custom Icon
   flutter_svg: ^0.22.0
+  flutter_svg_provider: ^0.1.9
 
   # youtube
   youtube_explode_dart: ^1.9.4
@@ -89,6 +90,9 @@ flutter:
     - assets/drawerbar_0.png
     - assets/splash.png
     - assets/musicicon.png
+    - assets/itd/
+    - assets/camera_back.png
+    - assets/logo_firstpage.png
     #- assets/test/
 
 flutter_native_splash:

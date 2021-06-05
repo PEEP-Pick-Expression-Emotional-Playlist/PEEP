@@ -15,7 +15,7 @@ class MiniPlayerController extends StatelessWidget {
             backgroundColor: Colors.black26,
             valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
         ColoredBox(
-            color: Colors.black12,
+            color: const Color(0xfff6f7f9),
             child: Row(
               children: <Widget>[
                 Expanded(

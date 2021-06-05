@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'ui/audio_wave.dart';
 import 'ui/dropdown_demo.dart';
 import 'ui/my_wave_clipper.dart';
@@ -119,23 +120,23 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                   children: <Widget>[
                                     Expanded(
                                       child: emotionButton(
-                                          "Happiness", Icons.ac_unit_rounded),
+                                          "Happiness", "assets/itd/ITD_icon_happy.svg"),
                                     ),
                                     Expanded(
                                       child: emotionButton(
-                                          "2", Icons.audiotrack_rounded),
+                                          "2", "assets/itd/ITD_icon_angry.svg"),
                                     ),
                                     Expanded(
                                       child:
-                                          emotionButton("3", Icons.adb_rounded),
+                                          emotionButton("3", "assets/itd/ITD_icon_calm.svg"),
                                     ),
                                     Expanded(
                                       child: emotionButton(
-                                          "4", Icons.assistant_photo_rounded),
+                                          "4", "assets/itd/ITD_icon_blue.svg"),
                                     ),
                                     Expanded(
                                       child: emotionButton(
-                                          "5", Icons.bubble_chart_rounded),
+                                          "5", "assets/itd/ITD_icon_fear.svg"),
                                     ),
                                   ],
                                 ))
@@ -243,16 +244,29 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                     ]))));
   }
 
-  Widget emotionButton(String emotion, IconData icon) {
+  Widget emotionButton(String emotion, String svgicon) {
     return GestureDetector(
       onTap: () => setState(() => _emotionValue = emotion),
       child: Container(
+        child: Column(children: <Widget>[
+          SizedBox(height: 20,),
+          SizedBox(
+                height: 25,
+                width: 25,
+                child:SvgPicture.asset(
+                  svgicon,
+                  
+                ),
+                
+              ),
+        ],),
         height: 64.0,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: _emotionValue == emotion ? Colors.grey : Colors.black12,
+          
         ),
-        child: Icon(icon),
+        
       ),
     );
   }

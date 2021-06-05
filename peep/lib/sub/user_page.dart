@@ -1,5 +1,8 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peep/login/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
@@ -60,8 +63,12 @@ class _UserPageState extends State<UserPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 8.0,),
               Center(
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Color(0xfff6f7f9),
+                    ),
                   //logout 버튼
                   onPressed: () {
                     final provider = Provider.of<GoogleSignInProvider>(context,
@@ -85,14 +92,26 @@ class _UserPageState extends State<UserPage> {
               SizedBox(
                 height: 10.0,
               ),
-              Row(
-                children: <Widget>[
-                  ElevatedButton(
+              
+              Container(
+          // 수평적으로 대칭(symmetric)의 마진을 추가 -> 화면 위, 아래에 20픽세의 마진 삽입
+          margin: EdgeInsets.symmetric(vertical: 20.0),
+          // 컨테이너의 높이를 200으로 설정
+          height: 40.0,
+          // 리스트뷰 추가
+          child: ListView(
+            // 스크롤 방향 설정. 수평적으로 스크롤되도록 설정
+            scrollDirection: Axis.horizontal,
+            // 컨테이너들을 ListView의 자식들로 추가
+            children: <Widget>[
+              Container(
+                
+                child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.grey,
+                      primary: Color(0xfff6f7f9),
                     ),
                     onPressed: () {
-                      //버튼 클릭 시 사용자가 커스터마이징한 HAPPY 플레이리스트
+                      //버튼 클릭 시 사용자가 커스터마이징한 CALM 플레이리스트
                     },
                     child: Text(
                       'HAPPY',
@@ -102,12 +121,14 @@ class _UserPageState extends State<UserPage> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  ElevatedButton(
+              ),
+              Container(
+                child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.grey,
+                      primary: Color(0xfff6f7f9),
                     ),
                     onPressed: () {
-                      //버튼 클릭 시 사용자가 커스터마이징한 BLUE 플레이리스트
+                      //버튼 클릭 시 사용자가 커스터마이징한 CALM 플레이리스트
                     },
                     child: Text(
                       'BLUE',
@@ -117,24 +138,28 @@ class _UserPageState extends State<UserPage> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  ElevatedButton(
+              ),
+              Container(
+                child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.grey,
+                      primary: Color(0xfff6f7f9),
                     ),
                     onPressed: () {
-                      //버튼 클릭 시 사용자가 커스터마이징한 SURPRISED 플레이리스트
+                      //버튼 클릭 시 사용자가 커스터마이징한 CALM 플레이리스트
                     },
                     child: Text(
-                      'SURPRISED',
+                      'ANGRY',
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  ElevatedButton(
+              ),
+              Container(
+                child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.grey,
+                      primary: Color(0xfff6f7f9),
                     ),
                     onPressed: () {
                       //버튼 클릭 시 사용자가 커스터마이징한 CALM 플레이리스트
@@ -147,23 +172,27 @@ class _UserPageState extends State<UserPage> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  ElevatedButton(
+              ),
+              Container(
+                child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.grey,
+                      primary: Color(0xfff6f7f9),
                     ),
                     onPressed: () {
-                      //버튼 클릭 시 사용자가 커스터마이징한 TIRED 플레이리스트
+                      //버튼 클릭 시 사용자가 커스터마이징한 CALM 플레이리스트
                     },
+                    
                     child: Text(
-                      'TIRED',
+                      'FEAR',
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                ],
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              )
+            ],
+          ),
               ),
               SizedBox(
                 height: 20.0,
