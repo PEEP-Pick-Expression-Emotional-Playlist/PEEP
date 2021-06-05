@@ -21,10 +21,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   ];
 
   final List<String> _genreValues = [
-    "발라드",
-    "힙합",
-    "댄스",
-    "...",
+    'HAPPY','SAD','FEAR','ANGRY','CALM'
   ];
 
   String _emotionValue = "...";

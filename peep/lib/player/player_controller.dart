@@ -410,4 +410,3 @@ class AudioMetadata {
       this.tags);
 }
 
-// enum BEHAVIOR { PLAY, NEXT }
