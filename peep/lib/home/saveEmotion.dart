@@ -12,7 +12,7 @@ class SaveEmotion{
     switch(str[1]){
       case 'h1>Angry':
         print("Angry");
-        
+
         break;
       case 'h1>Happy':
         print("Happy");
