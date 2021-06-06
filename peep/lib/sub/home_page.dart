@@ -17,16 +17,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   final List<ChartData> chartData = [
-    ChartData('HAPPY', 44),
-    ChartData('BLUE', 90),
-    ChartData('SURPRISED', 20),
-    ChartData('CALM', 30),
-    ChartData('TIRED', 55)
+    ChartData('BLUE', 94),
+    ChartData('FEAR', 100),
+    ChartData('ANGRY', 20),
+    ChartData('HAPPY', 30),
+    ChartData('CALM', 55)
   ];
 
-  File _image;
-  final ImagePicker _picker = ImagePicker();
+
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +86,6 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(Icons.pause),
             onPressed: () {
               print('Camera button is clicked');
-              takePicture();
               Navigator.push(
                   //getImage(ImageSource.camera);
                   context,
@@ -382,7 +381,6 @@ class _HomePageState extends State<HomePage> {
                 ),
                 onPressed: () {
                   print('Camera button is clicked');
-                  takePicture();
                   Navigator.push(
                       //getImage(ImageSource.camera);
                       context,
@@ -403,19 +401,7 @@ class _HomePageState extends State<HomePage> {
       ))),
     );
   }
+  Future<void> setEmoData(String emo) async{
 
-  Future<void> takePicture() async {
-    final File imageFile =
-        (await _picker.getImage(source: ImageSource.camera)) as File;
-    if (imageFile == null) {
-      print("no image");
-      return;
-    }
-    final appDir = await getApplicationDocumentsDirectory();
-    //await File(appDir.path+'/test.jpg').create(recursive: true);
-    final File newImage = await imageFile.copy(appDir.path + '/test.jpg');
-    setState(() {
-      _image = newImage;
-    });
   }
 }

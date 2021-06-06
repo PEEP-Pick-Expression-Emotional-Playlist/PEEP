@@ -31,4 +31,5 @@ class ChartData {
   final String x;
   final double y;
   final Color color;
+
 }
