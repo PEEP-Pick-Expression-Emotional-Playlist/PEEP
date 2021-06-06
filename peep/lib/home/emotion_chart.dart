@@ -29,6 +29,6 @@ class EmotionChart extends StatelessWidget {
 class ChartData {
   ChartData(this.x, this.y, [this.color]);
   final String x;
-  final double y;
+  final int y;
   final Color color;
 }

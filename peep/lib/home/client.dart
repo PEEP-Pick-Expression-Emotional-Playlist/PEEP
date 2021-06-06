@@ -3,24 +3,32 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import '../player/player_controller.dart';
+import '../sub/home_page.dart';
+import '../sub/home_page.dart';
+import '../sub/home_page.dart';
 import 'saveEmotion.dart';
+import 'package:peep/sub/home_page.dart';
 
 
 class ClientTest {
   Dio dio = new Dio();
   String testData;
+  String emotionResult;
   Future<void> getResult() async {
     try {
       var response = await dio.get('http://10.0.2.2:5000/result');
       print(response);
       testData = response.data;
       print(testData);
-      await SaveEmotion().setData(testData);
+      emotionResult = await SaveEmotion().setData(testData).then((value) =>
+      AudioManager.emotion = value
+      );
     } catch (e) {
       print(e);
     }
   }
-  Future<bool> test(String imageTest) async {
+  Future<String> test(String imageTest) async {
     try {
       Response response = await dio.post(
           'http://10.0.2.2:5000/peep/image/emotion_read',
@@ -28,7 +36,7 @@ class ClientTest {
             'image': json.encode(imageTest)
           }
       );
-      return true;
+      return emotionResult;
     } catch (e) {
       Exception(e);
     } finally {
@@ -36,7 +44,7 @@ class ClientTest {
       await getResult();
       dio.close();
     }
-    return false;
+    return emotionResult;
   }
 
 }
