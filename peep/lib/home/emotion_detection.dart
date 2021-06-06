@@ -37,11 +37,7 @@ class _EmotionDetect extends State<EmotionDetect>{
     Navigator.push(
       //getImage(ImageSource.camera);
         context,
-        MaterialPageRoute(builder: (context)
-         {
-           return MusicPlayerPage();
-         })
-    );
+        MaterialPageRoute(builder: (context) => MusicPlayerPage()));
     print("init state done");
   }
 
