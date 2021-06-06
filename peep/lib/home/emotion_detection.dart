@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
@@ -101,10 +102,7 @@ class _EmotionDetect extends State<EmotionDetect>{
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          'PEEP',
-          style: TextStyle(color: Colors.grey),
-        ),
+        title: SvgPicture.asset('assets/itd/ITD_logo_leftside.svg'),
         backgroundColor: Colors.white,
         elevation: 0.0,
       ),

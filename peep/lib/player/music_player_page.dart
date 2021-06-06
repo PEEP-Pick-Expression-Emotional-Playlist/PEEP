@@ -82,7 +82,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                   child: IconButton(
                                       icon: Icon(Icons.arrow_back_rounded),
                                       onPressed: () {
-                                        Navigator.pop(context, true);
+                                        Navigator.of(context).popUntil((route) => route.isFirst);
                                       }),
                                 ),
                                 Padding(
