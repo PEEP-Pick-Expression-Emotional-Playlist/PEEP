@@ -59,9 +59,11 @@ class _PlayerController extends State<PlayerController> {
                     fit: BoxFit.contain,
                   ),
                   iconSize: widget.previousSize,
-                  onPressed: (){
-                    audioManager.prev(context);
-                  }
+                  onPressed: _player.hasPrevious ? _player.seekToPrevious : null,
+
+                  //     (){
+                  //   audioManager.prev(context);
+                  // }
                 )),
         //재생 버튼
         StreamBuilder<PlayerState>(
@@ -116,16 +118,18 @@ class _PlayerController extends State<PlayerController> {
                 padding: EdgeInsets.zero,
                 constraints: BoxConstraints(),
                 iconSize: widget.playSize,
-                onPressed: _player.pause,
+                onPressed: () {
+                  _player.pause();
+                },
               );
             } else {
               return IconButton( //노래 끝났을때 다시플레이버튼
                 icon: Icon(Icons.replay),
                 padding: EdgeInsets.zero,
                 constraints: BoxConstraints(),
-                onPressed: () =>
-                    _player.seek(Duration.zero,
-                        index: _player.effectiveIndices.first),
+                onPressed: () {
+                  debugPrint("endend");
+                }
               );
             }
           },
@@ -140,8 +144,13 @@ class _PlayerController extends State<PlayerController> {
                     icon: SvgPicture.asset(
                         'assets/icons/' + widget.nextIconName + '.svg'),
                     iconSize: widget.nextSize,
-                    onPressed: audioManager.pass(context))), //패스 버튼 눌렸을 때
+                    onPressed: _player.hasNext ? _player.seekToNext : null,
+                    // audioManager.pass(context)
+
+                )),
+        //패스 버튼 눌렸을 때
       ],
+
     );
   }
 }
@@ -231,9 +240,87 @@ class AudioManager { //노래 재생을 담당하는 클래스
     }
   }
 
+  addRandomSong2(context) { //랜덤으로 노래뽑고 다운로드
+    debugPrint(emotion);
+    var metadata = _playlist.sequence[_player.currentIndex].tag as AudioMetadata;
+    var tags = metadata.tags;
+    var randomTag = tags[Random().nextInt(metadata.tags.length)];
+    debugPrint(randomTag);
+    ref
+        .orderByChild("emotions/" + emotion) //파이어베이스에서 감정 검색
+        .equalTo(true)
+        .once()
+        .then((value) {
+      List tmp = [];
+      value.value.forEach((key, values) {
+        List list = values['emotions'].keys.toList();
+        if(list.contains(emotion))//검색된거 다받아옴
+          tmp.add(values);
+      });
+
+      int random = Random().nextInt(tmp.length); //그중 랜덤으로 인덱스 뽑음
+
+      var item = tmp[random]; //아이템 하나 담음
+      debugPrint(_playlist.length.toString() +
+          ' ' +
+          item['title'] +
+          ' ' +
+          item['artist'] +
+          ' ' +
+          item['year'] +
+          ' ' +
+          item['emotions'].keys.toList().toString() +
+          ' ' +
+          item['genre'].keys.toList().toString() +
+          ' ' +
+          item['tags'].keys.toList().toString());
+      //뽑은 것 정보로 다운로드 함수 호출
+      download(context, item['title']+' '+item['artist']).then((value) {
+        //다운로드 되면 플레이리스트에 정보 추가
+        _playlist.add(AudioSource.uri(
+          Uri.file(value),
+          tag: AudioMetadata(
+            item['title'],
+            item['artist'],
+            item['year'],
+            item['emotions'].keys.toList(),
+            item['genre'].keys.toList(),
+            item['tags'].keys.toList(),
+          ),
+        ));
+
+        debugPrint(_playlist.length.toString() +
+            ' ' +
+            Uri.file(value).toString() +
+            ' ' +
+            item['title'] +
+            ' ' +
+            item['artist'] +
+            ' ' +
+            item['year'] +
+            ' ' +
+            item['emotions'].keys.toList().toString() +
+            ' ' +
+            item['genre'].keys.toList().toString() +
+            ' ' +
+            item['tags'].keys.toList().toString());
+        // await _player.setAudioSource(BufferAudioSource(await file.readAsBytes()));
+        //처음으로 넣으면 플레이리스트 변수를 등록
+        if (_player.sequence == null || _player.sequence.isEmpty) {
+          try {
+            _player.setAudioSource(_playlist);
+          } catch (e) {
+            // Catch load errors: 404, invalid url ...
+            print("Error loading playlist: $e");
+          }
+          _player.play(); //플레이함
+        }
+      });
+    });
+  }
+
   addRandomSong(context) { //랜덤으로 노래뽑고 다운로드
     debugPrint(emotion);
-
     ref
         .orderByChild("emotions/" + emotion) //파이어베이스에서 감정 검색
         .equalTo(true)
@@ -359,7 +446,8 @@ class AudioManager { //노래 재생을 담당하는 클래스
       }
       var dir = documents.path;
       //test.(확장자) 라는 이름으로 저장. 다 이름 같아서 덮어씀
-      var filePath = path.join(dir, 'test.${audioInfo.container.name}');
+      //->query로 따로 저장
+      var filePath = path.join(dir, query+'.${audioInfo.container.name}');
 
       // Open the file to write.
       var file = File(filePath);
