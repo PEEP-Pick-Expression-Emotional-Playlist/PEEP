@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:just_audio/just_audio.dart';
 import 'ui/audio_wave.dart';
 import 'ui/dropdown_demo.dart';
 import 'ui/my_wave_clipper.dart';
@@ -20,11 +21,9 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
     "1990",
   ];
 
-  final List<String> _genreValues = [
-    'HAPPY','SAD','FEAR','ANGRY','CALM'
-  ];
+  final List<String> _genreValues = ['댄스', '발라드', '랩∙힙합', '록∙메탈'];
 
-  String _emotionValue = "...";
+  // String _emotionValue = AudioManager.emotion;
 
   Animation<double> animation;
   AnimationController _controller;
@@ -53,217 +52,265 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                    // crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 0.0),
-                        child: ExpansionTileCard(
-                          expandedColor: Colors.black12,
-                          shadowColor: Colors.transparent,
-                          elevation: 0.0,
-                          title: Row(children: <Widget>[
-                            Container(
-                              transform: Matrix4.translationValues(-16.0, 0, 0),
-                              child: IconButton(
-                                  icon: Icon(Icons.arrow_back_rounded),
-                                  onPressed: () {
-                                    Navigator.pop(context, true);
-                                  }),
-                            ),
-                            Padding(
-                                padding: EdgeInsets.symmetric(vertical: 4.0),
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.horizontal(
-                                            left: Radius.circular(10.0),
-                                          ),
-                                          border: Border.all(
-                                            color: Colors.black,
-                                            width: 1,
-                                          )),
-                                      child: DropDownDemo(
-                                          hint: "연도", items: _yearValues),
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.horizontal(
-                                            right: Radius.circular(10.0),
-                                          ),
-                                          border: Border.all(
-                                            color: Colors.black,
-                                            width: 1,
-                                          )),
-                                      child: DropDownDemo(
-                                        hint: "장르",
-                                        items: _genreValues,
-                                      ),
-                                    ),
-                                  ],
-                                ))
-                          ]),
-                          children: <Widget>[
-                            Padding(
-                                padding:
-                                    EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 24.0),
-                                child: Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: emotionButton(
-                                          "Happiness", "assets/itd/ITD_icon_happy.svg"),
-                                    ),
-                                    Expanded(
-                                      child: emotionButton(
-                                          "2", "assets/itd/ITD_icon_angry.svg"),
-                                    ),
-                                    Expanded(
-                                      child:
-                                          emotionButton("3", "assets/itd/ITD_icon_calm.svg"),
-                                    ),
-                                    Expanded(
-                                      child: emotionButton(
-                                          "4", "assets/itd/ITD_icon_blue.svg"),
-                                    ),
-                                    Expanded(
-                                      child: emotionButton(
-                                          "5", "assets/itd/ITD_icon_fear.svg"),
-                                    ),
-                                  ],
-                                ))
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
-                        child: Text(
-                          "Beautiful Mistakes",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 20, foreground: Paint()..strokeWidth = 2
-                              // fontWeight: FontWeight.bold
-                              ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 4.0, bottom: 8.0),
-                        child: Text(
-                          "Maroon 5, Megan Thee Stallion",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      ),
-                      Expanded(
-                          child: Container(
-                        // color: Colors.yellow,
-                        decoration: new BoxDecoration(
-                            shape: BoxShape.circle, color: Colors.black12
-                            //
-                            // image: new DecorationImage(
-                            //     fit: BoxFit.fill,
-                            //     image: new NetworkImage(
-                            //         "https://i.imgur.com/BoN9kdC.png")
-                            // )
-                            ),
-                        child: Stack(
-                          children: [
-                            Positioned(
-                                bottom: 0,
-                                right: animation.value,
-                                child: ClipPath(
-                                  clipper: MyWaveClipper(),
-                                  child: Opacity(
-                                    opacity: 0.5,
-                                    child: Container(
-                                      color: Colors.black,
-                                      width: 900,
-                                      height: 200,
-                                    ),
-                                  ),
-                                )),
-                            Positioned(
-                              //helps to position widget where ever we want
-                              bottom: 0,
-                              //position at the bottom
-                              left: animation.value,
-                              //value of left from animation controller
-                              child: ClipPath(
-                                clipper: MyWaveClipper(),
-                                //applying our custom clipper
-                                child: Opacity(
-                                  opacity: 0.5,
-                                  child: Container(
-                                    color: Colors.black,
-                                    width: 900,
-                                    height: 200,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
-                      AudioWave(),
-                      Row(
+    return GestureDetector(
+        onPanUpdate: (dis) {
+          if (dis.delta.dx < 0) {
+            //User swiped from left to right
+            //pass
+          } else if(dis.delta.dy<0){
+            AudioManager.instance.addRandomSong2(context);
+          }
+        },
+        child: Scaffold(
+            body: SafeArea(
+                child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
                         children: <Widget>[
-                          Expanded(
-                              child: Text(
-                            "02:34",
-                            textAlign: TextAlign.left,
-                          )),
-                          Expanded(
-                            child: Text(
-                              "5:55",
-                              textAlign: TextAlign.right,
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 0.0),
+                            child: ExpansionTileCard(
+                              expandedColor: Colors.black12,
+                              shadowColor: Colors.transparent,
+                              elevation: 0.0,
+                              title: Row(children: <Widget>[
+                                Container(
+                                  transform:
+                                      Matrix4.translationValues(-16.0, 0, 0),
+                                  child: IconButton(
+                                      icon: Icon(Icons.arrow_back_rounded),
+                                      onPressed: () {
+                                        Navigator.pop(context, true);
+                                      }),
+                                ),
+                                Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 4.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.horizontal(
+                                                left: Radius.circular(10.0),
+                                              ),
+                                              border: Border.all(
+                                                color: Colors.black,
+                                                width: 1,
+                                              )),
+                                          child: DropDownDemo(
+                                              hint: "연도", items: _yearValues),
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.horizontal(
+                                                right: Radius.circular(10.0),
+                                              ),
+                                              border: Border.all(
+                                                color: Colors.black,
+                                                width: 1,
+                                              )),
+                                          child: DropDownDemo(
+                                            hint: "장르",
+                                            items: _genreValues,
+                                          ),
+                                        ),
+                                      ],
+                                    ))
+                              ]),
+                              children: <Widget>[
+                                Padding(
+                                    padding: EdgeInsets.fromLTRB(
+                                        4.0, 4.0, 4.0, 24.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: emotionButton("happy",
+                                              "assets/itd/ITD_icon_happy.svg"),
+                                        ),
+                                        Expanded(
+                                          child: emotionButton("angry",
+                                              "assets/itd/ITD_icon_angry.svg"),
+                                        ),
+                                        Expanded(
+                                          child: emotionButton("calm",
+                                              "assets/itd/ITD_icon_calm.svg"),
+                                        ),
+                                        Expanded(
+                                          child: emotionButton("sad",
+                                              "assets/itd/ITD_icon_blue.svg"),
+                                        ),
+                                        Expanded(
+                                          child: emotionButton("fear",
+                                              "assets/itd/ITD_icon_fear.svg"),
+                                        ),
+                                      ],
+                                    ))
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                      Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 16.0, horizontal: 48.0),
-                              child: PlayerController(
-                                prevIconName: 'player_prev',
-                                playIconName: 'player_play',
-                                nextIconName: 'player_next',
-                                previousSize: 36.0,
-                                playSize: 72.0,
-                                nextSize: 36.0,
-                              ))),
-                    ]))));
+                          Padding(
+                            padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
+                            child:
+                            StreamBuilder<SequenceState>(
+                              stream: AudioManager.instance.player.sequenceStateStream,
+                              builder: (context, snapshot) {
+                                final state = snapshot.data;
+                                if (state.sequence.isEmpty ?? true) return Text(
+                                  "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 20, foreground: Paint()..strokeWidth = 2
+                                  // fontWeight: FontWeight.bold
+                                ),
+                                );
+                                final metadata = state.currentSource.tag as AudioMetadata;
+                                return Text(
+                                  metadata.title,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 20, foreground: Paint()..strokeWidth = 2
+                                  // fontWeight: FontWeight.bold
+                                ),
+                                );
+                              },
+
+
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 4.0, bottom: 8.0),
+                            child:
+                            StreamBuilder<SequenceState>(
+                              stream: AudioManager.instance.player.sequenceStateStream,
+                              builder: (context, snapshot) {
+                                final state = snapshot.data;
+                                if (state.sequence.isEmpty ?? true) return Text(
+                                  "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
+                                  textAlign: TextAlign.center,
+                                  style:
+                                  TextStyle(fontSize: 16, color: Colors.grey),
+                                );
+                                final metadata = state.currentSource.tag as AudioMetadata;
+                                return Text(
+                                  metadata.artist,
+                                  textAlign: TextAlign.center,
+                                  style:
+                                  TextStyle(fontSize: 16, color: Colors.grey),
+                                );
+                              },
+
+
+                            ),
+                          ),
+                          Expanded(
+                              child: Container(
+                            // color: Colors.yellow,
+                            // decoration: new BoxDecoration(//TODO
+                            //     shape: BoxShape.circle, color: Colors.black12
+                            //     //
+                            //     // image: new DecorationImage(
+                            //     //     fit: BoxFit.fill,
+                            //     //     image: new NetworkImage(
+                            //     //         "https://i.imgur.com/BoN9kdC.png")
+                            //     // )
+                            //     ),
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                    bottom: 0,
+                                    right: animation.value,
+                                    child: ClipPath(
+                                      clipper: MyWaveClipper(),
+                                      child: Opacity(
+                                        opacity: 0.5,
+                                        child: Container(
+                                          color: Colors.black,
+                                          width: 900,
+                                          height: 200,
+                                        ),
+                                      ),
+                                    )),
+                                Positioned(
+                                  //helps to position widget where ever we want
+                                  bottom: 0,
+                                  //position at the bottom
+                                  left: animation.value,
+                                  //value of left from animation controller
+                                  child: ClipPath(
+                                    clipper: MyWaveClipper(),
+                                    //applying our custom clipper
+                                    child: Opacity(
+                                      opacity: 0.5,
+                                      child: Container(
+                                        color: Colors.black,
+                                        width: 900,
+                                        height: 200,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
+                          AudioWave(),
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                  child: Text(
+                                "02:34",
+                                textAlign: TextAlign.left,
+                              )),
+                              Expanded(
+                                child: Text(
+                                  "5:55",
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 16.0, horizontal: 48.0),
+                                  child: PlayerController(
+                                    prevIconName: 'player_prev',
+                                    playIconName: 'player_play',
+                                    nextIconName: 'player_next',
+                                    previousSize: 36.0,
+                                    playSize: 72.0,
+                                    nextSize: 36.0,
+                                  ))),
+                        ])))));
   }
 
   Widget emotionButton(String emotion, String svgicon) {
     return GestureDetector(
-      onTap: () => setState(() => _emotionValue = emotion),
+      onTap: () => setState(() => AudioManager.emotion = emotion),
       child: Container(
-        child: Column(children: <Widget>[
-          SizedBox(height: 20,),
-          SizedBox(
-                height: 25,
-                width: 25,
-                child:SvgPicture.asset(
-                  svgicon,
-                  
-                ),
-                
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+              height: 25,
+              width: 25,
+              child: SvgPicture.asset(
+                svgicon,
               ),
-        ],),
+            ),
+          ],
+        ),
         height: 64.0,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: _emotionValue == emotion ? Colors.grey : Colors.black12,
-          
+          color: AudioManager.emotion == emotion ? Colors.grey : Colors.black12,
         ),
-        
       ),
     );
   }
