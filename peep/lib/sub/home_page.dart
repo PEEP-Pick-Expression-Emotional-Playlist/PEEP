@@ -433,41 +433,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-          child: Column(
-            
-            // heightFactor: 3,
-            // widthFactor: 5,
-            children: <Widget>[
-              
-              SizedBox(height: 50,),
-              SvgPicture.asset('assets/itd/ITD_camera_faceicon.svg'),
-              //SizedBox(height: 10,),
-              //icon
-              //SvgPicture.asset('assets/itd/ITD_camera_start.svg')
-              SizedBox(
-                height: 100,
-                width: 300,
-                child: new IconButton(
-                
-                icon: SvgPicture.asset(
-                  'assets/itd/ITD_camera_start.svg',
-                
-                ),
-                onPressed: () {
-                  print('Camera button is clicked');
-                  Navigator.push(
-                      //getImage(ImageSource.camera);
-                      context,
-                      MaterialPageRoute(builder: (context) => EmotionDetect()));
-                  //클릭 시 감정 분석 카메라로 이동
-                  //현재 임시 이미지 넣어둠
-                },
-              ),),
-              
-            ],
-       
-            ),
-          )
+
+          ))
         ],
       ))),
     );
