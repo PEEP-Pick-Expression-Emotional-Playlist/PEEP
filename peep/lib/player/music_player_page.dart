@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -218,42 +220,74 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                             //     //         "https://i.imgur.com/BoN9kdC.png")
                             //     // )
                             //     ),
-                            child: Stack(
-                              children: [
-                                Positioned(
-                                    bottom: 0,
-                                    right: animation.value,
-                                    child: ClipPath(
-                                      clipper: MyWaveClipper(),
-                                      child: Opacity(
-                                        opacity: 0.5,
-                                        child: Container(
-                                          color: Colors.black,
-                                          width: 900,
-                                          height: 200,
+                            child:                             StreamBuilder<SequenceState>(
+                              stream: AudioManager.instance.player.sequenceStateStream,
+                              builder: (context, snapshot) {
+                                final state = snapshot.data;
+                                if (state.sequence.isEmpty ?? true) return Text(
+                                  "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 20, foreground: Paint()..strokeWidth = 2
+                                    // fontWeight: FontWeight.bold
+                                  ),
+                                );
+                                final metadata = state.currentSource.tag as AudioMetadata;
+                                final emotions = metadata.emotions;
+                                int random = Random().nextInt(emotions.length);
+                                final randomEmotion = emotions[random];
+                                var pickColor = Colors.black;
+                                if(randomEmotion == 'happy'){
+                                  pickColor = const Color(0xFFFBC600);
+                                }else if(randomEmotion == 'sad'){
+                                  pickColor = const Color(0xFF00A0E9);
+                                }else if(randomEmotion == 'angry'){
+                                  pickColor = const Color(0xFFEA5966);
+                                }else if(randomEmotion == 'calm'){
+                                  pickColor = const Color(0xFF298966);
+                                }else if(randomEmotion =='fear'){
+                                  pickColor = const Color(0xFF68579A);
+                                }
+                                return Stack(
+                                  children: [
+                                    Positioned(
+                                        bottom: 0,
+                                        right: animation.value,
+                                        child: ClipPath(
+                                          clipper: MyWaveClipper(),
+                                          child: Opacity(
+                                            opacity: 0.5,
+                                            child: Container(
+                                              color: pickColor,
+                                              width: 900,
+                                              height: 200,
+                                            ),
+                                          ),
+                                        )),
+                                    Positioned(
+                                      //helps to position widget where ever we want
+                                      bottom: 0,
+                                      //position at the bottom
+                                      left: animation.value,
+                                      //value of left from animation controller
+                                      child: ClipPath(
+                                        clipper: MyWaveClipper(),
+                                        //applying our custom clipper
+                                        child: Opacity(
+                                          opacity: 0.5,
+                                          child: Container(
+                                            color: pickColor,
+                                            width: 900,
+                                            height: 200,
+                                          ),
                                         ),
                                       ),
-                                    )),
-                                Positioned(
-                                  //helps to position widget where ever we want
-                                  bottom: 0,
-                                  //position at the bottom
-                                  left: animation.value,
-                                  //value of left from animation controller
-                                  child: ClipPath(
-                                    clipper: MyWaveClipper(),
-                                    //applying our custom clipper
-                                    child: Opacity(
-                                      opacity: 0.5,
-                                      child: Container(
-                                        color: Colors.black,
-                                        width: 900,
-                                        height: 200,
-                                      ),
                                     ),
-                                  ),
-                                ),
-                              ],
+                                  ],
+                                );
+                              },
+
+
                             ),
                           )),
                           AudioWave(),

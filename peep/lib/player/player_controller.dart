@@ -247,7 +247,7 @@ class AudioManager { //노래 재생을 담당하는 클래스
     var randomTag = tags[Random().nextInt(metadata.tags.length)];
     debugPrint(randomTag);
     ref
-        .orderByChild("emotions/" + emotion) //파이어베이스에서 감정 검색
+        .orderByChild("tags/" + randomTag) //파이어베이스에서 감정 검색
         .equalTo(true)
         .once()
         .then((value) {
@@ -316,6 +316,9 @@ class AudioManager { //노래 재생을 담당하는 클래스
           _player.play(); //플레이함
         }
       });
+    }
+    ).catchError((onError){
+      addRandomSong(context);
     });
   }
 
