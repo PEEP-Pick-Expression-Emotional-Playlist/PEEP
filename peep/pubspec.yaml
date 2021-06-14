@@ -98,10 +98,13 @@ flutter:
     - assets/itd/
     - assets/camera_back.png
     - assets/logo_firstpage.png
+    - assets/final_logo.png
+    - assets/logo_final.png
+    - assets/logo_splash.png
     #- assets/test/
 
 flutter_native_splash:
-  image: assets/splash.png
+  image: assets/logo_splash.png
   color: 'ffffff'
   android_disable_fullscreen: true
 

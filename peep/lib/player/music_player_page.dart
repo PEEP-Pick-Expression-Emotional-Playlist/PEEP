@@ -120,19 +120,20 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
             final randomEmotion = emotion1[rand];
             var pageColor = Colors.white;
             if (randomEmotion == 'happy') {
-              pageColor = const Color(0xFFF0BF1B);
+              pageColor = const Color(0xFFd5b15c);
             } else if (randomEmotion == 'sad') {
-              pageColor = const Color(0xFF6BC8F2);
+              pageColor = const Color(0xFF7fbad0);
             } else if (randomEmotion == 'angry') {
-              pageColor = const Color(0xFFFF7182);
+              pageColor = const Color(0xFFd77881);
             } else if (randomEmotion == 'calm') {
-              pageColor = const Color(0xFF43AA82);
+              pageColor = const Color(0xFF669f82);
             } else if (randomEmotion == 'fear') {
-              pageColor = const Color(0xFF9387C9);
+              pageColor = const Color(0xFF8481ac);
             }
             return Scaffold(
               body: Container(
                 color: pageColor,
+
                   child: SafeArea(
                       child: Column(
                         // crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,7 +253,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                     Text(
                                       metadata.artist,
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                                     )
                                   ]);
                                 },
@@ -304,20 +305,20 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                   var pickColor = Colors.black;
                                   var pickColor1 = Colors.black;
                                   if (randomEmotion == 'happy') {
-                                    pickColor = const Color(0xFFFBC600);
-                                    pickColor1 = const Color(0xFFEF5B00);
+                                    pickColor = const Color(0xFFe8c075);
+                                    pickColor1 = const Color(0xFFd57a47);
                                   } else if (randomEmotion == 'sad') {
-                                    pickColor = const Color(0xFF00A0E9);
-                                    pickColor1 = const Color(0xFF1169C0);
+                                    pickColor = const Color(0xFFa5c3d7);
+                                    pickColor1 = const Color(0xFF446199);
                                   } else if (randomEmotion == 'angry') {
-                                    pickColor = const Color(0xFFEA5966);
-                                    pickColor1 = const Color(0xFFFC2853);
+                                    pickColor = const Color(0xFFd77d92);
+                                    pickColor1 = const Color(0xFFcc4e60);
                                   } else if (randomEmotion == 'calm') {
-                                    pickColor = const Color(0xFF298966);
-                                    pickColor1 = const Color(0xFF06722D);
+                                    pickColor = const Color(0xFF57a481);
+                                    pickColor1 = const Color(0xFF426641);
                                   } else if (randomEmotion == 'fear') {
-                                    pickColor = const Color(0xFF68579A);
-                                    pickColor1 = const Color(0xFF4C17C4);
+                                    pickColor = const Color(0xFF8776a4);
+                                    pickColor1 = const Color(0xFF564986);
                                   }
                                   return Stack(
                                     children: [

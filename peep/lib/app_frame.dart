@@ -60,7 +60,9 @@ class _AppFrameState extends State<AppFrame>
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: SvgPicture.asset('assets/itd/ITD_logo_leftside.svg'),
+        centerTitle: true,
+        title: Image.asset("assets/logo_final.png", height: 20, width: 100,),
+         // SvgPicture.asset('assets/itd/ITD_logo_leftside.svg')
         // Text(
         //   'PEE',
         //   style: TextStyle(color: Colors.grey),
