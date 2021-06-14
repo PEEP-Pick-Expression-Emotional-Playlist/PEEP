@@ -101,405 +101,453 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
             AudioManager.instance.addRandomSong2(context);
           }
         },
-        child: Scaffold(
-            body: SafeArea(
-                child: Column(
-                    // crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-              ExpansionTileCard(
-                expandedColor: Colors.black12,
-                shadowColor: Colors.transparent,
-                elevation: 0.0,
-                title: Row(children: <Widget>[
-                  Container(
-                    transform: Matrix4.translationValues(-16.0, 0, 0),
-                    child: IconButton(
-                        icon: Icon(Icons.arrow_back_rounded),
-                        onPressed: () {
-                          Navigator.of(context)
-                              .popUntil((route) => route.isFirst);
-                        }),
-                  ),
-                  Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4.0),
-                      child: Row(
-                        children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.horizontal(
-                                  left: Radius.circular(10.0),
-                                ),
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 1,
-                                )),
-                            child: DropDownDemo(hint: "연도", items: _yearValues),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.horizontal(
-                                  right: Radius.circular(10.0),
-                                ),
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 1,
-                                )),
-                            child: DropDownDemo(
-                              hint: "장르",
-                              items: _genreValues,
-                            ),
-                          ),
-                        ],
-                      ))
-                ]),
-                children: <Widget>[
-                  Padding(
-                      padding: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 24.0),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: emotionButton(
-                                "happy", "assets/itd/ITD_icon_happy.svg"),
-                          ),
-                          Expanded(
-                            child: emotionButton(
-                                "angry", "assets/itd/ITD_icon_angry.svg"),
-                          ),
-                          Expanded(
-                            child: emotionButton(
-                                "calm", "assets/itd/ITD_icon_calm.svg"),
-                          ),
-                          Expanded(
-                            child: emotionButton(
-                                "sad", "assets/itd/ITD_icon_blue.svg"),
-                          ),
-                          Expanded(
-                            child: emotionButton(
-                                "fear", "assets/itd/ITD_icon_fear.svg"),
-                          ),
-                        ],
-                      ))
-                ],
+        child: StreamBuilder<SequenceState>(
+          stream: AudioManager.instance.player.sequenceStateStream,
+          builder: (context, snapshot) {
+            final state = snapshot.data;
+            if (state.sequence.isEmpty ?? true)
+              return Text(
+              "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 20, foreground: Paint()..strokeWidth = 2
+                // fontWeight: FontWeight.bold
               ),
-              Padding(
-                padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
-                child: StreamBuilder<SequenceState>(
-                  stream: AudioManager.instance.player.sequenceStateStream,
-                  builder: (context, snapshot) {
-                    final state = snapshot.data;
-                    if (state.sequence.isEmpty ?? true)
-                      return Column(children: [
-                        Text(
-                          "재생 중인 곡이 없습니다",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 20, foreground: Paint()..strokeWidth = 2
-                              // fontWeight: FontWeight.bold
-                              ),
-                        ),
-                        Text(
-                          "위로 스와이프해주세요",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        )
-                      ]);
-                    final metadata = state.currentSource.tag as AudioMetadata;
-                    return Column(children: [
-                      Text(
-                        metadata.title,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 20, foreground: Paint()..strokeWidth = 2
-                            // fontWeight: FontWeight.bold
-                            ),
-                      ),
-                      SizedBox(
-                          height: 8,
-                      ),
-                      Text(
-                        metadata.artist,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      )
-                    ]);
-                  },
-                ),
-              ),
-              // Padding( //TODO: 태그 보여줌
-              //   padding: EdgeInsets.only(top: 2.0, bottom: 8.0),
-              //   child:
-              //   StreamBuilder<SequenceState>(
-              //     stream: AudioManager.instance.player.sequenceStateStream,
-              //     builder: (context, snapshot) {
-              //       final state = snapshot.data;
-              //       if (state.sequence.isEmpty ?? true) return Text(
-              //         "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
-              //         textAlign: TextAlign.center,
-              //         style:
-              //         TextStyle(fontSize: 14, color: Colors.grey),
-              //       );
-              //       final metadata = state.currentSource.tag as AudioMetadata;
-              //       return Text(
-              //         metadata.getTags(),
-              //         textAlign: TextAlign.center,
-              //         style:
-              //         TextStyle(fontSize: 16, color: Colors.grey),
-              //       );
-              //     },
-              //
-              //
-              //   ),
-              // ),
-              Expanded(
-                child: StreamBuilder<SequenceState>(
-                  stream: AudioManager.instance.player.sequenceStateStream,
-                  builder: (context, snapshot) {
-                    final state = snapshot.data;
-                    if (state.sequence.isEmpty ?? true)
-                      return Text(
-                        "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 20, foreground: Paint()..strokeWidth = 2
-                            // fontWeight: FontWeight.bold
-                            ),
-                      );
-                    final metadata = state.currentSource.tag as AudioMetadata;
-                    final emotions = metadata.emotions;
-                    int random = Random().nextInt(emotions.length);
-                    final randomEmotion = emotions[random];
-                    var pickColor = Colors.black;
-                    if (randomEmotion == 'happy') {
-                      pickColor = const Color(0xFFFBC600);
-                    } else if (randomEmotion == 'sad') {
-                      pickColor = const Color(0xFF00A0E9);
-                    } else if (randomEmotion == 'angry') {
-                      pickColor = const Color(0xFFEA5966);
-                    } else if (randomEmotion == 'calm') {
-                      pickColor = const Color(0xFF298966);
-                    } else if (randomEmotion == 'fear') {
-                      pickColor = const Color(0xFF68579A);
-                    }
-                    return Stack(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Image.network(
-                            metadata.artwork,
-                            width: 480,
-                            height: 480,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        Positioned(
-                            bottom: -10,
-                            right: animation.value,
-                            child: ClipPath(
-                              clipper: MyWaveClipper(),
-                              child: Opacity(
-                                opacity: 0.4,
-                                child: Container(
-                                  color: pickColor,
-                                  width: 900,
-                                  height: 200,
+            );
+            final metad = state.currentSource.tag as AudioMetadata;
+            final emotion1 = metad.emotions;
+            int rand = Random().nextInt(emotion1.length);
+            final randomEmotion = emotion1[rand];
+            var pageColor = Colors.white;
+            if (randomEmotion == 'happy') {
+              pageColor = const Color(0xFFF0BF1B);
+            } else if (randomEmotion == 'sad') {
+              pageColor = const Color(0xFF6BC8F2);
+            } else if (randomEmotion == 'angry') {
+              pageColor = const Color(0xFFFF7182);
+            } else if (randomEmotion == 'calm') {
+              pageColor = const Color(0xFF43AA82);
+            } else if (randomEmotion == 'fear') {
+              pageColor = const Color(0xFF9387C9);
+            }
+            return Scaffold(
+              body: Container(
+                color: pageColor,
+                  child: SafeArea(
+                      child: Column(
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: <Widget>[
+                            ExpansionTileCard(
+                              baseColor: pageColor,
+                              expandedColor: Colors.black12,
+                              shadowColor: Colors.transparent,
+                              elevation: 0.0,
+                              title: Row(children: <Widget>[
+                                Container(
+                                  transform: Matrix4.translationValues(-16.0, 0, 0),
+                                  child: IconButton(
+                                      icon: Icon(Icons.arrow_back_rounded),
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .popUntil((route) => route.isFirst);
+                                      }),
                                 ),
-                              ),
-                            )),
-                        Positioned(
-                            bottom: 20,
-                            right: animation.value,
-                            child: ClipPath(
-                              clipper: MyWaveClipper(),
-                              child: Opacity(
-                                opacity: 0.2,
-                                child: Container(
-                                  color: pickColor,
-                                  width: 900,
-                                  height: 200,
-                                ),
-                              ),
-                            )),
-                        Positioned(
-                            bottom: 20,
-                            right: animation4.value,
-                            child: ClipPath(
-                              clipper: MyWaveClipper(),
-                              child: Opacity(
-                                opacity: 0.1,
-                                child: Container(
-                                  color: pickColor,
-                                  width: 900,
-                                  height: 200,
-                                ),
-                              ),
-                            )),
-                        Positioned(
-                          //helps to position widget where ever we want
-                          bottom: -40,
-                          //position at the bottom
-                          left: animation2.value,
-                          //value of left from animation controller
-                          child: ClipPath(
-                            clipper: MyWaveClipper(),
-                            //applying our custom clipper
-                            child: Opacity(
-                              opacity: 0.5,
-                              child: Container(
-                                color: pickColor,
-                                width: 900,
-                                height: 200,
+                                Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 4.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.horizontal(
+                                                left: Radius.circular(10.0),
+                                              ),
+                                              border: Border.all(
+                                                color: Colors.black,
+                                                width: 1,
+                                              )),
+                                          child: DropDownDemo(hint: "연도", items: _yearValues),
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.horizontal(
+                                                right: Radius.circular(10.0),
+                                              ),
+                                              border: Border.all(
+                                                color: Colors.black,
+                                                width: 1,
+                                              )),
+                                          child: DropDownDemo(
+                                            hint: "장르",
+                                            items: _genreValues,
+                                          ),
+                                        ),
+                                      ],
+                                    ))
+                              ]),
+                              children: <Widget>[
+                                Padding(
+                                    padding: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 24.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: emotionButton(
+                                              "happy", "assets/itd/ITD_icon_happy.svg"),
+                                        ),
+                                        Expanded(
+                                          child: emotionButton(
+                                              "angry", "assets/itd/ITD_icon_angry.svg"),
+                                        ),
+                                        Expanded(
+                                          child: emotionButton(
+                                              "calm", "assets/itd/ITD_icon_calm.svg"),
+                                        ),
+                                        Expanded(
+                                          child: emotionButton(
+                                              "sad", "assets/itd/ITD_icon_blue.svg"),
+                                        ),
+                                        Expanded(
+                                          child: emotionButton(
+                                              "fear", "assets/itd/ITD_icon_fear.svg"),
+                                        ),
+                                      ],
+                                    ))
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
+                              child: StreamBuilder<SequenceState>(
+                                stream: AudioManager.instance.player.sequenceStateStream,
+                                builder: (context, snapshot) {
+                                  final state = snapshot.data;
+                                  if (state.sequence.isEmpty ?? true)
+                                    return Column(children: [
+                                      Text(
+                                        "재생 중인 곡이 없습니다",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: 20, foreground: Paint()..strokeWidth = 2
+                                          // fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                      Text(
+                                        "위로 스와이프해주세요",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                      )
+                                    ]);
+                                  final metadata = state.currentSource.tag as AudioMetadata;
+                                  return Column(children: [
+                                    Text(
+                                      metadata.title,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 20, foreground: Paint()..strokeWidth = 2
+                                        // fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 8,
+                                    ),
+                                    Text(
+                                      metadata.artist,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                                    )
+                                  ]);
+                                },
                               ),
                             ),
-                          ),
-                        ),
-                        Positioned(
-                          //helps to position widget where ever we want
-                          bottom: -55,
-                          //position at the bottom
-                          left: animation2.value,
-                          //value of left from animation controller
-                          child: ClipPath(
-                            clipper: MyWaveClipper(),
-                            //applying our custom clipper
-                            child: Opacity(
-                              opacity: 0.7,
-                              child: Container(
-                                color: pickColor,
-                                width: 900,
-                                height: 200,
+                            // Padding( //TODO: 태그 보여줌
+                            //   padding: EdgeInsets.only(top: 2.0, bottom: 8.0),
+                            //   child:
+                            //   StreamBuilder<SequenceState>(
+                            //     stream: AudioManager.instance.player.sequenceStateStream,
+                            //     builder: (context, snapshot) {
+                            //       final state = snapshot.data;
+                            //       if (state.sequence.isEmpty ?? true) return Text(
+                            //         "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
+                            //         textAlign: TextAlign.center,
+                            //         style:
+                            //         TextStyle(fontSize: 14, color: Colors.grey),
+                            //       );
+                            //       final metadata = state.currentSource.tag as AudioMetadata;
+                            //       return Text(
+                            //         metadata.getTags(),
+                            //         textAlign: TextAlign.center,
+                            //         style:
+                            //         TextStyle(fontSize: 16, color: Colors.grey),
+                            //       );
+                            //     },
+                            //
+                            //
+                            //   ),
+                            // ),
+                            Expanded(
+                              child: StreamBuilder<SequenceState>(
+                                stream: AudioManager.instance.player.sequenceStateStream,
+                                builder: (context, snapshot) {
+                                  final state = snapshot.data;
+                                  if (state.sequence.isEmpty ?? true)
+                                    return Text(
+                                      "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 20, foreground: Paint()..strokeWidth = 2
+                                        // fontWeight: FontWeight.bold
+                                      ),
+                                    );
+                                  final metadata = state.currentSource.tag as AudioMetadata;
+                                  final emotions = metadata.emotions;
+                                  int random = Random().nextInt(emotions.length);
+                                  final randomEmotion = emotions[random];
+                                  var pickColor = Colors.black;
+                                  var pickColor1 = Colors.black;
+                                  if (randomEmotion == 'happy') {
+                                    pickColor = const Color(0xFFFBC600);
+                                    pickColor1 = const Color(0xFFEF5B00);
+                                  } else if (randomEmotion == 'sad') {
+                                    pickColor = const Color(0xFF00A0E9);
+                                    pickColor1 = const Color(0xFF1169C0);
+                                  } else if (randomEmotion == 'angry') {
+                                    pickColor = const Color(0xFFEA5966);
+                                    pickColor1 = const Color(0xFFFC2853);
+                                  } else if (randomEmotion == 'calm') {
+                                    pickColor = const Color(0xFF298966);
+                                    pickColor1 = const Color(0xFF06722D);
+                                  } else if (randomEmotion == 'fear') {
+                                    pickColor = const Color(0xFF68579A);
+                                    pickColor1 = const Color(0xFF4C17C4);
+                                  }
+                                  return Stack(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                        child: Image.network(
+                                          metadata.artwork,
+                                          width: 480,
+                                          height: 480,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      Positioned(
+                                          bottom: -10,
+                                          right: animation.value,
+                                          child: ClipPath(
+                                            clipper: MyWaveClipper(),
+                                            child: Opacity(
+                                              opacity: 0.4,
+                                              child: Container(
+                                                color: pickColor1,
+                                                width: 900,
+                                                height: 200,
+                                              ),
+                                            ),
+                                          )),
+                                      Positioned(
+                                          bottom: 20,
+                                          right: animation.value,
+                                          child: ClipPath(
+                                            clipper: MyWaveClipper(),
+                                            child: Opacity(
+                                              opacity: 0.2,
+                                              child: Container(
+                                                color: pickColor1,
+                                                width: 900,
+                                                height: 200,
+                                              ),
+                                            ),
+                                          )),
+                                      Positioned(
+                                          bottom: 20,
+                                          right: animation4.value,
+                                          child: ClipPath(
+                                            clipper: MyWaveClipper(),
+                                            child: Opacity(
+                                              opacity: 0.1,
+                                              child: Container(
+                                                color: pickColor1,
+                                                width: 900,
+                                                height: 200,
+                                              ),
+                                            ),
+                                          )),
+                                      Positioned(
+                                        //helps to position widget where ever we want
+                                        bottom: -40,
+                                        //position at the bottom
+                                        left: animation2.value,
+                                        //value of left from animation controller
+                                        child: ClipPath(
+                                          clipper: MyWaveClipper(),
+                                          //applying our custom clipper
+                                          child: Opacity(
+                                            opacity: 0.5,
+                                            child: Container(
+                                              color: pickColor1,
+                                              width: 900,
+                                              height: 200,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        //helps to position widget where ever we want
+                                        bottom: -55,
+                                        //position at the bottom
+                                        left: animation2.value,
+                                        //value of left from animation controller
+                                        child: ClipPath(
+                                          clipper: MyWaveClipper(),
+                                          //applying our custom clipper
+                                          child: Opacity(
+                                            opacity: 0.7,
+                                            child: Container(
+                                              color: pickColor,
+                                              width: 900,
+                                              height: 200,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        //helps to position widget where ever we want
+                                        bottom: -100,
+                                        //position at the bottom
+                                        right: animation3.value,
+                                        //value of left from animation controller
+                                        child: ClipPath(
+                                          clipper: MyWaveClipper(),
+                                          //applying our custom clipper
+                                          child: Opacity(
+                                            opacity: 1,
+                                            child: Container(
+                                              color: Colors.white,
+                                              width: 900,
+                                              height: 200,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        //helps to position widget where ever we want
+                                        bottom: -120,
+                                        //position at the bottom
+                                        right: animation3.value,
+                                        //value of left from animation controller
+                                        child: ClipPath(
+                                          clipper: MyWaveClipper(),
+                                          //applying our custom clipper
+                                          child: Opacity(
+                                            opacity: 1,
+                                            child: Container(
+                                              color: Colors.white,
+                                              width: 900,
+                                              height: 200,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        //helps to position widget where ever we want
+                                        bottom: -128,
+                                        //position at the bottom
+                                        right: animation3.value,
+                                        //value of left from animation controller
+                                        child: ClipPath(
+                                          clipper: MyWaveClipper(),
+                                          //applying our custom clipper
+                                          child: Opacity(
+                                            opacity: 1,
+                                            child: Container(
+                                              color: Colors.white,
+                                              width: 900,
+                                              height: 200,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
-                          ),
-                        ),
-                        Positioned(
-                          //helps to position widget where ever we want
-                          bottom: -100,
-                          //position at the bottom
-                          right: animation3.value,
-                          //value of left from animation controller
-                          child: ClipPath(
-                            clipper: MyWaveClipper(),
-                            //applying our custom clipper
-                            child: Opacity(
-                              opacity: 1,
-                              child: Container(
-                                color: Colors.white,
-                                width: 900,
-                                height: 200,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          //helps to position widget where ever we want
-                          bottom: -120,
-                          //position at the bottom
-                          right: animation3.value,
-                          //value of left from animation controller
-                          child: ClipPath(
-                            clipper: MyWaveClipper(),
-                            //applying our custom clipper
-                            child: Opacity(
-                              opacity: 1,
-                              child: Container(
-                                color: pickColor,
-                                width: 900,
-                                height: 200,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          //helps to position widget where ever we want
-                          bottom: -128,
-                          //position at the bottom
-                          right: animation3.value,
-                          //value of left from animation controller
-                          child: ClipPath(
-                            clipper: MyWaveClipper(),
-                            //applying our custom clipper
-                            child: Opacity(
-                              opacity: 1,
-                              child: Container(
-                                color: Colors.white,
-                                width: 900,
-                                height: 200,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              StreamBuilder<Duration>(
-                stream: AudioManager.instance.player.durationStream,
-                builder: (context, snapshot) {
-                  final duration = snapshot.data ?? Duration.zero;
-                  return StreamBuilder<PositionData>(
-                    stream: Rx.combineLatest2<Duration, Duration, PositionData>(
-                        AudioManager.instance.player.positionStream,
-                        AudioManager.instance.player.bufferedPositionStream,
-                        (position, bufferedPosition) =>
-                            PositionData(position, bufferedPosition)),
-                    builder: (context, snapshot) {
-                      final positionData = snapshot.data ??
-                          PositionData(Duration.zero, Duration.zero);
-                      var position = positionData.position;
-                      if (position > duration) {
-                        position = duration;
-                      }
-                      var bufferedPosition = positionData.bufferedPosition;
-                      if (bufferedPosition > duration) {
-                        bufferedPosition = duration;
-                      }
-                      return SeekBar(
-                        duration: duration,
-                        position: position,
-                        bufferedPosition: bufferedPosition,
-                        onChangeEnd: (newPosition) {
-                          AudioManager.instance.player.seek(newPosition);
-                        },
-                        emotionColor: Colors.black,
-                      );
-                    },
-                  );
-                },
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                        child: Text(
-                      "02:34",
-                      textAlign: TextAlign.left,
-                    )),
-                    Expanded(
-                      child: Text(
-                        "5:55",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 96.0),
-                      child: PlayerController(
-                        prevIconName: 'player_prev',
-                        playIconName: 'player_play',
-                        nextIconName: 'player_next',
-                        previousSize: 36.0,
-                        playSize: 72.0,
-                        nextSize: 36.0,
-                      ))),
-            ]))));
+                            Container(
+                              color: Colors.white,
+                              child: Column(
+                                children: [
+                                  StreamBuilder<Duration>(
+                                    stream: AudioManager.instance.player.durationStream,
+                                    builder: (context, snapshot) {
+                                      final duration = snapshot.data ?? Duration.zero;
+                                      return StreamBuilder<PositionData>(
+                                        stream: Rx.combineLatest2<Duration, Duration, PositionData>(
+                                            AudioManager.instance.player.positionStream,
+                                            AudioManager.instance.player.bufferedPositionStream,
+                                                (position, bufferedPosition) =>
+                                                PositionData(position, bufferedPosition)),
+                                        builder: (context, snapshot) {
+                                          final positionData = snapshot.data ??
+                                              PositionData(Duration.zero, Duration.zero);
+                                          var position = positionData.position;
+                                          if (position > duration) {
+                                            position = duration;
+                                          }
+                                          var bufferedPosition = positionData.bufferedPosition;
+                                          if (bufferedPosition > duration) {
+                                            bufferedPosition = duration;
+                                          }
+                                          return SeekBar(
+                                            duration: duration,
+                                            position: position,
+                                            bufferedPosition: bufferedPosition,
+                                            onChangeEnd: (newPosition) {
+                                              AudioManager.instance.player.seek(newPosition);
+                                            },
+                                            emotionColor: Colors.black,
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                            child: Text(
+                                              "02:34",
+                                              textAlign: TextAlign.left,
+                                            )),
+                                        Expanded(
+                                          child: Text(
+                                            "5:55",
+                                            textAlign: TextAlign.right,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 16.0, horizontal: 96.0),
+                                          child: PlayerController(
+                                            prevIconName: 'player_prev',
+                                            playIconName: 'player_play',
+                                            nextIconName: 'player_next',
+                                            previousSize: 36.0,
+                                            playSize: 72.0,
+                                            nextSize: 36.0,
+                                          ))),
+                                ],
+                              )
+                            )
+
+                          ]))
+              )
+              );}));
   }
 
   Widget emotionButton(String emotion, String svgicon) {

@@ -194,35 +194,46 @@ class _UserPageState extends State<UserPage> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),*/
-              )
-            ],
-          ),
-              ),
-              SizedBox(
+                )
+                    ],
+                  ),
+                ),
+                SizedBox(
                 height: 10.0,
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  '  좋아요 한 곡',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold),
                 ),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  '  최근에 들은 곡',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    color: Color(0xFFF3F4F6),
+                    child: Text(
+                      '   좋아요 한 곡',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+
                 ),
-              )
-            ],
-          )),
-        ));
+              SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    color: Color(0xFFFFFFFF),
+                    child: Text(
+                      '   최근에 들은 곡',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  )
+              ),
+              ],
+            )),
+          ));
   }
 }
