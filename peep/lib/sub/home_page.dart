@@ -30,7 +30,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    setData();
   }
   @override
   void didChangeDependencies() {
@@ -218,7 +217,7 @@ class _HomePageState extends State<HomePage> {
                                 fit: BoxFit.fill,
                               ),
                               onPressed: () async {
-                                await MiniPlayerController().getEmotion("happy");
+                                await setData("happy");
                                 await ClientTest().readAndWrite("happy");
                                 AudioManager.emotion = "happy";
                                 Navigator.push(
@@ -244,7 +243,7 @@ class _HomePageState extends State<HomePage> {
                                 fit: BoxFit.fill,
                               ),
                               onPressed: () async {
-                                await MiniPlayerController().getEmotion("sad");
+                                await setData("sad");
                                 await ClientTest().readAndWrite("sad");
                                 AudioManager.emotion = "sad";
                                 Navigator.push(
@@ -275,7 +274,7 @@ class _HomePageState extends State<HomePage> {
                                 fit: BoxFit.fill,
                               ),
                               onPressed: () async {
-                                await MiniPlayerController().getEmotion("angry");
+                                await setData("angry");
                                 await ClientTest().readAndWrite("angry");
                                 AudioManager.emotion = "angry";
                                 Navigator.push(
@@ -301,7 +300,7 @@ class _HomePageState extends State<HomePage> {
                                 fit: BoxFit.fill,
                               ),
                               onPressed: () async {
-                                await MiniPlayerController().getEmotion("calm");
+                                await setData("calm");
                                 await ClientTest().readAndWrite("calm");
                                 AudioManager.emotion = "calm";
                                 Navigator.push(
@@ -332,7 +331,7 @@ class _HomePageState extends State<HomePage> {
                                 fit: BoxFit.fill,
                               ),
                               onPressed: () async {
-                                await MiniPlayerController().getEmotion("fear");
+                                await setData("fear");
                                 await ClientTest().readAndWrite("fear");
                                 AudioManager.emotion = "fear";
                                 Navigator.push(
@@ -354,14 +353,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> setData() async{
-    //FirebaseFirestore firestore = FirebaseFirestore.instance;
-    await firestore.collection("emotion").doc("freq").get().then((DocumentSnapshot ds) async{
-      blueFreq = ds['sad'];
-      happyFreq = ds['happy'];
-      calmFreq = ds['calm'];
-      angryFreq = ds['angry'];
-      fearFreq = ds['fear'];
-    });
+  Future<void> setData(String emotionState) async{
+    await firestore.collection("current").doc("state").update({"emotion":emotionState});
   }
 }

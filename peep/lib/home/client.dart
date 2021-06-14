@@ -64,6 +64,7 @@ class ClientTest {
     freqValue = freqValue + 10;
     print(freqValue);
     await firestore.collection("emotion").doc("freq").update({emotionField:freqValue});
+    await firestore.collection("current").doc("state").update({"emotion":emotionField});
   }
 
 }
