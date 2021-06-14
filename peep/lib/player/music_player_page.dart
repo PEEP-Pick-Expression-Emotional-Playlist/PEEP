@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:just_audio/just_audio.dart';
-import 'ui/audio_wave.dart';
+import 'package:peep/player/ui/seekbar.dart';
 import 'ui/dropdown_demo.dart';
 import 'ui/my_wave_clipper.dart';
 import 'player_controller.dart';
+import 'package:rxdart/rxdart.dart';
 
 class MusicPlayerPage extends StatefulWidget {
   @override
@@ -246,6 +247,31 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
 
                             ),
                           ),
+                          // Padding( //TODO: 태그 보여줌
+                          //   padding: EdgeInsets.only(top: 2.0, bottom: 8.0),
+                          //   child:
+                          //   StreamBuilder<SequenceState>(
+                          //     stream: AudioManager.instance.player.sequenceStateStream,
+                          //     builder: (context, snapshot) {
+                          //       final state = snapshot.data;
+                          //       if (state.sequence.isEmpty ?? true) return Text(
+                          //         "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
+                          //         textAlign: TextAlign.center,
+                          //         style:
+                          //         TextStyle(fontSize: 14, color: Colors.grey),
+                          //       );
+                          //       final metadata = state.currentSource.tag as AudioMetadata;
+                          //       return Text(
+                          //         metadata.getTags(),
+                          //         textAlign: TextAlign.center,
+                          //         style:
+                          //         TextStyle(fontSize: 16, color: Colors.grey),
+                          //       );
+                          //     },
+                          //
+                          //
+                          //   ),
+                          // ),
                           Expanded(
                               child: Container(
                             // color: Colors.yellow,
@@ -288,6 +314,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                 }
                                 return Stack(
                                   children: [
+                                    Center(
+                                        child: Image.network(metadata.artwork)),
                                     Positioned(
                                         bottom: -10,
                                         right: animation.value,
@@ -438,7 +466,40 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
 
                             ),
                           )),
-                          AudioWave(),
+                          StreamBuilder<Duration>(
+                            stream: AudioManager.instance.player.durationStream,
+                            builder: (context, snapshot) {
+                              final duration = snapshot.data ?? Duration.zero;
+                              return StreamBuilder<PositionData>(
+                                stream: Rx.combineLatest2<Duration, Duration, PositionData>(
+                                    AudioManager.instance.player.positionStream,
+                                    AudioManager.instance.player.bufferedPositionStream,
+                                        (position, bufferedPosition) =>
+                                        PositionData(position, bufferedPosition)),
+                                builder: (context, snapshot) {
+                                  final positionData = snapshot.data ??
+                                      PositionData(Duration.zero, Duration.zero);
+                                  var position = positionData.position;
+                                  if (position > duration) {
+                                    position = duration;
+                                  }
+                                  var bufferedPosition = positionData.bufferedPosition;
+                                  if (bufferedPosition > duration) {
+                                    bufferedPosition = duration;
+                                  }
+                                  return SeekBar(
+                                    duration: duration,
+                                    position: position,
+                                    bufferedPosition: bufferedPosition,
+                                    onChangeEnd: (newPosition) {
+                                      AudioManager.instance.player.seek(newPosition);
+                                    },
+                                    emotionColor: Colors.black,
+                                  );
+                                },
+                              );
+                            },
+                          ),
                           Row(
                             children: <Widget>[
                               Expanded(

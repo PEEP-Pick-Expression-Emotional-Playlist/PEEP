@@ -96,10 +96,12 @@ class _PlayerController extends State<PlayerController> {
                 onPressed: () { //재생하는 버튼 눌렀을 때
                   // ScaffoldMessenger.of(context)
                   //     .showSnackBar(SnackBar(content: Text('Wait a minute')));
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar( //선택된 감정과 연도를 보여줌
-                      content: Text(AudioManager.emotion +
-                          ' ' +
-                          AudioManager.year)));
+
+                  // ScaffoldMessenger.of(context).showSnackBar(SnackBar( //선택된 감정과 연도를 보여줌
+                  //     content: Text(AudioManager.emotion +
+                  //         ' ' +
+                  //         AudioManager.year)));
+
                   audioManager.play(context); //노래 재생하는 함수
                   // if (_player.sequence == null || _player.sequence.isEmpty)
                   //   {
@@ -245,6 +247,8 @@ class AudioManager { //노래 재생을 담당하는 클래스
     var metadata = _playlist.sequence[_player.currentIndex].tag as AudioMetadata;
     var tags = metadata.tags;
     var randomTag = tags[Random().nextInt(metadata.tags.length)];
+    // ScaffoldMessenger.of(context).showSnackBar(SnackBar( //선택된 감정과 연도를 보여줌
+    //     content: Text("선정된 태그: #"+randomTag)));
     debugPrint(randomTag);
     ref
         .orderByChild("tags/" + randomTag) //파이어베이스에서 감정 검색
@@ -282,6 +286,7 @@ class AudioManager { //노래 재생을 담당하는 클래스
           tag: AudioMetadata(
             item['title'],
             item['artist'],
+            item['artwork'],
             item['year'],
             item['emotions'].keys.toList(),
             item['genre'].keys.toList(),
@@ -323,6 +328,8 @@ class AudioManager { //노래 재생을 담당하는 클래스
   }
 
   addRandomSong(context) { //랜덤으로 노래뽑고 다운로드
+    // ScaffoldMessenger.of(context).showSnackBar(SnackBar( //선택된 감정과 연도를 보여줌
+    //     content: Text("선택된 감정:"+emotion)));
     debugPrint(emotion);
     ref
         .orderByChild("emotions/" + emotion) //파이어베이스에서 감정 검색
@@ -358,6 +365,7 @@ class AudioManager { //노래 재생을 담당하는 클래스
             tag: AudioMetadata(
               item['title'],
               item['artist'],
+              item['artwork'],
               item['year'],
               item['emotions'].keys.toList(),
               item['genre'].keys.toList(),
@@ -492,12 +500,19 @@ class AudioManager { //노래 재생을 담당하는 클래스
 class AudioMetadata {
   final String title;
   final String artist;
+  final String artwork;
   final String year;
   final List emotions;
   final List genre;
   final List tags;
 
-  AudioMetadata(this.title, this.artist, this.year, this.emotions, this.genre,
+  AudioMetadata(this.title, this.artist, this.artwork, this.year, this.emotions, this.genre,
       this.tags);
+
+  String getTags(){
+    String tagStr = "";
+    this.tags.forEach((tag)=>tagStr=tagStr+"#"+tag+" ");
+    return tagStr;
+  }
 }
 

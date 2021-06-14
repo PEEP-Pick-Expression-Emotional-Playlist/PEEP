@@ -23,6 +23,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Utility
+  rxdart: ^0.27.1
+
   # UI
   expansion_tile_card: ^1.1.0
   page_transition: "^2.0.2"
