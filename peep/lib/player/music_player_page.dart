@@ -15,7 +15,7 @@ class MusicPlayerPage extends StatefulWidget {
 }
 
 class _MusicPlayerPageState extends State<MusicPlayerPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   final List<String> _yearValues = [
     "2020",
     "2010",
@@ -28,28 +28,66 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   // String _emotionValue = AudioManager.emotion;
 
   Animation<double> animation;
+  Animation<double> animation2;
+  Animation<double> animation3;
+  Animation<double> animation4;
+
   AnimationController _controller;
+  AnimationController _controller2;
+  AnimationController _controller3;
+  AnimationController _controller4;
 
   @override
   void initState() {
     super.initState();
     _controller =
-        AnimationController(duration: Duration(seconds: 4), vsync: this);
+        AnimationController(duration: Duration(seconds: 7), vsync: this);
     _controller.repeat();
     //we set animation duration, and repeat for infinity
+    _controller2 =
+      AnimationController(duration: Duration(seconds: 8), vsync: this);
+      //두번째 웨이브 컨트롤러
+    _controller2.repeat();
+
+    _controller3 =
+      AnimationController(duration: Duration(seconds: 9), vsync: this);
+      //두번째 웨이브 컨트롤러
+    _controller3.repeat();
+
+    _controller4 =
+      AnimationController(duration: Duration(seconds: 3), vsync: this);
+      //두번째 웨이브 컨트롤러
+    _controller4.repeat();
 
     animation = Tween<double>(begin: -400, end: 0).animate(_controller);
+    animation2 = Tween<double>(begin: -400, end: 0).animate(_controller2);
+    animation3 = Tween<double>(begin: -400, end: 0).animate(_controller3);
+    animation4 = Tween<double>(begin: -400, end: 0).animate(_controller4);
     //we have set begin to -600 and end to 0, it will provide the value for
     //left or right position for Positioned() widget to creat movement from left to right
     animation.addListener(() {
       setState(() {}); //update UI on every animation value update
     });
+
+    animation2.addListener(() {
+      setState(() {}); //update UI on every animation value update
+    });
+    animation3.addListener(() {
+      setState(() {}); //update UI on every animation value update
+    });
+    animation4.addListener(() {
+      setState(() {}); //update UI on every animation value update
+    });
+
   }
 
   @override
   void dispose() {
     super.dispose();
     _controller.dispose(); //destory anmiation to free memory on last
+    _controller2.dispose();
+    _controller3.dispose();
+    _controller4.dispose();
   }
 
   @override
@@ -251,12 +289,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                 return Stack(
                                   children: [
                                     Positioned(
-                                        bottom: 0,
+                                        bottom: -10,
                                         right: animation.value,
                                         child: ClipPath(
                                           clipper: MyWaveClipper(),
                                           child: Opacity(
-                                            opacity: 0.5,
+                                            opacity: 0.4,
                                             child: Container(
                                               color: pickColor,
                                               width: 900,
@@ -264,11 +302,42 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                             ),
                                           ),
                                         )),
+
+                                    Positioned(
+                                        bottom: 20,
+                                        right: animation.value,
+                                        child: ClipPath(
+                                          clipper: MyWaveClipper(),
+                                          child: Opacity(
+                                            opacity: 0.2,
+                                            child: Container(
+                                              color: pickColor,
+                                              width: 900,
+                                              height: 200,
+                                            ),
+                                          ),
+                                        )),
+
+                                        Positioned(
+                                        bottom: 20,
+                                        right: animation4.value,
+                                        child: ClipPath(
+                                          clipper: MyWaveClipper(),
+                                          child: Opacity(
+                                            opacity: 0.1,
+                                            child: Container(
+                                              color: pickColor,
+                                              width: 900,
+                                              height: 200,
+                                            ),
+                                          ),
+                                        )),
+
                                     Positioned(
                                       //helps to position widget where ever we want
-                                      bottom: 0,
+                                      bottom: -40,
                                       //position at the bottom
-                                      left: animation.value,
+                                      left: animation2.value,
                                       //value of left from animation controller
                                       child: ClipPath(
                                         clipper: MyWaveClipper(),
@@ -277,6 +346,85 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                           opacity: 0.5,
                                           child: Container(
                                             color: pickColor,
+                                            width: 900,
+                                            height: 200,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      //helps to position widget where ever we want
+                                      bottom: -55,
+                                      //position at the bottom
+                                      left: animation2.value,
+                                      //value of left from animation controller
+                                      child: ClipPath(
+                                        clipper: MyWaveClipper(),
+                                        //applying our custom clipper
+                                        child: Opacity(
+                                          opacity: 0.7,
+                                          child: Container(
+                                            color: pickColor,
+                                            width: 900,
+                                            height: 200,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    Positioned(
+                                      //helps to position widget where ever we want
+                                      bottom: -100,
+                                      //position at the bottom
+                                      right: animation3.value,
+                                      //value of left from animation controller
+                                      child: ClipPath(
+                                        clipper: MyWaveClipper(),
+                                        //applying our custom clipper
+                                        child: Opacity(
+                                          opacity: 1,
+                                          child: Container(
+                                            color: Colors.white,
+                                            width: 900,
+                                            height: 200,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    Positioned(
+                                      //helps to position widget where ever we want
+                                      bottom: -120,
+                                      //position at the bottom
+                                      right: animation3.value,
+                                      //value of left from animation controller
+                                      child: ClipPath(
+                                        clipper: MyWaveClipper(),
+                                        //applying our custom clipper
+                                        child: Opacity(
+                                          opacity: 1,
+                                          child: Container(
+                                            color: pickColor,
+                                            width: 900,
+                                            height: 200,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    Positioned(
+                                      //helps to position widget where ever we want
+                                      bottom: -128,
+                                      //position at the bottom
+                                      right: animation3.value,
+                                      //value of left from animation controller
+                                      child: ClipPath(
+                                        clipper: MyWaveClipper(),
+                                        //applying our custom clipper
+                                        child: Opacity(
+                                          opacity: 1,
+                                          child: Container(
+                                            color: Colors.white,
                                             width: 900,
                                             height: 200,
                                           ),
