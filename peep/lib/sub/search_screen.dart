@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -115,6 +116,19 @@ GetSongArtist(String sinfo) {
   return songArtist;
 }
 
+GetSongCover(String sinfo){
+  String songCover;
+  String info;
+  info = sinfo;
+
+  String token = ', title';
+  String token2 = 'artwork: ';
+  int lastIndex = info.indexOf(token);
+  int startIndex = info.indexOf(token2);
+  songCover = info.substring(startIndex + 9, lastIndex);
+  return songCover;
+}
+
 String futureSearchResults;
 controlSearching(str) {
   String _searchText = str;
@@ -146,7 +160,7 @@ displayNoSearchResultScreen() {
           '검색 결과가 없습니다.',
           textAlign: TextAlign.center,
           style: TextStyle(
-              color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 30),
+              color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 20),
         )
       ],
     ),
@@ -172,9 +186,10 @@ class _SongResultState extends State<SongResult> {
           child: Column(
             children: <Widget>[
               ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: AssetImage('assets/musicicon.png'),
-                ),
+                leading: (
+                  Image.network(GetSongCover(futureSearchResults))),
+
+
                 title: Text(
                   GetSongTitle(futureSearchResults),
                   style: TextStyle(
