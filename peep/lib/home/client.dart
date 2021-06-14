@@ -10,6 +10,7 @@ import '../sub/home_page.dart';
 import 'saveEmotion.dart';
 import 'package:peep/sub/home_page.dart';
 import 'saveEmotion.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ClientTest {
   Dio dio = new Dio();
@@ -29,6 +30,7 @@ class ClientTest {
     }
   }
   Future<String> test(String imageTest) async {
+
     try {
       Response response = await dio.post(
           'http://10.0.2.2:5000/peep/image/emotion_read',
@@ -42,9 +44,26 @@ class ClientTest {
     } finally {
       print("post done");
       await getResult();
+      //print("emotionResult");
+      //print(emotionResult);
+      //print("emotionResult2");
+      await readAndWrite(emotionResult);
       dio.close();
     }
     return emotionResult;
+  }
+
+  Future<void> readAndWrite(String emotionField) async{
+    int freqValue;
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    await firestore.collection("emotion").doc("freq").get().then((DocumentSnapshot ds) async{
+      freqValue = ds[emotionField];
+    });
+    print("freqvalue");
+    print(freqValue);
+    freqValue = freqValue + 10;
+    print(freqValue);
+    await firestore.collection("emotion").doc("freq").update({emotionField:freqValue});
   }
 
 }

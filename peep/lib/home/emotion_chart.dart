@@ -23,7 +23,6 @@ class EmotionChart extends StatelessWidget {
         ]
     );
   }
-
 }
 
 class ChartData {

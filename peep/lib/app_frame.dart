@@ -67,7 +67,12 @@ class _AppFrameState extends State<AppFrame>
         iconTheme: IconThemeData(color: Colors.grey),
         backgroundColor: Colors.white,
         elevation: 0.0,
-        actions: <Widget>[],
+        actions:[
+          IconButton(icon: Icon(Icons.settings), onPressed: (){
+            Scaffold.of(context).openEndDrawer();
+          })
+        ],
+        //<Widget>[],
       ),
       endDrawer: Drawer(
         child: ListView(
