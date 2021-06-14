@@ -89,15 +89,15 @@ class _UserPageState extends State<UserPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(
-                height: 10.0,
-              ),
+              /*SizedBox(
+                height: 3.0,
+              ),*/
               
               Container(
           // 수평적으로 대칭(symmetric)의 마진을 추가 -> 화면 위, 아래에 20픽세의 마진 삽입
           margin: EdgeInsets.symmetric(vertical: 20.0),
           // 컨테이너의 높이를 200으로 설정
-          height: 40.0,
+          height: 50.0,
           // 리스트뷰 추가
           child: ListView(
             // 스크롤 방향 설정. 수평적으로 스크롤되도록 설정
@@ -105,8 +105,8 @@ class _UserPageState extends State<UserPage> {
             // 컨테이너들을 ListView의 자식들로 추가
             children: <Widget>[
               Container(
-                
-                child: ElevatedButton(
+                child: SvgPicture.asset('assets/itd/ITD_button_1-1.svg')
+                /*child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: Color(0xfff6f7f9),
                     ),
@@ -120,10 +120,11 @@ class _UserPageState extends State<UserPage> {
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
-                  ),
+                  ),*/
               ),
               Container(
-                child: ElevatedButton(
+                  child: SvgPicture.asset('assets/itd/ITD_button_1-2.svg')
+                /*child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: Color(0xfff6f7f9),
                     ),
@@ -137,10 +138,11 @@ class _UserPageState extends State<UserPage> {
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
-                  ),
+                  ),*/
               ),
               Container(
-                child: ElevatedButton(
+                  child: SvgPicture.asset('assets/itd/ITD_button_1-3.svg')
+                /*child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: Color(0xfff6f7f9),
                     ),
@@ -154,10 +156,11 @@ class _UserPageState extends State<UserPage> {
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
-                  ),
+                  ),*/
               ),
               Container(
-                child: ElevatedButton(
+                  child: SvgPicture.asset('assets/itd/ITD_button_1-4.svg')
+                /*child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: Color(0xfff6f7f9),
                     ),
@@ -171,10 +174,11 @@ class _UserPageState extends State<UserPage> {
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
-                  ),
+                  ),*/
               ),
               Container(
-                child: ElevatedButton(
+                  child: SvgPicture.asset('assets/itd/ITD_button_1-5.svg')
+                /*child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: Color(0xfff6f7f9),
                     ),
@@ -189,13 +193,13 @@ class _UserPageState extends State<UserPage> {
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
-                  ),
+                  ),*/
               )
             ],
           ),
               ),
               SizedBox(
-                height: 20.0,
+                height: 10.0,
               ),
               TextButton(
                 onPressed: () {},

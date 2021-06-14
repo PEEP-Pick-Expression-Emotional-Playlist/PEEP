@@ -5,6 +5,7 @@ import 'package:peep/home/emotion_chart.dart';
 import 'package:peep/home/play_cards.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:peep/home/emotion_detection.dart';
+import 'package:peep/mini_player_controller.dart';
 import 'package:peep/player/music_player_page.dart';
 import 'package:peep/player/player_controller.dart';
 import '../home/client.dart';
@@ -217,6 +218,7 @@ class _HomePageState extends State<HomePage> {
                                 fit: BoxFit.fill,
                               ),
                               onPressed: () async {
+                                await MiniPlayerController().getEmotion("happy");
                                 await ClientTest().readAndWrite("happy");
                                 AudioManager.emotion = "happy";
                                 Navigator.push(
@@ -242,6 +244,7 @@ class _HomePageState extends State<HomePage> {
                                 fit: BoxFit.fill,
                               ),
                               onPressed: () async {
+                                await MiniPlayerController().getEmotion("sad");
                                 await ClientTest().readAndWrite("sad");
                                 AudioManager.emotion = "sad";
                                 Navigator.push(
@@ -272,6 +275,7 @@ class _HomePageState extends State<HomePage> {
                                 fit: BoxFit.fill,
                               ),
                               onPressed: () async {
+                                await MiniPlayerController().getEmotion("angry");
                                 await ClientTest().readAndWrite("angry");
                                 AudioManager.emotion = "angry";
                                 Navigator.push(
@@ -297,6 +301,7 @@ class _HomePageState extends State<HomePage> {
                                 fit: BoxFit.fill,
                               ),
                               onPressed: () async {
+                                await MiniPlayerController().getEmotion("calm");
                                 await ClientTest().readAndWrite("calm");
                                 AudioManager.emotion = "calm";
                                 Navigator.push(
@@ -327,6 +332,7 @@ class _HomePageState extends State<HomePage> {
                                 fit: BoxFit.fill,
                               ),
                               onPressed: () async {
+                                await MiniPlayerController().getEmotion("fear");
                                 await ClientTest().readAndWrite("fear");
                                 AudioManager.emotion = "fear";
                                 Navigator.push(

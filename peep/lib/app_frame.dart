@@ -15,6 +15,7 @@ import 'mini_player_controller.dart';
 // }
 
 class AppFramePage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
