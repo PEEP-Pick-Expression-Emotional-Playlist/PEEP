@@ -101,6 +101,8 @@ flutter:
     - assets/final_logo.png
     - assets/logo_final.png
     - assets/logo_splash.png
+    - assets/logo_final_e.png
+    - assets/logo_final_d.png
     #- assets/test/
 
 flutter_native_splash:

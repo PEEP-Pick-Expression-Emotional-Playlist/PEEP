@@ -7,6 +7,6 @@ import 'package:provider/provider.dart';
 class GoogleSignupLogo extends StatelessWidget{
   Widget build(BuildContext context) => Container(
     padding: EdgeInsets.all(4),
-    child: Image.asset('assets/logo_firstpage.png')
+    child: Image.asset('assets/logo_final.png')
     );
 }

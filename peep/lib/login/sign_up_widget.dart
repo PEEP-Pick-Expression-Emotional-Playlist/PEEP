@@ -4,6 +4,7 @@ import 'package:peep/login/signup_logo.dart';
 import 'package:flutter_svg/svg.dart';
 //login page(but not real page)
 class SignUpWidget extends StatelessWidget{
+
   @override
   Widget build(BuildContext context) => buildSignUp();
   
@@ -22,11 +23,10 @@ class SignUpWidget extends StatelessWidget{
         ),
       ),
       Container(
-        margin: EdgeInsets.only(left: 20),
         height: 150,
         width: 150,
         
-        child: Image.asset('assets/logo_firstpage.png'),
+        child: Image.asset('assets/logo_final_e.png'),
       ),
       SizedBox(
         height: 50,
