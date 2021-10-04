@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+
+import 'emotion_detection.dart';
 
 class EmotionChart extends StatelessWidget {
   final List<ChartData> chartData;
@@ -8,6 +11,7 @@ class EmotionChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SfCircularChart(
+
         series: <CircularSeries>[
           // Renders radial bar chart
           RadialBarSeries<ChartData, String>(
@@ -18,9 +22,36 @@ class EmotionChart extends StatelessWidget {
             radius: '100%',
             innerRadius: '40%',
             gap: '3%',
-            sortingOrder: SortingOrder.none
+            sortingOrder: SortingOrder.descending
           )
-        ]
+        ],
+      annotations: <CircularChartAnnotation>[ // 그래프 중간에 카메라 촬영 아이콘 넣기
+        CircularChartAnnotation(
+          angle: 0,
+          radius: '0%',
+          height: '80%',
+          width: '80%',
+          widget: SizedBox(
+            height: 80,
+            width: 80,
+            child: IconButton(
+              icon: SvgPicture.asset(
+                'assets/itd/ITD_camera_faceicon.svg',
+              ),
+              onPressed: () {
+                // widthFactor: 5,
+                print('Camera button is clicked');
+                Navigator.push(
+                  //getImage(ImagefSource.camera);
+                    context,
+                    MaterialPageRoute(builder: (context) => EmotionDetect()));
+                //클릭 시 감정 분석 카메라로 이동
+                //현재 임시 이미지 넣어둠
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
