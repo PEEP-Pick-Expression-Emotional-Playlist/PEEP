@@ -253,7 +253,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                     Text(
                                       metadata.artist,
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                                      style: TextStyle(fontSize: 16, color: Colors.black54),
                                     )
                                   ]);
                                 },

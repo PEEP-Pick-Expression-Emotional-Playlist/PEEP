@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// A animation of wave
 class MyWaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

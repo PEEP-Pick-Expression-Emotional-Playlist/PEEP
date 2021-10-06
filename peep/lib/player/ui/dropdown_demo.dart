@@ -4,6 +4,7 @@ import 'custom_dropdown.dart';
 import 'package:flutter/cupertino.dart';
 
 class DropDownDemo extends StatefulWidget {
+  // TODO: Explain meaning of variable.
   final int value;
   final String hint;
   final String errorText;
@@ -39,6 +40,9 @@ class _DropDownDemoState extends State<DropDownDemo> {
                 iconSize: 0.0,
                 value: _chosenValue,
                 elevation: 0,
+
+                /// [dropdownColor] is background color of [DropdownMenuItem]
+                // TODO: Make [dropdownColor] suitably. Not Colors.grey
                 dropdownColor: Colors.grey,
                 style: TextStyle(color: Colors.black),
                 items:
