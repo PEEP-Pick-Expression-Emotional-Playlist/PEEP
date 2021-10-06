@@ -18,7 +18,7 @@ class ClientTest {
   String emotionResult;
   Future<void> getResult() async {
     try {
-      var response = await dio.get('http://10.0.2.2:5000/result');
+      var response = await dio.get('http://3.38.93.39:5000/result');
       print(response);
       testData = response.data;
       print(testData);
@@ -33,7 +33,7 @@ class ClientTest {
 
     try {
       Response response = await dio.post(
-          'http://10.0.2.2:5000/peep/image/emotion_read',
+          'http://3.38.93.39:5000/peep/image/emotion_read',
           data: {
             'image': json.encode(imageTest)
           }
