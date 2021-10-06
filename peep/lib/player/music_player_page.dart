@@ -5,6 +5,7 @@ import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:peep/player/ui/seekbar.dart';
+import '../globals.dart';
 import 'ui/dropdown_demo.dart';
 import 'ui/my_wave_clipper.dart';
 import 'player_controller.dart';
@@ -102,51 +103,43 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
           }
         },
         child: StreamBuilder<SequenceState>(
-          stream: AudioManager.instance.player.sequenceStateStream,
-          builder: (context, snapshot) {
-            final state = snapshot.data;
-            if (state.sequence.isEmpty ?? true)
-              return Text(
-              "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 20, foreground: Paint()..strokeWidth = 2
-                // fontWeight: FontWeight.bold
-              ),
-            );
-            final metad = state.currentSource.tag as AudioMetadata;
-            final emotion1 = metad.emotions;
-            int rand = Random().nextInt(emotion1.length);
-            final randomEmotion = emotion1[rand];
-            var pageColor = Colors.white;
-            if (randomEmotion == 'happy') {
-              pageColor = const Color(0xFFd5b15c);
-            } else if (randomEmotion == 'sad') {
-              pageColor = const Color(0xFF7fbad0);
-            } else if (randomEmotion == 'angry') {
-              pageColor = const Color(0xFFd77881);
-            } else if (randomEmotion == 'calm') {
-              pageColor = const Color(0xFF669f82);
-            } else if (randomEmotion == 'fear') {
-              pageColor = const Color(0xFF8481ac);
-            }
-            return Scaffold(
-              body: Container(
-                color: pageColor,
-
-                  child: SafeArea(
-                      child: Column(
-                        // crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
+            stream: AudioManager.instance.player.sequenceStateStream,
+            builder: (context, snapshot) {
+              final state = snapshot.data;
+              if (state.sequence.isEmpty ?? true)
+                return Text(
+                  "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 20, foreground: Paint()..strokeWidth = 2
+                      // fontWeight: FontWeight.bold
+                      ),
+                );
+              final metad = state.currentSource.tag as AudioMetadata;
+              final emotion1 = metad.emotions;
+              int rand = Random().nextInt(emotion1.length);
+              var randomEmotion = emotion1[rand];
+              if (randomEmotion == null || randomEmotion == "") {
+                randomEmotion = "default";
+              }
+              return Scaffold(
+                  body: Container(
+                      color: EmotionColor.getNormalColorFor(randomEmotion),
+                      child: SafeArea(
+                          child: Column(
+                              // crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
                             ExpansionTileCard(
-                              baseColor: pageColor,
+                              baseColor:
+                                  EmotionColor.getNormalColorFor(randomEmotion),
                               expandedColor: Colors.black12,
                               shadowColor: Colors.transparent,
                               elevation: 0.0,
                               title: Row(children: <Widget>[
                                 Container(
-                                  transform: Matrix4.translationValues(-16.0, 0, 0),
+                                  transform:
+                                      Matrix4.translationValues(-16.0, 0, 0),
                                   child: IconButton(
                                       icon: Icon(Icons.arrow_back_rounded),
                                       onPressed: () {
@@ -155,23 +148,27 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                       }),
                                 ),
                                 Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 4.0),
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 4.0),
                                     child: Row(
                                       children: <Widget>[
                                         Container(
                                           decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.horizontal(
+                                              borderRadius:
+                                                  BorderRadius.horizontal(
                                                 left: Radius.circular(10.0),
                                               ),
                                               border: Border.all(
                                                 color: Colors.black,
                                                 width: 1,
                                               )),
-                                          child: DropDownDemo(hint: "연도", items: _yearValues),
+                                          child: DropDownDemo(
+                                              hint: "연도", items: _yearValues),
                                         ),
                                         Container(
                                           decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.horizontal(
+                                              borderRadius:
+                                                  BorderRadius.horizontal(
                                                 right: Radius.circular(10.0),
                                               ),
                                               border: Border.all(
@@ -188,28 +185,29 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                               ]),
                               children: <Widget>[
                                 Padding(
-                                    padding: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 24.0),
+                                    padding: EdgeInsets.fromLTRB(
+                                        4.0, 4.0, 4.0, 24.0),
                                     child: Row(
                                       children: <Widget>[
                                         Expanded(
-                                          child: emotionButton(
-                                              "happy", "assets/itd/ITD_icon_happy.svg"),
+                                          child: emotionButton("happy",
+                                              "assets/itd/ITD_icon_happy.svg"),
                                         ),
                                         Expanded(
-                                          child: emotionButton(
-                                              "angry", "assets/itd/ITD_icon_angry.svg"),
+                                          child: emotionButton("angry",
+                                              "assets/itd/ITD_icon_angry.svg"),
                                         ),
                                         Expanded(
-                                          child: emotionButton(
-                                              "calm", "assets/itd/ITD_icon_calm.svg"),
+                                          child: emotionButton("calm",
+                                              "assets/itd/ITD_icon_calm.svg"),
                                         ),
                                         Expanded(
-                                          child: emotionButton(
-                                              "sad", "assets/itd/ITD_icon_blue.svg"),
+                                          child: emotionButton("sad",
+                                              "assets/itd/ITD_icon_blue.svg"),
                                         ),
                                         Expanded(
-                                          child: emotionButton(
-                                              "fear", "assets/itd/ITD_icon_fear.svg"),
+                                          child: emotionButton("fear",
+                                              "assets/itd/ITD_icon_fear.svg"),
                                         ),
                                       ],
                                     ))
@@ -218,7 +216,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                             Padding(
                               padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
                               child: StreamBuilder<SequenceState>(
-                                stream: AudioManager.instance.player.sequenceStateStream,
+                                stream: AudioManager
+                                    .instance.player.sequenceStateStream,
                                 builder: (context, snapshot) {
                                   final state = snapshot.data;
                                   if (state.sequence.isEmpty ?? true)
@@ -227,25 +226,29 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         "재생 중인 곡이 없습니다",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                            fontSize: 20, foreground: Paint()..strokeWidth = 2
-                                          // fontWeight: FontWeight.bold
-                                        ),
+                                            fontSize: 20,
+                                            foreground: Paint()..strokeWidth = 2
+                                            // fontWeight: FontWeight.bold
+                                            ),
                                       ),
                                       Text(
                                         "위로 스와이프해주세요",
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.grey),
                                       )
                                     ]);
-                                  final metadata = state.currentSource.tag as AudioMetadata;
+                                  final metadata =
+                                      state.currentSource.tag as AudioMetadata;
                                   return Column(children: [
                                     Text(
                                       metadata.title,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                          fontSize: 20, foreground: Paint()..strokeWidth = 2
-                                        // fontWeight: FontWeight.bold
-                                      ),
+                                          fontSize: 20,
+                                          foreground: Paint()..strokeWidth = 2
+                                          // fontWeight: FontWeight.bold
+                                          ),
                                     ),
                                     SizedBox(
                                       height: 8,
@@ -253,7 +256,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                     Text(
                                       metadata.artist,
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 16, color: Colors.black54),
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.black54),
                                     )
                                   ]);
                                 },
@@ -286,7 +290,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                             // ),
                             Expanded(
                               child: StreamBuilder<SequenceState>(
-                                stream: AudioManager.instance.player.sequenceStateStream,
+                                stream: AudioManager
+                                    .instance.player.sequenceStateStream,
                                 builder: (context, snapshot) {
                                   final state = snapshot.data;
                                   if (state.sequence.isEmpty ?? true)
@@ -294,13 +299,16 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                       "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                          fontSize: 20, foreground: Paint()..strokeWidth = 2
-                                        // fontWeight: FontWeight.bold
-                                      ),
+                                          fontSize: 20,
+                                          foreground: Paint()..strokeWidth = 2
+                                          // fontWeight: FontWeight.bold
+                                          ),
                                     );
-                                  final metadata = state.currentSource.tag as AudioMetadata;
+                                  final metadata =
+                                      state.currentSource.tag as AudioMetadata;
                                   final emotions = metadata.emotions;
-                                  int random = Random().nextInt(emotions.length);
+                                  int random =
+                                      Random().nextInt(emotions.length);
                                   final randomEmotion = emotions[random];
                                   var pickColor = Colors.black;
                                   var pickColor1 = Colors.black;
@@ -323,7 +331,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                   return Stack(
                                     children: [
                                       Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16.0),
                                         child: Image.network(
                                           metadata.artwork,
                                           width: 480,
@@ -474,81 +483,92 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                               ),
                             ),
                             Container(
-                              color: Colors.white,
-                              child: Column(
-                                children: [
-                                  StreamBuilder<Duration>(
-                                    stream: AudioManager.instance.player.durationStream,
-                                    builder: (context, snapshot) {
-                                      final duration = snapshot.data ?? Duration.zero;
-                                      return StreamBuilder<PositionData>(
-                                        stream: Rx.combineLatest2<Duration, Duration, PositionData>(
-                                            AudioManager.instance.player.positionStream,
-                                            AudioManager.instance.player.bufferedPositionStream,
-                                                (position, bufferedPosition) =>
-                                                PositionData(position, bufferedPosition)),
-                                        builder: (context, snapshot) {
-                                          final positionData = snapshot.data ??
-                                              PositionData(Duration.zero, Duration.zero);
-                                          var position = positionData.position;
-                                          if (position > duration) {
-                                            position = duration;
-                                          }
-                                          var bufferedPosition = positionData.bufferedPosition;
-                                          if (bufferedPosition > duration) {
-                                            bufferedPosition = duration;
-                                          }
-                                          return SeekBar(
-                                            duration: duration,
-                                            position: position,
-                                            bufferedPosition: bufferedPosition,
-                                            onChangeEnd: (newPosition) {
-                                              AudioManager.instance.player.seek(newPosition);
-                                            },
-                                            emotionColor: Colors.black,
-                                          );
-                                        },
-                                      );
-                                    },
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                            child: Text(
-                                              "02:34",
-                                              textAlign: TextAlign.left,
-                                            )),
-                                        Expanded(
-                                          child: Text(
-                                            "5:55",
-                                            textAlign: TextAlign.right,
-                                          ),
-                                        ),
-                                      ],
+                                color: Colors.white,
+                                child: Column(
+                                  children: [
+                                    StreamBuilder<Duration>(
+                                      stream: AudioManager
+                                          .instance.player.durationStream,
+                                      builder: (context, snapshot) {
+                                        final duration =
+                                            snapshot.data ?? Duration.zero;
+                                        return StreamBuilder<PositionData>(
+                                          stream: Rx.combineLatest2<Duration,
+                                                  Duration, PositionData>(
+                                              AudioManager.instance.player
+                                                  .positionStream,
+                                              AudioManager.instance.player
+                                                  .bufferedPositionStream,
+                                              (position, bufferedPosition) =>
+                                                  PositionData(position,
+                                                      bufferedPosition)),
+                                          builder: (context, snapshot) {
+                                            final positionData =
+                                                snapshot.data ??
+                                                    PositionData(Duration.zero,
+                                                        Duration.zero);
+                                            var position =
+                                                positionData.position;
+                                            if (position > duration) {
+                                              position = duration;
+                                            }
+                                            var bufferedPosition =
+                                                positionData.bufferedPosition;
+                                            if (bufferedPosition > duration) {
+                                              bufferedPosition = duration;
+                                            }
+                                            return SeekBar(
+                                              duration: duration,
+                                              position: position,
+                                              bufferedPosition:
+                                                  bufferedPosition,
+                                              onChangeEnd: (newPosition) {
+                                                AudioManager.instance.player
+                                                    .seek(newPosition);
+                                              },
+                                              emotionColor: Colors.black,
+                                            );
+                                          },
+                                        );
+                                      },
                                     ),
-                                  ),
-                                  Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 16.0, horizontal: 96.0),
-                                          child: PlayerController(
-                                            prevIconName: 'player_prev',
-                                            playIconName: 'player_play',
-                                            nextIconName: 'player_next',
-                                            previousSize: 36.0,
-                                            playSize: 72.0,
-                                            nextSize: 36.0,
-                                          ))),
-                                ],
-                              )
-                            )
-
-                          ]))
-              )
-              );}));
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.0),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Expanded(
+                                              child: Text(
+                                            "02:34",
+                                            textAlign: TextAlign.left,
+                                          )),
+                                          Expanded(
+                                            child: Text(
+                                              "5:55",
+                                              textAlign: TextAlign.right,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 16.0,
+                                                horizontal: 96.0),
+                                            child: PlayerController(
+                                              prevIconName: 'player_prev',
+                                              playIconName: 'player_play',
+                                              nextIconName: 'player_next',
+                                              previousSize: 36.0,
+                                              playSize: 72.0,
+                                              nextSize: 36.0,
+                                            ))),
+                                  ],
+                                ))
+                          ]))));
+            }));
   }
 
   Widget emotionButton(String emotion, String svgicon) {

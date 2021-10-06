@@ -25,17 +25,18 @@ class EmotionChart extends StatelessWidget {
             sortingOrder: SortingOrder.descending
           )
         ],
-      annotations: <CircularChartAnnotation>[ // 그래프 중간에 카메라 촬영 아이콘 넣기
+      /// A chart for emotion frequency
+      annotations: <CircularChartAnnotation>[
         CircularChartAnnotation(
           angle: 0,
           radius: '0%',
           height: '80%',
           width: '80%',
-          widget: SizedBox(
+          widget: SizedBox( /// [IconButton] for emotion camera.
             height: 80,
             width: 80,
             child: IconButton(
-              icon: SvgPicture.asset(
+            icon: SvgPicture.asset(
                 'assets/itd/ITD_camera_faceicon.svg',
               ),
               onPressed: () {
