@@ -35,36 +35,30 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   Animation<double> animation4;
 
   AnimationController _controller;
-  AnimationController _controller2;
-  AnimationController _controller3;
-  AnimationController _controller4;
 
   @override
   void initState() {
     super.initState();
     _controller =
-        AnimationController(duration: Duration(seconds: 7), vsync: this);
-    _controller.repeat();
-    //we set animation duration, and repeat for infinity
-    _controller2 =
-        AnimationController(duration: Duration(seconds: 8), vsync: this);
-    //두번째 웨이브 컨트롤러
-    _controller2.repeat();
+        AnimationController(duration: Duration(seconds: 10), vsync: this);
+    _controller.repeat(reverse: true);
 
-    _controller3 =
-        AnimationController(duration: Duration(seconds: 9), vsync: this);
-    //두번째 웨이브 컨트롤러
-    _controller3.repeat();
-
-    _controller4 =
-        AnimationController(duration: Duration(seconds: 3), vsync: this);
-    //두번째 웨이브 컨트롤러
-    _controller4.repeat();
-
-    animation = Tween<double>(begin: -400, end: 0).animate(_controller);
-    animation2 = Tween<double>(begin: -400, end: 0).animate(_controller2);
-    animation3 = Tween<double>(begin: -400, end: 0).animate(_controller3);
-    animation4 = Tween<double>(begin: -400, end: 0).animate(_controller4);
+    animation = Tween<double>(begin: -255, end: 0).animate(CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+        reverseCurve: Curves.linear));
+    animation2 = Tween<double>(begin: -200, end: 0).animate(CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+        reverseCurve: Curves.linear));
+    animation3 = Tween<double>(begin: -300, end: 0).animate(CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+        reverseCurve: Curves.linear));
+    animation4 = Tween<double>(begin: -400, end: 0).animate(CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+        reverseCurve: Curves.linear));
     //we have set begin to -600 and end to 0, it will provide the value for
     //left or right position for Positioned() widget to creat movement from left to right
     animation.addListener(() {
@@ -86,9 +80,6 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   void dispose() {
     super.dispose();
     _controller.dispose(); //destory anmiation to free memory on last
-    _controller2.dispose();
-    _controller3.dispose();
-    _controller4.dispose();
   }
 
   @override
@@ -106,33 +97,42 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
             stream: AudioManager.instance.player.sequenceStateStream,
             builder: (context, snapshot) {
               final state = snapshot.data;
-              if (state.sequence.isEmpty ?? true)
-                return Text(
+              var playingEmotion;
+              // var playingEmotion = CurrentEmotion.of(context).emotion; // default value
+              // TODO: 아무 곡이 없을 때(`state==null`) 처리
+              if (state == null ||
+                      state.sequence == null ||
+                      state.sequence.isEmpty ??
+                  true) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
                   "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 20, foreground: Paint()..strokeWidth = 2
                       // fontWeight: FontWeight.bold
                       ),
-                );
-              final metad = state.currentSource.tag as AudioMetadata;
-              final emotion1 = metad.emotions;
-              int rand = Random().nextInt(emotion1.length);
-              var randomEmotion = emotion1[rand];
-              if (randomEmotion == null || randomEmotion == "") {
-                randomEmotion = "default";
+                )));
+              } else {
+                final metad = state.currentSource.tag as AudioMetadata;
+                final emotion1 = metad.emotions;
+                int rand = Random().nextInt(emotion1.length);
+                playingEmotion = emotion1[rand];
+                if (playingEmotion == null || playingEmotion == "") {
+                  playingEmotion = "default";
+                }
               }
               return Scaffold(
                   body: Container(
-                      color: EmotionColor.getNormalColorFor(randomEmotion),
+                      color: EmotionColor.getNormalColorFor(playingEmotion),
                       child: SafeArea(
                           child: Column(
                               // crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.max,
                               children: <Widget>[
                             ExpansionTileCard(
-                              baseColor:
-                                  EmotionColor.getNormalColorFor(randomEmotion),
+                              baseColor: EmotionColor.getNormalColorFor(
+                                  playingEmotion),
                               expandedColor: Colors.black12,
                               shadowColor: Colors.transparent,
                               elevation: 0.0,
@@ -310,24 +310,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                   int random =
                                       Random().nextInt(emotions.length);
                                   final randomEmotion = emotions[random];
-                                  var pickColor = Colors.black;
-                                  var pickColor1 = Colors.black;
-                                  if (randomEmotion == 'happy') {
-                                    pickColor = const Color(0xFFe8c075);
-                                    pickColor1 = const Color(0xFFd57a47);
-                                  } else if (randomEmotion == 'sad') {
-                                    pickColor = const Color(0xFFa5c3d7);
-                                    pickColor1 = const Color(0xFF446199);
-                                  } else if (randomEmotion == 'angry') {
-                                    pickColor = const Color(0xFFd77d92);
-                                    pickColor1 = const Color(0xFFcc4e60);
-                                  } else if (randomEmotion == 'calm') {
-                                    pickColor = const Color(0xFF57a481);
-                                    pickColor1 = const Color(0xFF426641);
-                                  } else if (randomEmotion == 'fear') {
-                                    pickColor = const Color(0xFF8776a4);
-                                    pickColor1 = const Color(0xFF564986);
-                                  }
+                                  ///An artwork and waves in [Stack]
                                   return Stack(
                                     children: [
                                       Padding(
@@ -341,42 +324,48 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         ),
                                       ),
                                       Positioned(
-                                          bottom: -10,
+                                          bottom: 10,
                                           right: animation.value,
                                           child: ClipPath(
                                             clipper: MyWaveClipper(),
                                             child: Opacity(
-                                              opacity: 0.4,
+                                              opacity: 0.35,
                                               child: Container(
-                                                color: pickColor1,
+                                                color: EmotionColor
+                                                    .getDarkColorFor(
+                                                    randomEmotion),
                                                 width: 900,
                                                 height: 200,
                                               ),
                                             ),
-                                          )),
+                                          ),),
                                       Positioned(
-                                          bottom: 20,
-                                          right: animation.value,
-                                          child: ClipPath(
-                                            clipper: MyWaveClipper(),
-                                            child: Opacity(
-                                              opacity: 0.2,
-                                              child: Container(
-                                                color: pickColor1,
-                                                width: 900,
-                                                height: 200,
-                                              ),
-                                            ),
-                                          )),
-                                      Positioned(
-                                          bottom: 20,
+                                          bottom: 10,
                                           right: animation4.value,
                                           child: ClipPath(
                                             clipper: MyWaveClipper(),
                                             child: Opacity(
-                                              opacity: 0.1,
+                                              opacity: 0.5,
                                               child: Container(
-                                                color: pickColor1,
+                                                color: EmotionColor
+                                                    .getDarkColorFor(
+                                                    randomEmotion),
+                                                width: 900,
+                                                height: 200,
+                                              ),
+                                            ),
+                                          )),
+                                      Positioned(
+                                          bottom: -16,
+                                          right: animation4.value,
+                                          child: ClipPath(
+                                            clipper: MyWaveClipper(),
+                                            child: Opacity(
+                                              opacity: 0.7,
+                                              child: Container(
+                                                color: EmotionColor
+                                                    .getDarkColorFor(
+                                                    randomEmotion),
                                                 width: 900,
                                                 height: 200,
                                               ),
@@ -384,17 +373,19 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                           )),
                                       Positioned(
                                         //helps to position widget where ever we want
-                                        bottom: -40,
+                                        bottom: -42,
                                         //position at the bottom
-                                        left: animation2.value,
+                                        left: animation3.value,
                                         //value of left from animation controller
                                         child: ClipPath(
                                           clipper: MyWaveClipper(),
                                           //applying our custom clipper
                                           child: Opacity(
-                                            opacity: 0.5,
+                                            opacity: 0.6,
                                             child: Container(
-                                              color: pickColor1,
+                                              color:
+                                              EmotionColor.getDarkColorFor(
+                                                  randomEmotion),
                                               width: 900,
                                               height: 200,
                                             ),
@@ -405,7 +396,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         //helps to position widget where ever we want
                                         bottom: -55,
                                         //position at the bottom
-                                        left: animation2.value,
+                                        left: animation3.value,
                                         //value of left from animation controller
                                         child: ClipPath(
                                           clipper: MyWaveClipper(),
@@ -413,7 +404,9 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                           child: Opacity(
                                             opacity: 0.7,
                                             child: Container(
-                                              color: pickColor,
+                                              color:
+                                              EmotionColor.getLightColorFor(
+                                                  randomEmotion),
                                               width: 900,
                                               height: 200,
                                             ),
@@ -424,45 +417,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         //helps to position widget where ever we want
                                         bottom: -100,
                                         //position at the bottom
-                                        right: animation3.value,
-                                        //value of left from animation controller
-                                        child: ClipPath(
-                                          clipper: MyWaveClipper(),
-                                          //applying our custom clipper
-                                          child: Opacity(
-                                            opacity: 1,
-                                            child: Container(
-                                              color: Colors.white,
-                                              width: 900,
-                                              height: 200,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        //helps to position widget where ever we want
-                                        bottom: -120,
-                                        //position at the bottom
-                                        right: animation3.value,
-                                        //value of left from animation controller
-                                        child: ClipPath(
-                                          clipper: MyWaveClipper(),
-                                          //applying our custom clipper
-                                          child: Opacity(
-                                            opacity: 1,
-                                            child: Container(
-                                              color: Colors.white,
-                                              width: 900,
-                                              height: 200,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        //helps to position widget where ever we want
-                                        bottom: -128,
-                                        //position at the bottom
-                                        right: animation3.value,
+                                        right: animation2.value,
                                         //value of left from animation controller
                                         child: ClipPath(
                                           clipper: MyWaveClipper(),

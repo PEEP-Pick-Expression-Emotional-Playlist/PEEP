@@ -8,12 +8,10 @@ class CurrentEmotion extends InheritedWidget {
   const CurrentEmotion({
     Key key,
     this.emotion,
-    this.color,
     Widget child,
   }) : super(key: key, child: child);
 
   final String emotion;
-  final Color color;
 
   static CurrentEmotion of(BuildContext context) {
     final CurrentEmotion result = context.dependOnInheritedWidgetOfExactType<CurrentEmotion>();
