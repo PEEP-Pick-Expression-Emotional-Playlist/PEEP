@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:peep/player/ui/animated_wave.dart';
 import 'package:peep/player/ui/seekbar.dart';
 import '../globals.dart';
 import 'ui/dropdown_demo.dart';
-import 'ui/my_wave_clipper.dart';
 import 'player_controller.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -37,81 +37,31 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   AnimationController controller;
 
   @override
-  void initState() {
-    super.initState();
-    controller =
-        AnimationController(duration: Duration(seconds: 10), vsync: this);
-    controller.repeat(reverse: true);
-
-    animation = Tween<double>(begin: -255, end: 0).animate(CurvedAnimation(
-        parent: controller,
-        curve: Curves.linear,
-        reverseCurve: Curves.linear));
-    animation2 = Tween<double>(begin: -200, end: 0).animate(CurvedAnimation(
-        parent: controller,
-        curve: Curves.linear,
-        reverseCurve: Curves.linear));
-    animation3 = Tween<double>(begin: -300, end: 0).animate(CurvedAnimation(
-        parent: controller,
-        curve: Curves.linear,
-        reverseCurve: Curves.linear));
-    animation4 = Tween<double>(begin: -400, end: 0).animate(CurvedAnimation(
-        parent: controller,
-        curve: Curves.linear,
-        reverseCurve: Curves.linear));
-    //we have set begin to -600 and end to 0, it will provide the value for
-    //left or right position for Positioned() widget to creat movement from left to right
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    controller.dispose(); //destory anmiation to free memory on last
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-        onPanUpdate: (dis) {
-          if (dis.delta.dx < 0) {
-            //User swiped from left to right
-            //pass
-          } else if (dis.delta.dy < 0) {
-            AudioManager.instance.addRandomSong2(context);
-          }
-        },
-        child: StreamBuilder<SequenceState>(
+  Widget build(BuildContext topContext) {
+    return Scaffold(
+        body: StreamBuilder<SequenceState>(
             stream: AudioManager.instance.player.sequenceStateStream,
             builder: (context, snapshot) {
-              final state = snapshot.data;
-              var playingEmotion;
-              // var playingEmotion = CurrentEmotion.of(context).emotion; // default value
-              // TODO: 아무 곡이 없을 때(`state==null`) 처리
-              if (state == null ||
-                      state.sequence == null ||
-                      state.sequence.isEmpty ??
-                  true) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                  "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 20, foreground: Paint()..strokeWidth = 2
-                      // fontWeight: FontWeight.bold
-                      ),
-                )));
-              } else {
-                final metad = state.currentSource.tag as AudioMetadata;
-                final emotion1 = metad.emotions;
-                int rand = Random().nextInt(emotion1.length);
-                playingEmotion = emotion1[rand];
-                if (playingEmotion == null || playingEmotion == "") {
-                  playingEmotion = "default";
-                }
+              AudioMetadata songMeta;
+              String playingEmotion = "default";
+              if (snapshot.hasData) {
+                final playingData = snapshot.data;
+                songMeta = playingData.currentSource.tag as AudioMetadata;
+                final playingEmotions = songMeta.emotions;
+                int rand = Random().nextInt(songMeta.emotions.length);
+                playingEmotion = playingEmotions[rand];
               }
-              return Scaffold(
-                  body: Container(
-                      color: EmotionColor.getNormalColorFor(playingEmotion),
+              return Container(
+                  color: EmotionColor.getNormalColorFor(playingEmotion),
+                  child: GestureDetector(
+                      onPanUpdate: (dis) {
+                        if (dis.delta.dx < 0) {
+                          //User swiped from left to right
+                          //pass
+                        } else if (dis.delta.dy < 0) {
+                          AudioManager.instance.addRandomSong2(context);
+                        }
+                      },
                       child: SafeArea(
                           child: Column(
                               // crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,55 +151,27 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                               ],
                             ),
                             Padding(
-                              padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
-                              child: StreamBuilder<SequenceState>(
-                                stream: AudioManager
-                                    .instance.player.sequenceStateStream,
-                                builder: (context, snapshot) {
-                                  final state = snapshot.data;
-                                  if (state.sequence.isEmpty ?? true)
-                                    return Column(children: [
-                                      Text(
-                                        "재생 중인 곡이 없습니다",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            foreground: Paint()..strokeWidth = 2
-                                            // fontWeight: FontWeight.bold
-                                            ),
-                                      ),
-                                      Text(
-                                        "위로 스와이프해주세요",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.grey),
-                                      )
-                                    ]);
-                                  final metadata =
-                                      state.currentSource.tag as AudioMetadata;
-                                  return Column(children: [
-                                    Text(
-                                      metadata.title,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          foreground: Paint()..strokeWidth = 2
-                                          // fontWeight: FontWeight.bold
-                                          ),
-                                    ),
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      metadata.artist,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 16, color: Colors.black54),
-                                    )
-                                  ]);
-                                },
-                              ),
-                            ),
+                                padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
+                                child: Column(children: [
+                                  Text(
+                                    songMeta.title,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        foreground: Paint()..strokeWidth = 2
+                                        // fontWeight: FontWeight.bold
+                                        ),
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    songMeta.artist,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.black54),
+                                  )
+                                ])),
                             // Padding( //TODO: 태그 보여줌
                             //   padding: EdgeInsets.only(top: 2.0, bottom: 8.0),
                             //   child:
@@ -261,101 +183,80 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                             //         "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
                             //         textAlign: TextAlign.center,
                             //         style:
-                            //         TextStyle(fontSize: 14, color: Colors.grey),
+                            //         TextStyle(fontSize: 14, color: Colors.white),
                             //       );
                             //       final metadata = state.currentSource.tag as AudioMetadata;
                             //       return Text(
                             //         metadata.getTags(),
                             //         textAlign: TextAlign.center,
                             //         style:
-                            //         TextStyle(fontSize: 16, color: Colors.grey),
+                            //         TextStyle(fontSize: 16, color: Colors.white),
                             //       );
                             //     },
                             //
                             //
                             //   ),
                             // ),
+                            ///An artwork and waves in [Stack]
                             Expanded(
-                              child: StreamBuilder<SequenceState>(
-                                stream: AudioManager
-                                    .instance.player.sequenceStateStream,
-                                builder: (context, snapshot) {
-                                  final state = snapshot.data;
-                                  if (state.sequence.isEmpty ?? true)
-                                    return Text(
-                                      "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          foreground: Paint()..strokeWidth = 2
-                                          // fontWeight: FontWeight.bold
-                                          ),
-                                    );
-                                  final metadata =
-                                      state.currentSource.tag as AudioMetadata;
-                                  final emotions = metadata.emotions;
-                                  int random =
-                                      Random().nextInt(emotions.length);
-                                  final randomEmotion = emotions[random];
-
-                                  ///An artwork and waves in [Stack]
-                                  return Stack(children: [
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: Image.network(
-                                        metadata.artwork,
-                                        width: 480,
-                                        height: 480,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                    AnimatedWave(
-                                      animation: animation,
-                                      bottom: 10,
-                                      opacity: 0.35,
-                                      color: EmotionColor.getDarkColorFor(randomEmotion),
-                                      direction: 1,
-                                    ),
-                                    AnimatedWave(
-                                      animation: animation4,
-                                      bottom: 10,
-                                      opacity: 0.5,
-                                      color: EmotionColor.getDarkColorFor(randomEmotion),
-                                      direction: 1,
-                                    ),
-                                    AnimatedWave(
-                                      animation: animation4,
-                                      bottom: -16,
-                                      opacity: 0.7,
-                                      color: EmotionColor.getDarkColorFor(randomEmotion),
-                                      direction: 1,
-                                    ),
-                                    AnimatedWave(
-                                      animation: animation3,
-                                      bottom: -42,
-                                      opacity: 0.6,
-                                      color: EmotionColor.getDarkColorFor(randomEmotion),
-                                      direction: 0,
-                                    ),
-                                    AnimatedWave(
-                                      animation: animation3,
-                                      bottom: -55,
-                                      opacity: 0.7,
-                                      color: EmotionColor.getLightColorFor(randomEmotion),
-                                      direction: 0,
-                                    ),
-                                    AnimatedWave(
-                                      animation: animation2,
-                                      bottom: -100,
-                                      opacity: 1,
-                                      color: Colors.white,
-                                      direction: 1,
-                                    )
-                                  ]);
-                                },
+                                child: Stack(children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Image.network(
+                                  songMeta.artwork,
+                                  width: 480,
+                                  height: 480,
+                                  fit: BoxFit.contain,
+                                ),
                               ),
-                            ),
+                              AnimatedWave(
+                                animation: animation,
+                                bottom: 10,
+                                opacity: 0.35,
+                                color: EmotionColor.getDarkColorFor(
+                                    playingEmotion),
+                                isLeftToRight: false,
+                              ),
+                              AnimatedWave(
+                                animation: animation4,
+                                bottom: 10,
+                                opacity: 0.5,
+                                color: EmotionColor.getDarkColorFor(
+                                    playingEmotion),
+                                isLeftToRight: true,
+                              ),
+                              AnimatedWave(
+                                animation: animation4,
+                                bottom: -16,
+                                opacity: 0.7,
+                                color: EmotionColor.getDarkColorFor(
+                                    playingEmotion),
+                                isLeftToRight: true,
+                              ),
+                              AnimatedWave(
+                                animation: animation3,
+                                bottom: -42,
+                                opacity: 0.6,
+                                color: EmotionColor.getDarkColorFor(
+                                    playingEmotion),
+                                isLeftToRight: false,
+                              ),
+                              AnimatedWave(
+                                animation: animation3,
+                                bottom: -55,
+                                opacity: 0.7,
+                                color: EmotionColor.getLightColorFor(
+                                    playingEmotion),
+                                isLeftToRight: false,
+                              ),
+                              AnimatedWave(
+                                animation: animation2,
+                                bottom: -100,
+                                opacity: 1,
+                                color: Colors.white,
+                                isLeftToRight: true,
+                              )
+                            ])),
                             Container(
                                 color: Colors.white,
                                 child: Column(
@@ -445,6 +346,31 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
             }));
   }
 
+  @override
+  void initState() {
+    super.initState();
+    controller =
+        AnimationController(duration: Duration(seconds: 10), vsync: this);
+    controller.repeat(reverse: true);
+
+    //[begin]: -600 ~ 0
+    animation = Tween<double>(begin: -255, end: 0).animate(CurvedAnimation(
+        parent: controller, curve: Curves.linear, reverseCurve: Curves.linear));
+    animation2 = Tween<double>(begin: -200, end: 0).animate(CurvedAnimation(
+        parent: controller, curve: Curves.linear, reverseCurve: Curves.linear));
+    animation3 = Tween<double>(begin: -300, end: 0).animate(CurvedAnimation(
+        parent: controller, curve: Curves.linear, reverseCurve: Curves.linear));
+    animation4 = Tween<double>(begin: -400, end: 0).animate(CurvedAnimation(
+        parent: controller, curve: Curves.linear, reverseCurve: Curves.linear));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+  // );
   Widget emotionButton(String emotion, String svgIcon) {
     return GestureDetector(
       onTap: () => setState(() => AudioManager.emotion = emotion),
@@ -467,51 +393,6 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: AudioManager.emotion == emotion ? Colors.grey : Colors.black12,
-        ),
-      ),
-    );
-  }
-}
-
-class AnimatedWave extends AnimatedWidget {
-  final Color color;
-  final double opacity;
-  final double bottom;
-  /// 0: left
-  /// 1: right
-  final int direction;
-
-  const AnimatedWave({
-    Key key,
-    Animation<double> animation,
-    this.bottom,
-    this.opacity,
-    this.color,
-    this.direction,
-  }): super(key: key, listenable: animation);
-
-  @override
-  Widget build(BuildContext context) {
-  final animation = listenable as Animation<double>;
-  double left, right;
-  if (direction == 1) {
-    right = animation.value;
-  } else {
-    left = animation.value;
-  }
-    return Positioned(
-      bottom: bottom,
-      left : left,
-      right: right,
-      child: ClipPath(
-        clipper: MyWaveClipper(),
-        child: Opacity(
-          opacity: opacity,
-          child: Container(
-            color: color,
-            width: 900,
-            height: 200,
-          ),
         ),
       ),
     );
