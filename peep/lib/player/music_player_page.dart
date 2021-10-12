@@ -34,52 +34,52 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   Animation<double> animation3;
   Animation<double> animation4;
 
-  AnimationController _controller;
+  AnimationController controller;
 
   @override
   void initState() {
     super.initState();
-    _controller =
+    controller =
         AnimationController(duration: Duration(seconds: 10), vsync: this);
-    _controller.repeat(reverse: true);
+    controller.repeat(reverse: true);
 
     animation = Tween<double>(begin: -255, end: 0).animate(CurvedAnimation(
-        parent: _controller,
+        parent: controller,
         curve: Curves.linear,
         reverseCurve: Curves.linear));
     animation2 = Tween<double>(begin: -200, end: 0).animate(CurvedAnimation(
-        parent: _controller,
+        parent: controller,
         curve: Curves.linear,
         reverseCurve: Curves.linear));
     animation3 = Tween<double>(begin: -300, end: 0).animate(CurvedAnimation(
-        parent: _controller,
+        parent: controller,
         curve: Curves.linear,
         reverseCurve: Curves.linear));
     animation4 = Tween<double>(begin: -400, end: 0).animate(CurvedAnimation(
-        parent: _controller,
+        parent: controller,
         curve: Curves.linear,
         reverseCurve: Curves.linear));
     //we have set begin to -600 and end to 0, it will provide the value for
     //left or right position for Positioned() widget to creat movement from left to right
-    animation.addListener(() {
-      setState(() {}); //update UI on every animation value update
-    });
-
-    animation2.addListener(() {
-      setState(() {}); //update UI on every animation value update
-    });
-    animation3.addListener(() {
-      setState(() {}); //update UI on every animation value update
-    });
-    animation4.addListener(() {
-      setState(() {}); //update UI on every animation value update
-    });
+    // animation.addListener(() {
+    //   setState(() {}); //update UI on every animation value update
+    // });
+    //
+    // animation2.addListener(() {
+    //   setState(() {}); //update UI on every animation value update
+    // });
+    // animation3.addListener(() {
+    //   setState(() {}); //update UI on every animation value update
+    // });
+    // animation4.addListener(() {
+    //   setState(() {}); //update UI on every animation value update
+    // });
   }
 
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose(); //destory anmiation to free memory on last
+    controller.dispose(); //destory anmiation to free memory on last
   }
 
   @override
@@ -310,130 +310,156 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                   int random =
                                       Random().nextInt(emotions.length);
                                   final randomEmotion = emotions[random];
+
                                   ///An artwork and waves in [Stack]
-                                  return Stack(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        child: Image.network(
-                                          metadata.artwork,
-                                          width: 480,
-                                          height: 480,
-                                          fit: BoxFit.contain,
-                                        ),
+                                  return Stack(children: [
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.0),
+                                      child: Image.network(
+                                        metadata.artwork,
+                                        width: 480,
+                                        height: 480,
+                                        fit: BoxFit.contain,
                                       ),
-                                      Positioned(
-                                          bottom: 10,
-                                          right: animation.value,
-                                          child: ClipPath(
-                                            clipper: MyWaveClipper(),
-                                            child: Opacity(
-                                              opacity: 0.35,
-                                              child: Container(
-                                                color: EmotionColor
-                                                    .getDarkColorFor(
-                                                    randomEmotion),
-                                                width: 900,
-                                                height: 200,
-                                              ),
-                                            ),
-                                          ),),
-                                      Positioned(
-                                          bottom: 10,
-                                          right: animation4.value,
-                                          child: ClipPath(
-                                            clipper: MyWaveClipper(),
-                                            child: Opacity(
-                                              opacity: 0.5,
-                                              child: Container(
-                                                color: EmotionColor
-                                                    .getDarkColorFor(
-                                                    randomEmotion),
-                                                width: 900,
-                                                height: 200,
-                                              ),
-                                            ),
-                                          )),
-                                      Positioned(
-                                          bottom: -16,
-                                          right: animation4.value,
-                                          child: ClipPath(
-                                            clipper: MyWaveClipper(),
-                                            child: Opacity(
-                                              opacity: 0.7,
-                                              child: Container(
-                                                color: EmotionColor
-                                                    .getDarkColorFor(
-                                                    randomEmotion),
-                                                width: 900,
-                                                height: 200,
-                                              ),
-                                            ),
-                                          )),
-                                      Positioned(
-                                        //helps to position widget where ever we want
-                                        bottom: -42,
-                                        //position at the bottom
-                                        left: animation3.value,
-                                        //value of left from animation controller
-                                        child: ClipPath(
-                                          clipper: MyWaveClipper(),
-                                          //applying our custom clipper
-                                          child: Opacity(
-                                            opacity: 0.6,
-                                            child: Container(
-                                              color:
-                                              EmotionColor.getDarkColorFor(
-                                                  randomEmotion),
-                                              width: 900,
-                                              height: 200,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        //helps to position widget where ever we want
-                                        bottom: -55,
-                                        //position at the bottom
-                                        left: animation3.value,
-                                        //value of left from animation controller
-                                        child: ClipPath(
-                                          clipper: MyWaveClipper(),
-                                          //applying our custom clipper
-                                          child: Opacity(
-                                            opacity: 0.7,
-                                            child: Container(
-                                              color:
-                                              EmotionColor.getLightColorFor(
-                                                  randomEmotion),
-                                              width: 900,
-                                              height: 200,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        //helps to position widget where ever we want
-                                        bottom: -100,
-                                        //position at the bottom
-                                        right: animation2.value,
-                                        //value of left from animation controller
-                                        child: ClipPath(
-                                          clipper: MyWaveClipper(),
-                                          //applying our custom clipper
-                                          child: Opacity(
-                                            opacity: 1,
-                                            child: Container(
-                                              color: Colors.white,
-                                              width: 900,
-                                              height: 200,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
+                                    ),
+                                    AnimatedWave(
+                                      animation: animation,
+                                      bottom: 10,
+                                      opacity: 0.35,
+                                      color: EmotionColor.getDarkColorFor(randomEmotion),
+                                    ),
+                                    AnimatedWave(
+                                      animation: animation4,
+                                      bottom: 10,
+                                      opacity: 0.5,
+                                      color: EmotionColor.getDarkColorFor(randomEmotion),
+                                    ),
+                                    AnimatedWave(
+                                      animation: animation4,
+                                      bottom: -16,
+                                      opacity: 0.7,
+                                      color: EmotionColor.getDarkColorFor(randomEmotion),
+                                    ),
+                                    AnimatedWave(
+                                      animation: animation3,
+                                      bottom: -42,
+                                      opacity: 0.6,
+                                      color: EmotionColor.getDarkColorFor(randomEmotion),
+                                    ),
+                                    AnimatedWave(
+                                      animation: animation3,
+                                      bottom: -55,
+                                      opacity: 0.7,
+                                      color: EmotionColor.getLightColorFor(randomEmotion),
+                                    ),
+                                    AnimatedWave(
+                                      animation: animation2,
+                                      bottom: -100,
+                                      opacity: 1,
+                                      color: Colors.white,
+                                    )
+                                    // Positioned(
+                                    //   bottom: 10,
+                                    //   right: animation.value,
+                                    //   child: ClipPath(
+                                    //     clipper: MyWaveClipper(),
+                                    //     child: Opacity(
+                                    //       opacity: 0.35,
+                                    //       child: Container(
+                                    //         color: EmotionColor.getDarkColorFor(emotion),
+                                    //         width: 900,
+                                    //         height: 200,
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    // Positioned(
+                                    //     bottom: 10,
+                                    //     right: animation4.value,
+                                    //     child: ClipPath(
+                                    //       clipper: MyWaveClipper(),
+                                    //       child: Opacity(
+                                    //         opacity: 0.5,
+                                    //         child: Container(
+                                    //           color: EmotionColor.getDarkColorFor(emotion),
+                                    //           width: 900,
+                                    //           height: 200,
+                                    //         ),
+                                    //       ),
+                                    //     )),
+                                    // Positioned(
+                                    //     bottom: -16,
+                                    //     right: animation4.value,
+                                    //     child: ClipPath(
+                                    //       clipper: MyWaveClipper(),
+                                    //       child: Opacity(
+                                    //         opacity: 0.7,
+                                    //         child: Container(
+                                    //           color: EmotionColor.getDarkColorFor(emotion),
+                                    //           width: 900,
+                                    //           height: 200,
+                                    //         ),
+                                    //       ),
+                                    //     )),
+                                    // Positioned(
+                                    //   //helps to position widget where ever we want
+                                    //   bottom: -42,
+                                    //   //position at the bottom
+                                    //   left: animation3.value,
+                                    //   //value of left from animation controller
+                                    //   child: ClipPath(
+                                    //     clipper: MyWaveClipper(),
+                                    //     //applying our custom clipper
+                                    //     child: Opacity(
+                                    //       opacity: 0.6,
+                                    //       child: Container(
+                                    //         color: EmotionColor.getDarkColorFor(emotion),
+                                    //         width: 900,
+                                    //         height: 200,
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    // Positioned(
+                                    //   //helps to position widget where ever we want
+                                    //   bottom: -55,
+                                    //   //position at the bottom
+                                    //   left: animation3.value,
+                                    //   //value of left from animation controller
+                                    //   child: ClipPath(
+                                    //     clipper: MyWaveClipper(),
+                                    //     //applying our custom clipper
+                                    //     child: Opacity(
+                                    //       opacity: 0.7,
+                                    //       child: Container(
+                                    //         color: EmotionColor.getLightColorFor(emotion),
+                                    //         width: 900,
+                                    //         height: 200,
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    // Positioned(
+                                    //   //helps to position widget where ever we want
+                                    //   bottom: -100,
+                                    //   //position at the bottom
+                                    //   right: animation2.value,
+                                    //   //value of left from animation controller
+                                    //   child: ClipPath(
+                                    //     clipper: MyWaveClipper(),
+                                    //     //applying our custom clipper
+                                    //     child: Opacity(
+                                    //       opacity: 1,
+                                    //       child: Container(
+                                    //         color: Colors.white,
+                                    //         width: 900,
+                                    //         height: 200,
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                  ]);
                                 },
                               ),
                             ),
@@ -526,7 +552,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
             }));
   }
 
-  Widget emotionButton(String emotion, String svgicon) {
+  Widget emotionButton(String emotion, String svgIcon) {
     return GestureDetector(
       onTap: () => setState(() => AudioManager.emotion = emotion),
       child: Container(
@@ -539,7 +565,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
               height: 25,
               width: 25,
               child: SvgPicture.asset(
-                svgicon,
+                svgIcon,
               ),
             ),
           ],
@@ -548,6 +574,40 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: AudioManager.emotion == emotion ? Colors.grey : Colors.black12,
+        ),
+      ),
+    );
+  }
+}
+
+class AnimatedWave extends AnimatedWidget {
+  final Color color;
+  final double opacity;
+  final double bottom;
+
+  const AnimatedWave({
+    Key key,
+    Animation<double> animation,
+    this.bottom,
+    this.opacity,
+    this.color
+  }): super(key: key, listenable: animation);
+
+  @override
+  Widget build(BuildContext context) {
+  final animation = listenable as Animation<double>;
+    return Positioned(
+      bottom: bottom,
+      right: animation.value,
+      child: ClipPath(
+        clipper: MyWaveClipper(),
+        child: Opacity(
+          opacity: opacity,
+          child: Container(
+            color: color,
+            width: 900,
+            height: 200,
+          ),
         ),
       ),
     );
