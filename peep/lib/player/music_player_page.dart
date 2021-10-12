@@ -172,31 +172,6 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         fontSize: 16, color: Colors.black54),
                                   )
                                 ])),
-                            // Padding( //TODO: 태그 보여줌
-                            //   padding: EdgeInsets.only(top: 2.0, bottom: 8.0),
-                            //   child:
-                            //   StreamBuilder<SequenceState>(
-                            //     stream: AudioManager.instance.player.sequenceStateStream,
-                            //     builder: (context, snapshot) {
-                            //       final state = snapshot.data;
-                            //       if (state.sequence.isEmpty ?? true) return Text(
-                            //         "재생 중인 곡이 없습니다. 위로 스와이프해주세요",
-                            //         textAlign: TextAlign.center,
-                            //         style:
-                            //         TextStyle(fontSize: 14, color: Colors.white),
-                            //       );
-                            //       final metadata = state.currentSource.tag as AudioMetadata;
-                            //       return Text(
-                            //         metadata.getTags(),
-                            //         textAlign: TextAlign.center,
-                            //         style:
-                            //         TextStyle(fontSize: 16, color: Colors.white),
-                            //       );
-                            //     },
-                            //
-                            //
-                            //   ),
-                            // ),
                             ///An artwork and waves in [Stack]
                             Expanded(
                                 child: Stack(children: [
