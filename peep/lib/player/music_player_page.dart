@@ -315,36 +315,42 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                       bottom: 10,
                                       opacity: 0.35,
                                       color: EmotionColor.getDarkColorFor(randomEmotion),
+                                      direction: 1,
                                     ),
                                     AnimatedWave(
                                       animation: animation4,
                                       bottom: 10,
                                       opacity: 0.5,
                                       color: EmotionColor.getDarkColorFor(randomEmotion),
+                                      direction: 1,
                                     ),
                                     AnimatedWave(
                                       animation: animation4,
                                       bottom: -16,
                                       opacity: 0.7,
                                       color: EmotionColor.getDarkColorFor(randomEmotion),
+                                      direction: 1,
                                     ),
                                     AnimatedWave(
                                       animation: animation3,
                                       bottom: -42,
                                       opacity: 0.6,
                                       color: EmotionColor.getDarkColorFor(randomEmotion),
+                                      direction: 0,
                                     ),
                                     AnimatedWave(
                                       animation: animation3,
                                       bottom: -55,
                                       opacity: 0.7,
                                       color: EmotionColor.getLightColorFor(randomEmotion),
+                                      direction: 0,
                                     ),
                                     AnimatedWave(
                                       animation: animation2,
                                       bottom: -100,
                                       opacity: 1,
                                       color: Colors.white,
+                                      direction: 1,
                                     )
                                   ]);
                                 },
@@ -471,21 +477,32 @@ class AnimatedWave extends AnimatedWidget {
   final Color color;
   final double opacity;
   final double bottom;
+  /// 0: left
+  /// 1: right
+  final int direction;
 
   const AnimatedWave({
     Key key,
     Animation<double> animation,
     this.bottom,
     this.opacity,
-    this.color
+    this.color,
+    this.direction,
   }): super(key: key, listenable: animation);
 
   @override
   Widget build(BuildContext context) {
   final animation = listenable as Animation<double>;
+  double left, right;
+  if (direction == 1) {
+    right = animation.value;
+  } else {
+    left = animation.value;
+  }
     return Positioned(
       bottom: bottom,
-      right: animation.value,
+      left : left,
+      right: right,
       child: ClipPath(
         clipper: MyWaveClipper(),
         child: Opacity(
