@@ -205,7 +205,6 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                             ),
                                           ],
                                         ),
-
                                         child: Image.network(
                                           songMeta.artwork,
                                           width: 480,
@@ -268,6 +267,32 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                 color: Colors.white,
                                 child: Column(
                                   children: [
+                                    /// favorite button
+                                    Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: Row(children: [
+                                          IconButton(
+                                              padding: EdgeInsets.only(right:4.0),
+                                              constraints: BoxConstraints(),
+                                              onPressed: () {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: const Text(
+                                                        'Favorite button clicked'),
+                                                  ),
+                                                );
+                                              },
+                                              icon: Icon(
+                                                Icons.favorite,
+                                                color: Colors.pinkAccent,
+                                                size: 24.0,
+                                              )),
+                                          // TODO : 총 좋아요 수를 곡 정보에서 가져오기
+                                          Text("777"),
+                                        ])),
+
                                     /// SeekBar
                                     StreamBuilder<Duration>(
                                       stream: AudioManager
