@@ -156,7 +156,9 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                 child: Column(children: [
                                   /// title
                                   Text(
-                                    songMeta.title,
+                                    (songMeta == null || songMeta.title == null)
+                                        ? "재생 중인 곡이 없습니다"
+                                        : songMeta.title,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: 20,
@@ -170,7 +172,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
 
                                   /// artist
                                   Text(
-                                    songMeta.artist,
+                                    (songMeta == null ||
+                                            songMeta.artist == null)
+                                        ? "감정 선택 후 아래서 위로 쓸거나 재생을 눌러보세요"
+                                        : songMeta.artist,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: 16, color: Colors.black54),
@@ -206,7 +211,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                           ],
                                         ),
                                         child: Image.network(
-                                          songMeta.artwork,
+                                          (songMeta == null ||
+                                                  songMeta.artwork == null)
+                                              ? 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'
+                                              : songMeta.artwork,
                                           width: 480,
                                           fit: BoxFit.fitWidth,
                                         ),
@@ -273,7 +281,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                             horizontal: 16.0),
                                         child: Row(children: [
                                           IconButton(
-                                              padding: EdgeInsets.only(right:4.0),
+                                              padding:
+                                                  EdgeInsets.only(right: 4.0),
                                               constraints: BoxConstraints(),
                                               onPressed: () {
                                                 ScaffoldMessenger.of(context)

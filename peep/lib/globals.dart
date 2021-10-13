@@ -37,7 +37,7 @@ class EmotionColor {
     ANGRY:    const Color(0xFFd77881),
     CALM:     const Color(0xFF669f82),
     FEAR:     const Color(0xFF8481ac),
-    DEFAULT:  Colors.white,
+    DEFAULT:  Colors.grey,
   };
 
   static const _lightColorMap = {
@@ -55,7 +55,7 @@ class EmotionColor {
     ANGRY:    const Color(0xFFcc4e60),
     CALM:     const Color(0xFF426641),
     FEAR:     const Color(0xFF564986),
-    DEFAULT:  Colors.white,
+    DEFAULT:  Colors.black,
   };
 
   const EmotionColor._();
