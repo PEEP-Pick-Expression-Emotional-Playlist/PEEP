@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:peep/player/ui/animated_wave.dart';
@@ -36,14 +37,15 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
 
   AnimationController controller;
 
+  AudioMetadata songMeta;
+  String playingEmotion = "default";
+
   @override
   Widget build(BuildContext topContext) {
     return Scaffold(
         body: StreamBuilder<SequenceState>(
             stream: AudioManager.instance.player.sequenceStateStream,
             builder: (context, snapshot) {
-              AudioMetadata songMeta;
-              String playingEmotion = "default";
               if (snapshot.hasData) {
                 final playingData = snapshot.data;
                 songMeta = playingData.currentSource.tag as AudioMetadata;
@@ -53,27 +55,20 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
               }
               return Container(
                   color: EmotionColor.getNormalColorFor(playingEmotion),
-                  child: GestureDetector(
-                      onPanUpdate: (dis) {
-                        if (dis.delta.dx < 0) {
-                          //User swiped from left to right
-                          //pass
-                        } else if (dis.delta.dy < 0) {
-                          AudioManager.instance.addRandomSong2(context);
-                        }
-                      },
-                      child: SafeArea(
-                          child: Column(
-                              // crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: <Widget>[
+                  child: SafeArea(
+                      bottom: false,
+                      child: Column(
+                          // crossAxisAlignment: CrossAxisAlignment.start,
+                          // mainAxisSize: MainAxisSize.max,
+                          children: <Widget>[
+                            /// Back button, year, genre, emotion in [ExpansionTileCard]
                             ExpansionTileCard(
-                              baseColor: EmotionColor.getNormalColorFor(
-                                  playingEmotion),
-                              expandedColor: Colors.black12,
+                              baseColor: Colors.transparent,
+                              expandedColor: Colors.transparent,
                               shadowColor: Colors.transparent,
                               elevation: 0.0,
                               title: Row(children: <Widget>[
+                                /// Back button
                                 Container(
                                   transform:
                                       Matrix4.translationValues(-16.0, 0, 0),
@@ -84,11 +79,13 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                             .popUntil((route) => route.isFirst);
                                       }),
                                 ),
+
                                 Padding(
                                     padding:
                                         EdgeInsets.symmetric(vertical: 4.0),
                                     child: Row(
                                       children: <Widget>[
+                                        /// year
                                         Container(
                                           decoration: BoxDecoration(
                                               borderRadius:
@@ -102,6 +99,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                           child: DropDownDemo(
                                               hint: "연도", items: _yearValues),
                                         ),
+
+                                        /// genre
                                         Container(
                                           decoration: BoxDecoration(
                                               borderRadius:
@@ -121,6 +120,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                     ))
                               ]),
                               children: <Widget>[
+                                /// emotion button
                                 Padding(
                                     padding: EdgeInsets.fromLTRB(
                                         4.0, 4.0, 4.0, 24.0),
@@ -150,9 +150,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                     ))
                               ],
                             ),
+
+                            /// Playing song's title, artist in [Padding]
                             Padding(
                                 padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
                                 child: Column(children: [
+                                  /// title
                                   Text(
                                     songMeta.title,
                                     textAlign: TextAlign.center,
@@ -165,6 +168,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                   SizedBox(
                                     height: 8,
                                   ),
+
+                                  /// artist
                                   Text(
                                     songMeta.artist,
                                     textAlign: TextAlign.center,
@@ -172,70 +177,105 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         fontSize: 16, color: Colors.black54),
                                   )
                                 ])),
-                            ///An artwork and waves in [Stack]
+
+                            /// gesture, artwork and waves in [Expanded]
                             Expanded(
-                                child: Stack(children: [
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                child: Image.network(
-                                  songMeta.artwork,
-                                  width: 480,
-                                  height: 480,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              AnimatedWave(
-                                animation: animation,
-                                bottom: 10,
-                                opacity: 0.35,
-                                color: EmotionColor.getDarkColorFor(
-                                    playingEmotion),
-                                isLeftToRight: false,
-                              ),
-                              AnimatedWave(
-                                animation: animation4,
-                                bottom: 10,
-                                opacity: 0.5,
-                                color: EmotionColor.getDarkColorFor(
-                                    playingEmotion),
-                                isLeftToRight: true,
-                              ),
-                              AnimatedWave(
-                                animation: animation4,
-                                bottom: -16,
-                                opacity: 0.7,
-                                color: EmotionColor.getDarkColorFor(
-                                    playingEmotion),
-                                isLeftToRight: true,
-                              ),
-                              AnimatedWave(
-                                animation: animation3,
-                                bottom: -42,
-                                opacity: 0.6,
-                                color: EmotionColor.getDarkColorFor(
-                                    playingEmotion),
-                                isLeftToRight: false,
-                              ),
-                              AnimatedWave(
-                                animation: animation3,
-                                bottom: -55,
-                                opacity: 0.7,
-                                color: EmotionColor.getLightColorFor(
-                                    playingEmotion),
-                                isLeftToRight: false,
-                              ),
-                              AnimatedWave(
-                                animation: animation2,
-                                bottom: -100,
-                                opacity: 1,
-                                color: Colors.white,
-                                isLeftToRight: true,
-                              )
-                            ])),
+
+                                /// gesture
+                                child: GestureDetector(
+                                    onPanUpdate: (dis) {
+                                      if (dis.delta.dx < 0) {
+                                        //User swiped from left to right
+                                        //pass
+                                      } else if (dis.delta.dy < 0) {
+                                        AudioManager.instance
+                                            .addRandomSong2(context);
+                                      }
+                                    },
+                                    child: Stack(
+                                        children: [
+                                      /// artwork
+                                        Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 32.0, vertical: 16.0),
+                                          // TODO: artwork shadow
+                                          // decoration: BoxDecoration(
+                                          //   boxShadow: [
+                                          //     BoxShadow(
+                                          //       color: Colors.black
+                                          //           .withOpacity(0.5),
+                                          //       spreadRadius: 3,
+                                          //       blurRadius: 7,
+                                          //       offset: Offset(0,
+                                          //           0), // changes position of shadow
+                                          //     ),
+                                          //   ],
+                                          // ),
+                                          child: Image.network(
+                                            songMeta.artwork,
+                                            width: 480,
+                                            height: 480,
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                        ),
+
+
+                                      /// waves
+                                      AnimatedWave(
+                                        animation: animation,
+                                        bottom: 10,
+                                        opacity: 0.35,
+                                        color: EmotionColor.getDarkColorFor(
+                                            playingEmotion),
+                                        isLeftToRight: true,
+                                      ),
+                                      AnimatedWave(
+                                        animation: animation4,
+                                        bottom: 10,
+                                        opacity: 0.5,
+                                        color: EmotionColor.getDarkColorFor(
+                                            playingEmotion),
+                                        isLeftToRight: true,
+                                      ),
+                                      AnimatedWave(
+                                        animation: animation4,
+                                        bottom: -16,
+                                        opacity: 0.7,
+                                        color: EmotionColor.getDarkColorFor(
+                                            playingEmotion),
+                                        isLeftToRight: true,
+                                      ),
+                                      AnimatedWave(
+                                        animation: animation3,
+                                        bottom: -42,
+                                        opacity: 0.6,
+                                        color: EmotionColor.getDarkColorFor(
+                                            playingEmotion),
+                                        isLeftToRight: false,
+                                      ),
+                                      AnimatedWave(
+                                        animation: animation3,
+                                        bottom: -55,
+                                        opacity: 0.7,
+                                        color: EmotionColor.getLightColorFor(
+                                            playingEmotion),
+                                        isLeftToRight: false,
+                                      ),
+                                      AnimatedWave(
+                                        animation: animation2,
+                                        bottom: -100,
+                                        opacity: 1,
+                                        color: Colors.white,
+                                        isLeftToRight: true,
+                                      )
+                                    ]))),
+
+                            /// SeekBar, playing time, player controller in [Container]
                             Container(
                                 color: Colors.white,
                                 child: Column(
                                   children: [
+                                    /// SeekBar
                                     StreamBuilder<Duration>(
                                       stream: AudioManager
                                           .instance.player.durationStream,
@@ -282,6 +322,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         );
                                       },
                                     ),
+
+                                    /// playing time
                                     Padding(
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 16.0),
@@ -301,12 +343,13 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         ],
                                       ),
                                     ),
+
+                                    /// player controller
                                     Align(
                                         alignment: Alignment.bottomCenter,
                                         child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 16.0,
-                                                horizontal: 96.0),
+                                            padding: EdgeInsets.fromLTRB(
+                                                84.0, 8.0, 84.0, 48.0),
                                             child: PlayerController(
                                               prevIconName: 'player_prev',
                                               playIconName: 'player_play',
@@ -317,7 +360,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                             ))),
                                   ],
                                 ))
-                          ]))));
+                          ])));
             }));
   }
 
@@ -341,11 +384,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
 
   @override
   void dispose() {
-    super.dispose();
     controller.dispose();
+    super.dispose();
   }
 
-  // );
   Widget emotionButton(String emotion, String svgIcon) {
     return GestureDetector(
       onTap: () => setState(() => AudioManager.emotion = emotion),
@@ -367,7 +409,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
         height: 64.0,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AudioManager.emotion == emotion ? Colors.grey : Colors.black12,
+          color: AudioManager.emotion == emotion
+          // ?Colors.white
+              ? ((emotion == "angry" || emotion == "fear")
+                  ? EmotionColor.getLightColorFor(emotion)
+                  : EmotionColor.getDarkColorFor(emotion))
+              : Colors.transparent,
         ),
       ),
     );
