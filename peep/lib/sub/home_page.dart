@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:peep/home/emotion_chart.dart';
@@ -259,9 +260,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> setData(String emotionState) async {
-    await firestore
-        .collection("current")
-        .doc("state")
-        .update({"emotion": emotionState});
+    var uid;
+    final user = FirebaseAuth.instance.currentUser;
+    final databaseReference = FirebaseDatabase.instance.reference().child("emotion");
+
+    if(user!=null){
+      uid=user.uid;
+    }
+    await databaseReference.child(uid +"/"+ "current").update({
+      "emotion" : emotionState
+    });
+  //   await firestore
+  //       .collection("current")
+  //       .doc("state")
+  //       .update({"emotion": emotionState});
   }
 }
