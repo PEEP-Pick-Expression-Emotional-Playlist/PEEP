@@ -196,7 +196,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                             .addRandomSong2(context);
                                       }
                                     },
-                                    child: Stack(children: [
+                                    child: Stack(
+                                        children: [
                                       /// artwork
                                       Container(
                                         margin: EdgeInsets.symmetric(
@@ -216,7 +217,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                               ? 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'
                                               : songMeta.artwork,
                                           width: 480,
-                                          fit: BoxFit.fitWidth,
+                                          fit: BoxFit.contain,
                                         ),
                                       ),
 

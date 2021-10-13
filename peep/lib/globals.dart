@@ -58,9 +58,30 @@ class EmotionColor {
     DEFAULT:  Colors.black,
   };
 
+  static const _processColorMap = {
+    HAPPY:    const Color(0xFFE8C147),
+    SAD:      const Color(0xFF469DE2),
+    ANGRY:    const Color(0xFFCC6065),
+    CALM:     const Color(0xFF448265),
+    FEAR:     const Color(0xFF61558E),
+    DEFAULT:  Colors.black,
+  };
+
+  static const _barColorMap = {
+    HAPPY:    const Color(0xFFF6E7B7),
+    SAD:      const Color(0xFFB7DAF4),
+    ANGRY:    const Color(0xFFEBC2C4),
+    CALM:     const Color(0xFFB6CEC3),
+    FEAR:     const Color(0xFFC2BDD4),
+    DEFAULT:  Colors.grey,
+  };
+
+
   const EmotionColor._();
 
   static getNormalColorFor(String emotion) => _normalColorMap[emotion.toUpperCase()] ?? _normalColorMap[DEFAULT];
   static getLightColorFor(String emotion) => _lightColorMap[emotion.toUpperCase()] ?? _lightColorMap[DEFAULT];
   static getDarkColorFor(String emotion) => _darkColorMap[emotion.toUpperCase()] ?? _darkColorMap[DEFAULT];
+  static getProcessColorFor(String emotion) => _processColorMap[emotion.toUpperCase()] ?? _processColorMap[DEFAULT];
+  static getBarColorFor(String emotion) => _barColorMap[emotion.toUpperCase()] ?? _barColorMap[DEFAULT];
 }
