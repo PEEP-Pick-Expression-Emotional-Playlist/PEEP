@@ -47,7 +47,7 @@ class _PlayerController extends State<PlayerController> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        //이전 버튼
+        /// previous Button
         StreamBuilder<SequenceState>(
             stream: _player.sequenceStateStream,
             builder: (context, snapshot) =>
@@ -65,7 +65,7 @@ class _PlayerController extends State<PlayerController> {
                   //   audioManager.prev(context);
                   // }
                 )),
-        //재생 버튼
+        /// Play Button
         StreamBuilder<PlayerState>(
           stream: _player.playerStateStream,
           builder: (context, snapshot) {

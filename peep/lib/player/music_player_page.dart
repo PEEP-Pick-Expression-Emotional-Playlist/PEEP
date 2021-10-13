@@ -122,8 +122,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                               children: <Widget>[
                                 /// emotion button
                                 Padding(
-                                    padding: EdgeInsets.fromLTRB(
-                                        4.0, 4.0, 4.0, 24.0),
+                                    padding: EdgeInsets.all(4.0),
                                     child: Row(
                                       children: <Widget>[
                                         Expanded(
@@ -192,33 +191,27 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                             .addRandomSong2(context);
                                       }
                                     },
-                                    child: Stack(
-                                        children: [
+                                    child: Stack(children: [
                                       /// artwork
-                                        Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 32.0, vertical: 16.0),
-                                          // TODO: artwork shadow
-                                          // decoration: BoxDecoration(
-                                          //   boxShadow: [
-                                          //     BoxShadow(
-                                          //       color: Colors.black
-                                          //           .withOpacity(0.5),
-                                          //       spreadRadius: 3,
-                                          //       blurRadius: 7,
-                                          //       offset: Offset(0,
-                                          //           0), // changes position of shadow
-                                          //     ),
-                                          //   ],
-                                          // ),
-                                          child: Image.network(
-                                            songMeta.artwork,
-                                            width: 480,
-                                            height: 480,
-                                            fit: BoxFit.fitWidth,
-                                          ),
+                                      Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 32.0, vertical: 16.0),
+                                        decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black45,
+                                              spreadRadius: 1,
+                                              blurRadius: 5,
+                                            ),
+                                          ],
                                         ),
 
+                                        child: Image.network(
+                                          songMeta.artwork,
+                                          width: 480,
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                      ),
 
                                       /// waves
                                       AnimatedWave(
@@ -410,7 +403,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: AudioManager.emotion == emotion
-          // ?Colors.white
+              // ?Colors.white
               ? ((emotion == "angry" || emotion == "fear")
                   ? EmotionColor.getLightColorFor(emotion)
                   : EmotionColor.getDarkColorFor(emotion))
