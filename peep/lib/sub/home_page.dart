@@ -9,7 +9,7 @@ import 'package:peep/player/player_controller.dart';
 import '../db_manager.dart';
 import '../home/client.dart';
 import '../home/emotion_chart.dart';
-
+import '../home/emotion_manage.dart';
 //홈페이지
 
 class HomePage extends StatefulWidget {
@@ -48,6 +48,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    EmotionManger emotionManger = new EmotionManger();
     final user = FirebaseAuth.instance.currentUser;
     var name, photo, email, uid;
     if (user != null) {
@@ -168,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                         fit: BoxFit.fill,
                       ),
                       onPressed: () async {
-                        await setData("happy");
+                        await emotionManger.readWriteEmotion("happy");
                         await ClientTest().readAndWrite("happy");
                         AudioManager.emotion = "happy";
                         Navigator.push(
@@ -190,7 +191,7 @@ class _HomePageState extends State<HomePage> {
                         fit: BoxFit.fill,
                       ),
                       onPressed: () async {
-                        await setData("blue");
+                        await emotionManger.readWriteEmotion("blue");
                         await ClientTest().readAndWrite("blue");
                         AudioManager.emotion = "blue";
                         Navigator.push(
@@ -219,7 +220,7 @@ class _HomePageState extends State<HomePage> {
                         fit: BoxFit.fill,
                       ),
                       onPressed: () async {
-                        await setData("angry");
+                        await emotionManger.readWriteEmotion("angry");
                         await ClientTest().readAndWrite("angry");
                         AudioManager.emotion = "angry";
                         Navigator.push(
@@ -243,7 +244,7 @@ class _HomePageState extends State<HomePage> {
                         fit: BoxFit.fill,
                       ),
                       onPressed: () async {
-                        await setData("calm");
+                        await emotionManger.readWriteEmotion("calm");
                         await ClientTest().readAndWrite("calm");
                         AudioManager.emotion = "calm";
                         Navigator.push(
@@ -272,7 +273,7 @@ class _HomePageState extends State<HomePage> {
                         fit: BoxFit.fill,
                       ),
                       onPressed: () async {
-                        await setData("fear");
+                        await emotionManger.readWriteEmotion("fear");
                         await ClientTest().readAndWrite("fear");
                         AudioManager.emotion = "fear";
                         Navigator.push(
@@ -291,23 +292,5 @@ class _HomePageState extends State<HomePage> {
         ],
       ))),
     );
-  }
-
-  Future<void> setData(String emotionState) async {
-    var uid;
-    final user = FirebaseAuth.instance.currentUser;
-    final databaseReference =
-        FirebaseDatabase.instance.reference().child("emotion");
-
-    if (user != null) {
-      uid = user.uid;
-    }
-    await databaseReference
-        .child(uid + "/" + "current")
-        .update({"emotion": emotionState});
-    //   await firestore
-    //       .collection("current")
-    //       .doc("state")
-    //       .update({"emotion": emotionState});
   }
 }
