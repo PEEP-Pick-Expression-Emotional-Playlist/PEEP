@@ -1,11 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:peep/home/emotion_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:peep/login/user_manager.dart';
 import 'package:peep/player/music_player_page.dart';
 import 'package:peep/player/player_controller.dart';
+import '../db_manager.dart';
 import '../home/client.dart';
 import '../home/emotion_chart.dart';
 
@@ -17,7 +18,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  var userEmotionRef = DBManager.instance.ref
+      .child("emotion")
+      .child(UserManager.instance.user.uid);
   int blueFreq;
   int fearFreq;
   int angryFreq;
@@ -79,17 +82,48 @@ class _HomePageState extends State<HomePage> {
             height: 8.0,
           ),
           Center(
-              child: StreamBuilder<QuerySnapshot>(
-                  stream: firestore.collection("emotion").snapshots(),
+              child: StreamBuilder(
+                  stream: userEmotionRef.child("freq").onValue,
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return CircularProgressIndicator();
                     } else {
-                      blueFreq = snapshot.data.docs[0]['sad'];
-                      happyFreq = snapshot.data.docs[0]['happy'];
-                      angryFreq = snapshot.data.docs[0]['angry'];
-                      calmFreq = snapshot.data.docs[0]['calm'];
-                      fearFreq = snapshot.data.docs[0]['fear'];
+                      blueFreq = 0;
+                      happyFreq = 0;
+                      angryFreq = 0;
+                      calmFreq = 0;
+                      fearFreq = 0;
+                      if (snapshot.hasData &&
+                          !snapshot.hasError &&
+                          snapshot.data.snapshot.value != null) {
+                        var val = snapshot.data.snapshot.value;
+                        blueFreq = val['blue'];
+                        happyFreq = val['happy'];
+                        angryFreq = val['angry'];
+                        calmFreq = val['calm'];
+                        fearFreq = val['fear'];
+                      } else {
+                        userEmotionRef
+                            .child("freq")
+                            .child("blue")
+                            .set(blueFreq);
+                        userEmotionRef
+                            .child("freq")
+                            .child("happy")
+                            .set(happyFreq);
+                        userEmotionRef
+                            .child("freq")
+                            .child("angry")
+                            .set(angryFreq);
+                        userEmotionRef
+                            .child("freq")
+                            .child("calm")
+                            .set(calmFreq);
+                        userEmotionRef
+                            .child("freq")
+                            .child("fear")
+                            .set(fearFreq);
+                      }
                       return EmotionChart(
                         chartData: [
                           ChartData('BLUE', blueFreq),
@@ -156,9 +190,9 @@ class _HomePageState extends State<HomePage> {
                         fit: BoxFit.fill,
                       ),
                       onPressed: () async {
-                        await setData("sad");
-                        await ClientTest().readAndWrite("sad");
-                        AudioManager.emotion = "sad";
+                        await setData("blue");
+                        await ClientTest().readAndWrite("blue");
+                        AudioManager.emotion = "blue";
                         Navigator.push(
                             //getImage(ImageSource.camera);
                             context,
@@ -262,17 +296,18 @@ class _HomePageState extends State<HomePage> {
   Future<void> setData(String emotionState) async {
     var uid;
     final user = FirebaseAuth.instance.currentUser;
-    final databaseReference = FirebaseDatabase.instance.reference().child("emotion");
+    final databaseReference =
+        FirebaseDatabase.instance.reference().child("emotion");
 
-    if(user!=null){
-      uid=user.uid;
+    if (user != null) {
+      uid = user.uid;
     }
-    await databaseReference.child(uid +"/"+ "current").update({
-      "emotion" : emotionState
-    });
-  //   await firestore
-  //       .collection("current")
-  //       .doc("state")
-  //       .update({"emotion": emotionState});
+    await databaseReference
+        .child(uid + "/" + "current")
+        .update({"emotion": emotionState});
+    //   await firestore
+    //       .collection("current")
+    //       .doc("state")
+    //       .update({"emotion": emotionState});
   }
 }

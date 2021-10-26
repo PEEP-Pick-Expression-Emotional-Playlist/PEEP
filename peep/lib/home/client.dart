@@ -1,17 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:peep/login/user_manager.dart';
 import '../player/player_controller.dart';
-import '../sub/home_page.dart';
-import '../sub/home_page.dart';
-import '../sub/home_page.dart';
 import 'saveEmotion.dart';
-import 'package:peep/sub/home_page.dart';
-import 'saveEmotion.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

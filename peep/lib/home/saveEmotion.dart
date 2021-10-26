@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'emotion_chart.dart';
 
 class SaveEmotion{
   Future<String> setData(String emotionTest) async{
@@ -16,9 +14,9 @@ class SaveEmotion{
         print("Happy");
         return "happy";
         break;
-      case 'h1>Sad':
-        print("Sad");
-        return "sad";
+      case 'h1>Blue':
+        print("Blue");
+        return "blue";
         break;
       case 'h1>Fearful':
         print("Fear");

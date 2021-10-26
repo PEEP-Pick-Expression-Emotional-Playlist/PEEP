@@ -25,7 +25,7 @@ class CurrentEmotion extends InheritedWidget {
 
 class EmotionColor {
   static const HAPPY    = "HAPPY";
-  static const SAD      = "SAD";
+  static const BLUE      = "BLUE";
   static const ANGRY    = "ANGRY";
   static const CALM     = "CALM";
   static const FEAR     = "FEAR";
@@ -33,7 +33,7 @@ class EmotionColor {
 
   static const _normalColorMap = {
     HAPPY:    const Color(0xFFd5b15c),
-    SAD:      const Color(0xFF7fbad0),
+    BLUE:      const Color(0xFF7fbad0),
     ANGRY:    const Color(0xFFd77881),
     CALM:     const Color(0xFF669f82),
     FEAR:     const Color(0xFF8481ac),
@@ -42,7 +42,7 @@ class EmotionColor {
 
   static const _lightColorMap = {
     HAPPY:    const Color(0xFFe8c075),
-    SAD:      const Color(0xFFa5c3d7),
+    BLUE:      const Color(0xFFa5c3d7),
     ANGRY:    const Color(0xFFd77d92),
     CALM:     const Color(0xFF57a481),
     FEAR:     const Color(0xFF8776a4),
@@ -51,7 +51,7 @@ class EmotionColor {
 
   static const _darkColorMap = {
     HAPPY:    const Color(0xFFd57a47),
-    SAD:      const Color(0xFF446199),
+    BLUE:      const Color(0xFF446199),
     ANGRY:    const Color(0xFFcc4e60),
     CALM:     const Color(0xFF426641),
     FEAR:     const Color(0xFF564986),
@@ -60,7 +60,7 @@ class EmotionColor {
 
   static const _processColorMap = {
     HAPPY:    const Color(0xFFE8C147),
-    SAD:      const Color(0xFF469DE2),
+    BLUE:      const Color(0xFF469DE2),
     ANGRY:    const Color(0xFFCC6065),
     CALM:     const Color(0xFF448265),
     FEAR:     const Color(0xFF61558E),
@@ -69,7 +69,7 @@ class EmotionColor {
 
   static const _barColorMap = {
     HAPPY:    const Color(0xFFF6E7B7),
-    SAD:      const Color(0xFFB7DAF4),
+    BLUE:      const Color(0xFFB7DAF4),
     ANGRY:    const Color(0xFFEBC2C4),
     CALM:     const Color(0xFFB6CEC3),
     FEAR:     const Color(0xFFC2BDD4),

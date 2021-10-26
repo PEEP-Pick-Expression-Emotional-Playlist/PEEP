@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:peep/player/ui/animated_wave.dart';
@@ -138,7 +137,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                               "assets/itd/ITD_icon_calm.svg"),
                                         ),
                                         Expanded(
-                                          child: emotionButton("sad",
+                                          child: emotionButton("blue",
                                               "assets/itd/ITD_icon_blue.svg"),
                                         ),
                                         Expanded(
@@ -174,7 +173,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                   Text(
                                     (songMeta == null ||
                                             songMeta.artist == null)
-                                        ? "감정 선택 후 아래서 위로 쓸거나 재생을 눌러보세요"
+                                        ? "감정 선택 후 재생을 눌러보세요"
                                         : songMeta.artist,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
@@ -196,8 +195,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                             .addRandomSong2(context);
                                       }
                                     },
-                                    child: Stack(
-                                        children: [
+                                    child: Stack(children: [
                                       /// artwork
                                       Container(
                                         margin: EdgeInsets.symmetric(
@@ -438,10 +436,9 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: AudioManager.emotion == emotion
-              // ?Colors.white
-              ? ((emotion == "angry" || emotion == "fear")
-                  ? EmotionColor.getLightColorFor(emotion)
-                  : EmotionColor.getDarkColorFor(emotion))
+              ? ((emotion == "happy" || emotion == "fear")
+                  ? EmotionColor.getLightColorFor(emotion).withOpacity(0.7)
+                  : EmotionColor.getDarkColorFor(emotion).withOpacity(0.5))
               : Colors.transparent,
         ),
       ),
