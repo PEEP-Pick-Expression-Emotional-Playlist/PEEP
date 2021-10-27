@@ -14,7 +14,7 @@ class SaveEmotion{
         print("Happy");
         return "happy";
         break;
-      case 'h1>Blue':
+      case 'h1>Sad':
         print("Blue");
         return "blue";
         break;
