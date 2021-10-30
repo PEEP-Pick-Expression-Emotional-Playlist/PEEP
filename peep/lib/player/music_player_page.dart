@@ -7,6 +7,8 @@ import 'package:just_audio/just_audio.dart';
 import 'package:peep/player/ui/animated_wave.dart';
 import 'package:peep/player/ui/seekbar.dart';
 import '../globals.dart';
+import 'audio_manager.dart';
+import 'model/audio_metadata.dart';
 import 'ui/dropdown_demo.dart';
 import 'player_controller.dart';
 import 'package:rxdart/rxdart.dart';

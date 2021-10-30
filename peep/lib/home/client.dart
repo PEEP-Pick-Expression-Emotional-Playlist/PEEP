@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:peep/home/emotion_manage.dart';
-import '../player/player_controller.dart';
+import 'package:peep/player/audio_manager.dart';
 import 'saveEmotion.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class ClientTest {
   String testData;

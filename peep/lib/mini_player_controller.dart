@@ -1,10 +1,11 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:peep/globals.dart';
+import 'package:peep/player/audio_manager.dart';
+import 'package:peep/player/model/audio_metadata.dart';
 import 'package:peep/player/music_player_page.dart';
 import 'package:peep/player/player_controller.dart';
 import 'package:flutter_svg/flutter_svg.dart';

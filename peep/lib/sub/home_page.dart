@@ -3,10 +3,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:peep/home/emotion_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:peep/login/user_manager.dart';
+import 'package:peep/player/audio_manager.dart';
 import 'package:peep/player/music_player_page.dart';
-import 'package:peep/player/player_controller.dart';
 import '../db_manager.dart';
-import '../home/client.dart';
 import '../home/emotion_chart.dart';
 import '../home/emotion_manage.dart';
 //홈페이지
