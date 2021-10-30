@@ -6,6 +6,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:peep/globals.dart';
 import 'package:peep/player/audio_manager.dart';
 import 'package:peep/player/model/audio_metadata.dart';
+import 'package:peep/player/model/position_data.dart';
 import 'package:peep/player/music_player_page.dart';
 import 'package:peep/player/player_controller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -46,26 +47,12 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
               StreamBuilder<Duration>(
                 stream: AudioManager.instance.player.durationStream,
                 builder: (context, snapshot) {
-                  final duration = snapshot.data ?? Duration.zero;
                   return StreamBuilder<PositionData>(
-                    stream: Rx.combineLatest2<Duration, Duration, PositionData>(
-                        AudioManager.instance.player.positionStream,
-                        AudioManager.instance.player.bufferedPositionStream,
-                        (position, bufferedPosition) =>
-                            PositionData(position, bufferedPosition)),
+                    stream: AudioManager.instance.positionDataStream,
                     builder: (context, snapshot) {
-                      final positionData = snapshot.data ??
-                          PositionData(Duration.zero, Duration.zero);
-                      var position = positionData.position;
-                      if (position > duration) {
-                        position = duration;
-                      }
-                      var bufferedPosition = positionData.bufferedPosition;
-                      if (bufferedPosition > duration) {
-                        bufferedPosition = duration;
-                      }
+                      final positionData = snapshot.data?.position ?? Duration.zero;
                       return LinearProgressIndicator(
-                          value: position.inMilliseconds.toDouble(),
+                          value: positionData.inMilliseconds.toDouble(),
                           backgroundColor: Colors.black26,
                           valueColor: AlwaysStoppedAnimation<Color>(
                               EmotionColor.getProcessColorFor(playingEmotion)));

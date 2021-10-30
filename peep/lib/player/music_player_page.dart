@@ -9,9 +9,9 @@ import 'package:peep/player/ui/seekbar.dart';
 import '../globals.dart';
 import 'audio_manager.dart';
 import 'model/audio_metadata.dart';
+import 'model/position_data.dart';
 import 'ui/dropdown_demo.dart';
 import 'player_controller.dart';
-import 'package:rxdart/rxdart.dart';
 
 class MusicPlayerPage extends StatefulWidget {
   @override
@@ -308,43 +308,21 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                       stream: AudioManager
                                           .instance.player.durationStream,
                                       builder: (context, snapshot) {
-                                        final duration =
-                                            snapshot.data ?? Duration.zero;
                                         return StreamBuilder<PositionData>(
-                                          stream: Rx.combineLatest2<Duration,
-                                                  Duration, PositionData>(
-                                              AudioManager.instance.player
-                                                  .positionStream,
-                                              AudioManager.instance.player
-                                                  .bufferedPositionStream,
-                                              (position, bufferedPosition) =>
-                                                  PositionData(position,
-                                                      bufferedPosition)),
+                                          stream: AudioManager
+                                              .instance.positionDataStream,
                                           builder: (context, snapshot) {
-                                            final positionData =
-                                                snapshot.data ??
-                                                    PositionData(Duration.zero,
-                                                        Duration.zero);
-                                            var position =
-                                                positionData.position;
-                                            if (position > duration) {
-                                              position = duration;
-                                            }
-                                            var bufferedPosition =
-                                                positionData.bufferedPosition;
-                                            if (bufferedPosition > duration) {
-                                              bufferedPosition = duration;
-                                            }
+                                            final positionData = snapshot.data;
                                             return SeekBar(
-                                              duration: duration,
-                                              position: position,
-                                              bufferedPosition:
-                                                  bufferedPosition,
+                                              duration: positionData?.duration ?? Duration.zero,
+                                              position: positionData?.position ?? Duration.zero,
+                                              bufferedPosition: positionData?.bufferedPosition ?? Duration.zero,
                                               onChangeEnd: (newPosition) {
                                                 AudioManager.instance.player
                                                     .seek(newPosition);
                                               },
-                                              emotionColor: Colors.black,
+                                              emotionColor: EmotionColor.getLightColorFor(
+                                                  playingEmotion),
                                             );
                                           },
                                         );

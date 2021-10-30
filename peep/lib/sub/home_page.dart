@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() { // FIXME: is it needed ?
     super.didChangeDependencies();
     EmotionChart(
       chartData: [

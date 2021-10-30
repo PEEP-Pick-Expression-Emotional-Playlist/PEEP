@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peep/db_manager.dart';
 import 'package:peep/login/user_manager.dart';
+import 'package:peep/player/audio_manager.dart';
 import 'package:peep/sub/home_page.dart';
-import 'package:peep/sub/search_page.dart';
 import 'package:peep/sub/search_screen.dart';
 import 'package:peep/sub/user_page.dart';
 import 'mini_player_controller.dart';
@@ -39,11 +39,34 @@ class AppFrame extends StatefulWidget {
 }
 
 class _AppFrameState extends State<AppFrame>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   int screenIndex = 0;
   List<Widget> screenList = [HomePage(), SearchScreen(), UserPage()];
   var ref = DBManager.instance.ref; //firebase
   var user = UserManager.instance.user; //user
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    AudioManager.instance.player.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      // Release the player's resources when not in use. We use "stop" so that
+      // if the app resumes later, it will still remember what position to
+      // resume from.
+      AudioManager.instance.player.stop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

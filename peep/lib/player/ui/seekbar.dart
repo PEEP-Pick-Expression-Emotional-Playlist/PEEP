@@ -2,14 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-/// A seekBar of music player
 class SeekBar extends StatefulWidget {
   final Duration duration;
   final Duration position;
   final Duration bufferedPosition;
   final ValueChanged<Duration> onChanged;
   final ValueChanged<Duration> onChangeEnd;
-  final Color emotionColor;
+  final emotionColor;
 
   SeekBar({
     this.duration,
@@ -45,13 +44,13 @@ class _SeekBarState extends State<SeekBar> {
           data: _sliderThemeData.copyWith(
             thumbShape: HiddenThumbComponentShape(),
             activeTrackColor: Colors.grey.shade300,
-            inactiveTrackColor: widget.emotionColor,
           ),
           child: ExcludeSemantics(
             child: Slider(
               min: 0.0,
               max: widget.duration.inMilliseconds.toDouble(),
-              value: widget.bufferedPosition.inMilliseconds.toDouble(),
+              value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
+                  widget.duration.inMilliseconds.toDouble()),
               onChanged: (value) {
                 setState(() {
                   _dragValue = value;
@@ -72,6 +71,8 @@ class _SeekBarState extends State<SeekBar> {
         SliderTheme(
           data: _sliderThemeData.copyWith(
             inactiveTrackColor: Colors.transparent,
+            activeTrackColor: widget.emotionColor,
+            thumbColor: widget.emotionColor,
           ),
           child: Slider(
             min: 0.0,
@@ -94,9 +95,21 @@ class _SeekBarState extends State<SeekBar> {
             },
           ),
         ),
+        Positioned( // FIXME: remove after test
+          right: 16.0,
+          bottom: 0.0,
+          child: Text(
+              RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
+                  .firstMatch("$_remaining")
+                  ?.group(1) ??
+                  '$_remaining',
+              style: Theme.of(context).textTheme.caption),
+        ),
       ],
     );
   }
+
+  Duration get _remaining => widget.duration - widget.position;
 }
 
 class HiddenThumbComponentShape extends SliderComponentShape {
@@ -118,11 +131,4 @@ class HiddenThumbComponentShape extends SliderComponentShape {
         double textScaleFactor,
         Size sizeWithOverflow,
       }) {}
-}
-
-class PositionData {
-  final Duration position;
-  final Duration bufferedPosition;
-
-  PositionData(this.position, this.bufferedPosition);
 }

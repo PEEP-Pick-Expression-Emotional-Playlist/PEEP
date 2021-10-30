@@ -7,11 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:path/path.dart' as path;
 
 import '../db_manager.dart';
 import 'model/audio_metadata.dart';
+import 'model/position_data.dart';
 import 'model/query_video.dart';
 
 class AudioManager { //노래 재생을 담당하는 클래스
@@ -25,10 +27,10 @@ class AudioManager { //노래 재생을 담당하는 클래스
   final _playlist = ConcatenatingAudioSource(children: []); //곡 정보를 저장하는 플레이 리스트
   var ref = DBManager.instance.ref.child("songs"); //파이어베이스에
 
-  static String emotion; //선택된 감정
-  static String year; //연도
+  static String emotion;
+  static String year;
 
-  AudioManager._() { //클래스 생성자
+  AudioManager._() {
     _init();
     _player = AudioPlayer(); //플레이를 관리하는 객체 생성
     emotion = "happy"; //초기에는 happy로 설정. 파이어베이스에 감정에 따른 곡 검색할때 보냄
@@ -61,6 +63,14 @@ class AudioManager { //노래 재생을 담당하는 클래스
 
   static YoutubeExplode yt = YoutubeExplode(); //유튜브에 검색하고 다운로드하는 라이브러리
   static QueryVideo videoInfo; //유튜브에서 검색된 영상 정보
+
+  Stream<PositionData> get positionDataStream =>
+      Rx.combineLatest3<Duration, Duration, Duration, PositionData>(
+          _player.positionStream,
+          _player.bufferedPositionStream,
+          _player.durationStream,
+              (position, bufferedPosition, duration) => PositionData(
+              position, bufferedPosition, duration ?? Duration.zero));
 
   play(context) {
     if (_player.sequence == null || _player.sequence.isEmpty) { //만약 플레이어에 현재 곡이 없다면
