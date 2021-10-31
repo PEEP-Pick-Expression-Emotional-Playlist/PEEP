@@ -271,7 +271,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                       )
                                     ]))),
 
-                            /// SeekBar, playing time, player controller in [Container]
+                            /// favorite button, SeekBar, player controller in [Container]
                             Container(
                                 color: Colors.white,
                                 child: Column(
@@ -304,50 +304,28 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         ])),
 
                                     /// SeekBar
-                                    StreamBuilder<Duration>(
+                                    StreamBuilder<PositionData>(
                                       stream: AudioManager
-                                          .instance.player.durationStream,
+                                          .instance.positionDataStream,
                                       builder: (context, snapshot) {
-                                        return StreamBuilder<PositionData>(
-                                          stream: AudioManager
-                                              .instance.positionDataStream,
-                                          builder: (context, snapshot) {
-                                            final positionData = snapshot.data;
-                                            return SeekBar(
-                                              duration: positionData?.duration ?? Duration.zero,
-                                              position: positionData?.position ?? Duration.zero,
-                                              bufferedPosition: positionData?.bufferedPosition ?? Duration.zero,
-                                              onChangeEnd: (newPosition) {
-                                                AudioManager.instance.player
-                                                    .seek(newPosition);
-                                              },
-                                              emotionColor: EmotionColor.getLightColorFor(
-                                                  playingEmotion),
-                                            );
+                                        final positionData = snapshot.data;
+                                        return SeekBar(
+                                          duration: positionData?.duration ??
+                                              Duration.zero,
+                                          position: positionData?.position ??
+                                              Duration.zero,
+                                          bufferedPosition:
+                                              positionData?.bufferedPosition ??
+                                                  Duration.zero,
+                                          onChangeEnd: (newPosition) {
+                                            AudioManager.instance.player
+                                                .seek(newPosition);
                                           },
+                                          emotionColor:
+                                              EmotionColor.getLightColorFor(
+                                                  playingEmotion),
                                         );
                                       },
-                                    ),
-
-                                    /// playing time
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Expanded(
-                                              child: Text(
-                                            "02:34",
-                                            textAlign: TextAlign.left,
-                                          )),
-                                          Expanded(
-                                            child: Text(
-                                              "5:55",
-                                              textAlign: TextAlign.right,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
                                     ),
 
                                     /// player controller
