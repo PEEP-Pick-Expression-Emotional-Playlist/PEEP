@@ -22,13 +22,7 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
 
   @override
   Widget build(BuildContext context) {
-    return /*Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        LinearProgressIndicator(
-            value: 0.5,
-            backgroundColor: Colors.black26,
-            valueColor: AlwaysStoppedAnimation<Color>(processColor)),*/
+    return
         Container(
       child: StreamBuilder<SequenceState>(
           stream: AudioManager.instance.player.sequenceStateStream,
