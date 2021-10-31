@@ -117,13 +117,17 @@ class _PlayerController extends State<PlayerController> {
                 },
               );
             } else {
-              return IconButton( //노래 끝났을때 다시플레이버튼
-                icon: Icon(Icons.replay),
+              return IconButton(
                 padding: EdgeInsets.zero,
                 constraints: BoxConstraints(),
-                onPressed: () {
-                  debugPrint("endend");
-                }
+                icon: SvgPicture.asset(
+                  'assets/icons/' + widget.playIconName + '.svg',
+                  fit: BoxFit.scaleDown,
+                ),
+                iconSize: widget.playSize,
+                onPressed: () { //재생하는 버튼 눌렀을 때
+                  audioManager.play(context); //노래 재생하는 함수
+                },
               );
             }
           },
