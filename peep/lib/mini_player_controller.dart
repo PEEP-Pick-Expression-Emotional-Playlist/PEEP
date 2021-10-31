@@ -10,8 +10,6 @@ import 'package:peep/player/model/position_data.dart';
 import 'package:peep/player/music_player_page.dart';
 import 'package:peep/player/player_controller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:peep/player/ui/seekbar.dart';
-import 'package:rxdart/rxdart.dart';
 
 class MiniPlayerController extends StatefulWidget {
   @override
@@ -50,9 +48,12 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
                   return StreamBuilder<PositionData>(
                     stream: AudioManager.instance.positionDataStream,
                     builder: (context, snapshot) {
-                      final positionData = snapshot.data?.position ?? Duration.zero;
+                      final positionData = snapshot.data;
+                      final duration = positionData?.duration ?? Duration.zero;
+                      final position = positionData?.position ?? Duration.zero;
+
                       return LinearProgressIndicator(
-                          value: positionData.inMilliseconds.toDouble(),
+                          value: (position.inMilliseconds/duration.inMilliseconds).toDouble(),
                           backgroundColor: Colors.black26,
                           valueColor: AlwaysStoppedAnimation<Color>(
                               EmotionColor.getProcessColorFor(playingEmotion)));
