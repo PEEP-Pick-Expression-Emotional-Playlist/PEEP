@@ -36,7 +36,7 @@ dependencies:
   flutter_svg_provider: ^0.1.9
 
   # youtube
-  youtube_explode_dart: ^1.9.4
+  youtube_explode_dart: ^1.10.8
   permission_handler: ^8.0.0+2
 #  path: ^1.6.4
 #  path_provider: ^2.0.2

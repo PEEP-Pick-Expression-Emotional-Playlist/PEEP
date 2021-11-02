@@ -22,8 +22,7 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
 
   @override
   Widget build(BuildContext context) {
-    return
-        Container(
+    return Container(
       child: StreamBuilder<SequenceState>(
           stream: AudioManager.instance.player.sequenceStateStream,
           builder: (context, snapshot) {
@@ -34,8 +33,7 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
               int rand = Random().nextInt(songMeta.emotions.length);
               playingEmotion = playingEmotions[rand];
             }
-            return Column(mainAxisAlignment: MainAxisAlignment.end, children: <
-                Widget>[
+            return Column(mainAxisAlignment: MainAxisAlignment.end, children: [
               StreamBuilder<Duration>(
                 stream: AudioManager.instance.player.durationStream,
                 builder: (context, snapshot) {
@@ -47,7 +45,12 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
                       final position = positionData?.position ?? Duration.zero;
 
                       return LinearProgressIndicator(
-                          value: (position.inMilliseconds/duration.inMilliseconds).toDouble(),
+                          value: (position == Duration.zero &&
+                                  duration == Duration.zero)
+                              ? 0.0
+                              : (position.inMilliseconds /
+                                      duration.inMilliseconds)
+                                  .toDouble(),
                           backgroundColor: Colors.black26,
                           valueColor: AlwaysStoppedAnimation<Color>(
                               EmotionColor.getProcessColorFor(playingEmotion)));
@@ -67,7 +70,7 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
                     ],
                   )),
                   child: Row(
-                    children: <Widget>[
+                    children: [
                       Expanded(
                         flex: 6,
                         child: InkWell(
@@ -105,7 +108,7 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
-                                children: <Widget>[
+                                children: [
                                   PlayerController(
                                     prevIconName: 'player_mini_prev',
                                     playIconName: 'player_mini_play',

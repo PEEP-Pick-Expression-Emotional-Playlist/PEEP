@@ -38,7 +38,7 @@ class _PlayerController extends State<PlayerController> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
+      children: [
         /// previous Button
         StreamBuilder<SequenceState>(
             stream: _player.sequenceStateStream,
@@ -94,7 +94,14 @@ class _PlayerController extends State<PlayerController> {
                   //         ' ' +
                   //         AudioManager.year)));
 
-                  audioManager.play(context); //노래 재생하는 함수
+                  try {
+                    audioManager.play(); //노래 재생하는 함수
+                  } on NoFoundSearchResultException catch(e) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(
+                        content: Text(e.toString())));
+                  }
+
                   // if (_player.sequence == null || _player.sequence.isEmpty)
                   //   {
                   //     // search(query)
@@ -112,11 +119,9 @@ class _PlayerController extends State<PlayerController> {
                 padding: EdgeInsets.zero,
                 constraints: BoxConstraints(),
                 iconSize: widget.playSize,
-                onPressed: () {
-                  _player.pause();
-                },
+                onPressed: _player.pause,
               );
-            } else {
+            } else { // songs ended
               return IconButton(
                 padding: EdgeInsets.zero,
                 constraints: BoxConstraints(),
@@ -126,7 +131,15 @@ class _PlayerController extends State<PlayerController> {
                 ),
                 iconSize: widget.playSize,
                 onPressed: () { //재생하는 버튼 눌렀을 때
-                  audioManager.play(context); //노래 재생하는 함수
+                  _player.seek(Duration.zero,
+                      index: _player.effectiveIndices.first);
+                  try {
+                    audioManager.play(); //노래 재생하는 함수
+                  } on NoFoundSearchResultException catch (e) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(
+                        content: Text(e.toString())));
+                  }
                 },
               );
             }
@@ -144,7 +157,6 @@ class _PlayerController extends State<PlayerController> {
                     iconSize: widget.nextSize,
                     onPressed: _player.hasNext ? _player.seekToNext : null,
                     // audioManager.pass(context)
-
                 )),
         //패스 버튼 눌렸을 때
       ],

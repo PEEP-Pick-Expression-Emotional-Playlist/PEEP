@@ -61,14 +61,14 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                       child: Column(
                           // crossAxisAlignment: CrossAxisAlignment.start,
                           // mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
+                          children: [
                             /// Back button, year, genre, emotion in [ExpansionTileCard]
                             ExpansionTileCard(
                               baseColor: Colors.transparent,
                               expandedColor: Colors.transparent,
                               shadowColor: Colors.transparent,
                               elevation: 0.0,
-                              title: Row(children: <Widget>[
+                              title: Row(children: [
                                 /// Back button
                                 Container(
                                   transform:
@@ -85,7 +85,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                     padding:
                                         EdgeInsets.symmetric(vertical: 4.0),
                                     child: Row(
-                                      children: <Widget>[
+                                      children: [
                                         /// year
                                         Container(
                                           decoration: BoxDecoration(
@@ -120,12 +120,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                       ],
                                     ))
                               ]),
-                              children: <Widget>[
+                              children: [
                                 /// emotion button
                                 Padding(
                                     padding: EdgeInsets.all(4.0),
                                     child: Row(
-                                      children: <Widget>[
+                                      children: [
                                         Expanded(
                                           child: emotionButton("happy",
                                               "assets/itd/ITD_icon_happy.svg"),
@@ -193,8 +193,14 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         //User swiped from left to right
                                         //pass
                                       } else if (dis.delta.dy < 0) {
-                                        AudioManager.instance
-                                            .addRandomSong2(context);
+                                        try {
+                                          AudioManager.instance.addSong(
+                                              RecommendationType.RANDOM_TAG);
+                                        } on NoFoundSearchResultException catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(e.toString())));
+                                        }
                                       }
                                     },
                                     child: Stack(children: [
@@ -377,7 +383,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
       onTap: () => setState(() => AudioManager.emotion = emotion),
       child: Container(
         child: Column(
-          children: <Widget>[
+          children: [
             SizedBox(
               height: 20,
             ),
