@@ -43,7 +43,8 @@ class _AppFrameState extends State<AppFrame>
   int screenIndex = 0;
   List<Widget> screenList = [HomePage(), SearchScreen(), UserPage()];
   var ref = DBManager.instance.ref; //firebase
-  var user = UserManager.instance.user; //user
+  var user = UserManager.instance.user;
+
 
   @override
   void initState() {

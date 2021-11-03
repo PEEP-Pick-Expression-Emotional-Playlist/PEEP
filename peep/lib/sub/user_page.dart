@@ -3,8 +3,10 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:peep/home/emotion_detection.dart';
 import 'package:peep/login/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:shake/shake.dart';
 
 class UserPage extends StatefulWidget {
   @override
@@ -12,6 +14,23 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+  ShakeDetector detector;
+  @override
+  void initState() {
+    super.initState();
+    detector = ShakeDetector.autoStart(onPhoneShake: (){
+      print('Phone shaking detected');
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => EmotionDetect()));
+    });
+  }
+
+  @override
+  void dispose() {
+    detector.stopListening();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;

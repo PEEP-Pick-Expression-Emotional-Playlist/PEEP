@@ -43,7 +43,7 @@ class _EmotionDetect extends State<EmotionDetect>{
 
   Future<void> takePicture() async{
     print("take picture");
-    final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
+    final imageFile = await imagePicker.getImage(source: ImageSource.camera);
     if(imageFile == null){
       print("no image");
       return;

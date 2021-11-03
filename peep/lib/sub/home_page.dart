@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:peep/home/emotion_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:peep/home/emotion_detection.dart';
 import 'package:peep/login/user_manager.dart';
 import 'package:peep/player/audio_manager.dart';
 import 'package:peep/player/music_player_page.dart';
 import '../db_manager.dart';
 import '../home/emotion_chart.dart';
 import '../home/emotion_manage.dart';
+import 'package:shake/shake.dart';
 //홈페이지
 
 class HomePage extends StatefulWidget {
@@ -25,9 +27,21 @@ class _HomePageState extends State<HomePage> {
   int happyFreq;
   int calmFreq;
 
+  ShakeDetector detector;
   @override
   void initState() {
     super.initState();
+    detector = ShakeDetector.autoStart(onPhoneShake: (){
+      print('Phone shaking detected');
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => EmotionDetect()));
+    });
+  }
+
+  @override
+  void dispose() {
+    detector.stopListening();
   }
 
   @override
@@ -85,14 +99,13 @@ class _HomePageState extends State<HomePage> {
                       stream: userEmotionRef.child("freq").onValue,
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          emotionManger.setEmotionFreqDefault();
                           return CircularProgressIndicator();
                         } else {
-                            // blueFreq = 0;
-                            // happyFreq = 0;
-                            // angryFreq = 0;
-                            // calmFreq = 0;
-                            // fearFreq = 0;
+                            blueFreq = 0;
+                            happyFreq = 0;
+                            angryFreq = 0;
+                            calmFreq = 0;
+                            fearFreq = 0;
                             if (snapshot.hasData &&
                               !snapshot.hasError &&
                               snapshot.data.snapshot.value != null) {
@@ -103,26 +116,7 @@ class _HomePageState extends State<HomePage> {
                                 calmFreq = val['calm'];
                                 fearFreq = val['fear'];
                             } else {
-                                userEmotionRef
-                                  .child("freq")
-                                  .child("blue")
-                                  .set(blueFreq);
-                                userEmotionRef
-                                  .child("freq")
-                                  .child("happy")
-                                  .set(happyFreq);
-                                userEmotionRef
-                                  .child("freq")
-                                  .child("angry")
-                                  .set(angryFreq);
-                                userEmotionRef
-                                  .child("freq")
-                                  .child("calm")
-                                  .set(calmFreq);
-                                userEmotionRef
-                                  .child("freq")
-                                  .child("fear")
-                                  .set(fearFreq);
+                                emotionManger.setEmotionFreqDefault();
                             }
                             return EmotionChart(
                               chartData: [
@@ -282,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(
                   height: 24.0,
-              ),
+                ),
           ],
       ))),
     );

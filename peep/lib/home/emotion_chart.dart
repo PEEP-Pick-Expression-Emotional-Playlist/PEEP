@@ -4,14 +4,29 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'emotion_detection.dart';
 
-class EmotionChart extends StatelessWidget {
+class EmotionChart extends StatefulWidget {
   final List<ChartData> chartData;
-
   const EmotionChart({Key key, this.chartData}) : super(key: key);
+  @override
+  State createState() {
+    // _EmotionChart createState() => _EmotionChart();
+    return _EmotionChart();
+  }
+}
+
+class _EmotionChart extends State<EmotionChart>{
+  // final List<ChartData> chartData;
+  List<ChartData> chartData;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SfCircularChart(
-
         series: <CircularSeries>[
           // Renders radial bar chart
           RadialBarSeries<ChartData, String>(
@@ -62,5 +77,4 @@ class ChartData {
   final String x;
   final int y;
   final Color color;
-
 }
