@@ -203,6 +203,11 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         }
                                       }
                                     },
+                                    onDoubleTap: (){
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                          content: Text("좋아요 기능 예정")));
+                                    },
                                     child: Stack(children: [
                                       /// artwork
                                       Container(
