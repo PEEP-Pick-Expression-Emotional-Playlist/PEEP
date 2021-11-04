@@ -10,6 +10,7 @@ class DropDownDemo extends StatefulWidget {
   final String errorText;
   final List<String> items;
   final Function onChanged;
+  final Color backgroundColor;
 
   const DropDownDemo(
       {Key key,
@@ -17,7 +18,8 @@ class DropDownDemo extends StatefulWidget {
       this.hint,
       this.items,
       this.onChanged,
-      this.errorText})
+      this.errorText,
+      this.backgroundColor})
       : super(key: key);
 
   @override
@@ -43,7 +45,7 @@ class _DropDownDemoState extends State<DropDownDemo> {
 
                 /// [dropdownColor] is background color of [DropdownMenuItem]
                 // TODO: Make [dropdownColor] suitably. Not Colors.grey
-                dropdownColor: Colors.grey,
+                dropdownColor: widget.backgroundColor,
                 style: TextStyle(color: Colors.black),
                 items:
                     widget.items.map<DropdownMenuItem<String>>((String value) {

@@ -20,15 +20,10 @@ class MusicPlayerPage extends StatefulWidget {
 
 class _MusicPlayerPageState extends State<MusicPlayerPage>
     with TickerProviderStateMixin {
-  final List<String> _yearValues = [
-    "2020",
-    "2010",
-    "2000",
-    "1990",
-  ];
+  final List<String> _yearValues = ['모든 연도', '2020', '2010', '2000', '1990'];
+  final List<String> _genreValues = ['모든 장르', '댄스', '발라드', '랩∙힙합', '록∙메탈'];
 
-  final List<String> _genreValues = ['댄스', '발라드', '랩∙힙합', '록∙메탈'];
-
+  bool isExpanding = false;
   // String _emotionValue = AudioManager.emotion;
 
   Animation<double> animation;
@@ -68,19 +63,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                               expandedColor: Colors.transparent,
                               shadowColor: Colors.transparent,
                               elevation: 0.0,
-                              title: Row(children: [
-                                /// Back button
-                                Container(
-                                  transform:
-                                      Matrix4.translationValues(-16.0, 0, 0),
-                                  child: IconButton(
-                                      icon: Icon(Icons.arrow_back_rounded),
-                                      onPressed: () {
-                                        Navigator.of(context)
-                                            .popUntil((route) => route.isFirst);
-                                      }),
-                                ),
-
+                              onExpansionChanged: (val) {setState(() {
+                                isExpanding = val;
+                              });},
+                              title: isExpanding? Row(children: [
                                 Padding(
                                     padding:
                                         EdgeInsets.symmetric(vertical: 4.0),
@@ -98,7 +84,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                                 width: 1,
                                               )),
                                           child: DropDownDemo(
-                                              hint: "연도", items: _yearValues),
+                                            hint: "연도",
+                                            items: _yearValues,
+                                            backgroundColor:
+                                                EmotionColor.getLightColorFor(
+                                                    playingEmotion),
+                                          ),
                                         ),
 
                                         /// genre
@@ -115,11 +106,14 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                           child: DropDownDemo(
                                             hint: "장르",
                                             items: _genreValues,
+                                            backgroundColor:
+                                                EmotionColor.getLightColorFor(
+                                                    playingEmotion),
                                           ),
                                         ),
                                       ],
                                     ))
-                              ]),
+                              ]):SizedBox(width:0.0),
                               children: [
                                 /// emotion button
                                 Padding(
@@ -201,12 +195,16 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                               .showSnackBar(SnackBar(
                                                   content: Text(e.toString())));
                                         }
+                                      } else if (dis.delta.dy > 0) {
+                                        // Navigator.of(context).pop();
+                                        Navigator.of(context)
+                                            .popUntil((route) => route.isFirst);
                                       }
                                     },
-                                    onDoubleTap: (){
+                                    onDoubleTap: () {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
-                                          content: Text("좋아요 기능 예정")));
+                                              content: Text("좋아요 기능 예정")));
                                     },
                                     child: Stack(children: [
                                       /// artwork
@@ -310,7 +308,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                                 color: Colors.pinkAccent,
                                                 size: 24.0,
                                               )),
-                                          Text("${songMeta?.favorite ?? "좋아요 정보가 없어요"}"),
+                                          Text(
+                                              "${songMeta?.favorite ?? "좋아요 정보가 없어요"}"),
                                         ])),
 
                                     /// SeekBar
