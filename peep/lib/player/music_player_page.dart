@@ -23,17 +23,16 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   final List<String> _yearValues = ['모든 연도', '2020', '2010', '2000', '1990'];
   final List<String> _genreValues = ['모든 장르', '댄스', '발라드', '랩∙힙합', '록∙메탈'];
 
-  bool isExpanding = false;
-  // String _emotionValue = AudioManager.emotion;
+  bool _isExpanding = false;
 
-  Animation<double> animation;
-  Animation<double> animation2;
-  Animation<double> animation3;
-  Animation<double> animation4;
+  Animation<double> _animation;
+  Animation<double> _animation2;
+  Animation<double> _animation3;
+  Animation<double> _animation4;
 
-  AnimationController controller;
+  AnimationController _controller;
 
-  AudioMetadata songMeta;
+  AudioMetadata _songMeta;
   String playingEmotion = "default";
 
   @override
@@ -44,9 +43,9 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final playingData = snapshot.data;
-                songMeta = playingData.currentSource.tag as AudioMetadata;
-                final playingEmotions = songMeta.emotions;
-                int rand = Random().nextInt(songMeta.emotions.length);
+                _songMeta = playingData.currentSource.tag as AudioMetadata;
+                final playingEmotions = _songMeta.emotions;
+                int rand = Random().nextInt(_songMeta.emotions.length);
                 playingEmotion = playingEmotions[rand];
               }
               return Container(
@@ -63,57 +62,61 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                               expandedColor: Colors.transparent,
                               shadowColor: Colors.transparent,
                               elevation: 0.0,
-                              onExpansionChanged: (val) {setState(() {
-                                isExpanding = val;
-                              });},
-                              title: isExpanding? Row(children: [
-                                Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 4.0),
-                                    child: Row(
-                                      children: [
-                                        /// year
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.horizontal(
-                                                left: Radius.circular(10.0),
+                              onExpansionChanged: (val) => setState(() {
+                                _isExpanding = val;
+                              }),
+                              title: _isExpanding
+                                  ? Row(children: [
+                                      Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 4.0),
+                                          child: Row(
+                                            children: [
+                                              /// year
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.horizontal(
+                                                      left:
+                                                          Radius.circular(10.0),
+                                                    ),
+                                                    border: Border.all(
+                                                      color: Colors.black,
+                                                      width: 1,
+                                                    )),
+                                                child: DropDownDemo(
+                                                  hint: "연도",
+                                                  items: _yearValues,
+                                                  backgroundColor: EmotionColor
+                                                      .getLightColorFor(
+                                                          playingEmotion),
+                                                ),
                                               ),
-                                              border: Border.all(
-                                                color: Colors.black,
-                                                width: 1,
-                                              )),
-                                          child: DropDownDemo(
-                                            hint: "연도",
-                                            items: _yearValues,
-                                            backgroundColor:
-                                                EmotionColor.getLightColorFor(
-                                                    playingEmotion),
-                                          ),
-                                        ),
 
-                                        /// genre
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.horizontal(
-                                                right: Radius.circular(10.0),
+                                              /// genre
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.horizontal(
+                                                      right:
+                                                          Radius.circular(10.0),
+                                                    ),
+                                                    border: Border.all(
+                                                      color: Colors.black,
+                                                      width: 1,
+                                                    )),
+                                                child: DropDownDemo(
+                                                  hint: "장르",
+                                                  items: _genreValues,
+                                                  backgroundColor: EmotionColor
+                                                      .getLightColorFor(
+                                                          playingEmotion),
+                                                ),
                                               ),
-                                              border: Border.all(
-                                                color: Colors.black,
-                                                width: 1,
-                                              )),
-                                          child: DropDownDemo(
-                                            hint: "장르",
-                                            items: _genreValues,
-                                            backgroundColor:
-                                                EmotionColor.getLightColorFor(
-                                                    playingEmotion),
-                                          ),
-                                        ),
-                                      ],
-                                    ))
-                              ]):SizedBox(width:0.0),
+                                            ],
+                                          ))
+                                    ])
+                                  : SizedBox(width: 0.0),
                               children: [
                                 /// emotion button
                                 Padding(
@@ -121,23 +124,23 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                     child: Row(
                                       children: [
                                         Expanded(
-                                          child: emotionButton("happy",
+                                          child: draggableEmotion("happy",
                                               "assets/itd/ITD_icon_happy.svg"),
                                         ),
                                         Expanded(
-                                          child: emotionButton("angry",
+                                          child: draggableEmotion("angry",
                                               "assets/itd/ITD_icon_angry.svg"),
                                         ),
                                         Expanded(
-                                          child: emotionButton("calm",
+                                          child: draggableEmotion("calm",
                                               "assets/itd/ITD_icon_calm.svg"),
                                         ),
                                         Expanded(
-                                          child: emotionButton("blue",
+                                          child: draggableEmotion("blue",
                                               "assets/itd/ITD_icon_blue.svg"),
                                         ),
                                         Expanded(
-                                          child: emotionButton("fear",
+                                          child: draggableEmotion("fear",
                                               "assets/itd/ITD_icon_fear.svg"),
                                         ),
                                       ],
@@ -151,9 +154,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                 child: Column(children: [
                                   /// title
                                   Text(
-                                    (songMeta == null || songMeta.title == null)
+                                    (_songMeta == null ||
+                                            _songMeta.title == null)
                                         ? "재생 중인 곡이 없습니다"
-                                        : songMeta.title,
+                                        : _songMeta.title,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: 20,
@@ -167,10 +171,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
 
                                   /// artist
                                   Text(
-                                    (songMeta == null ||
-                                            songMeta.artist == null)
+                                    (_songMeta == null ||
+                                            _songMeta.artist == null)
                                         ? "감정 선택 후 재생을 눌러보세요"
-                                        : songMeta.artist,
+                                        : _songMeta.artist,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: 16, color: Colors.black54),
@@ -187,15 +191,9 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                         //User swiped from left to right
                                         //pass
                                       } else if (dis.delta.dy < 0) {
-                                        try {
-                                          AudioManager.instance.addSong(
-                                              RecommendationType.RANDOM_TAG);
-                                        } on NoFoundSearchResultException catch (e) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  content: Text(e.toString())));
-                                        }
+                                        /// down to up
                                       } else if (dis.delta.dy > 0) {
+                                        /// up to down
                                         // Navigator.of(context).pop();
                                         Navigator.of(context)
                                             .popUntil((route) => route.isFirst);
@@ -206,79 +204,97 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                           .showSnackBar(SnackBar(
                                               content: Text("좋아요 기능 예정")));
                                     },
-                                    child: Stack(children: [
-                                      /// artwork
-                                      Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 32.0, vertical: 16.0),
-                                        decoration: BoxDecoration(
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black45,
-                                              spreadRadius: 1,
-                                              blurRadius: 5,
+                                    child: DragTarget<String>(
+                                      builder: (context, candidateItems,
+                                          rejectedItems) {
+                                        return Stack(children: [
+                                          /// artwork
+                                          Container(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 32.0,
+                                                vertical: 16.0),
+                                            decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black45,
+                                                  spreadRadius: 1,
+                                                  blurRadius: 5,
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                        child: Image.network(
-                                          (songMeta == null ||
-                                                  songMeta.artwork == null)
-                                              ? 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'
-                                              : songMeta.artwork,
-                                          width: 480,
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
+                                            child: Image.network(
+                                              (_songMeta == null ||
+                                                      _songMeta.artwork == null)
+                                                  ? 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'
+                                                  : _songMeta.artwork,
+                                              width: 480,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
 
-                                      /// waves
-                                      AnimatedWave(
-                                        animation: animation,
-                                        bottom: 10,
-                                        opacity: 0.35,
-                                        color: EmotionColor.getDarkColorFor(
-                                            playingEmotion),
-                                        isLeftToRight: true,
-                                      ),
-                                      AnimatedWave(
-                                        animation: animation4,
-                                        bottom: 10,
-                                        opacity: 0.5,
-                                        color: EmotionColor.getDarkColorFor(
-                                            playingEmotion),
-                                        isLeftToRight: true,
-                                      ),
-                                      AnimatedWave(
-                                        animation: animation4,
-                                        bottom: -16,
-                                        opacity: 0.7,
-                                        color: EmotionColor.getDarkColorFor(
-                                            playingEmotion),
-                                        isLeftToRight: true,
-                                      ),
-                                      AnimatedWave(
-                                        animation: animation3,
-                                        bottom: -42,
-                                        opacity: 0.6,
-                                        color: EmotionColor.getDarkColorFor(
-                                            playingEmotion),
-                                        isLeftToRight: false,
-                                      ),
-                                      AnimatedWave(
-                                        animation: animation3,
-                                        bottom: -55,
-                                        opacity: 0.7,
-                                        color: EmotionColor.getLightColorFor(
-                                            playingEmotion),
-                                        isLeftToRight: false,
-                                      ),
-                                      AnimatedWave(
-                                        animation: animation2,
-                                        bottom: -100,
-                                        opacity: 1,
-                                        color: Colors.white,
-                                        isLeftToRight: true,
-                                      )
-                                    ]))),
+                                          /// waves
+                                          AnimatedWave(
+                                            animation: _animation,
+                                            bottom: 10,
+                                            opacity: 0.35,
+                                            color: EmotionColor.getDarkColorFor(
+                                                playingEmotion),
+                                            isLeftToRight: true,
+                                          ),
+                                          AnimatedWave(
+                                            animation: _animation4,
+                                            bottom: 10,
+                                            opacity: 0.5,
+                                            color: EmotionColor.getDarkColorFor(
+                                                playingEmotion),
+                                            isLeftToRight: true,
+                                          ),
+                                          AnimatedWave(
+                                            animation: _animation4,
+                                            bottom: -16,
+                                            opacity: 0.7,
+                                            color: EmotionColor.getDarkColorFor(
+                                                playingEmotion),
+                                            isLeftToRight: true,
+                                          ),
+                                          AnimatedWave(
+                                            animation: _animation3,
+                                            bottom: -42,
+                                            opacity: 0.6,
+                                            color: EmotionColor.getDarkColorFor(
+                                                playingEmotion),
+                                            isLeftToRight: false,
+                                          ),
+                                          AnimatedWave(
+                                            animation: _animation3,
+                                            bottom: -55,
+                                            opacity: 0.7,
+                                            color:
+                                                EmotionColor.getLightColorFor(
+                                                    playingEmotion),
+                                            isLeftToRight: false,
+                                          ),
+                                          AnimatedWave(
+                                            animation: _animation2,
+                                            bottom: -100,
+                                            opacity: 1,
+                                            color: Colors.white,
+                                            isLeftToRight: true,
+                                          )
+                                        ]);
+                                      },
+                                      onAccept: (emotion) {
+                                        AudioManager.emotion = emotion;
+                                        try {
+                                          AudioManager.instance.addSong(
+                                              RecommendationType.RANDOM_TAG);
+                                        } on NoFoundSearchResultException catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                              content: Text(e.toString())));
+                                        }
+                                      },
+                                    ))),
 
                             /// favorite button, SeekBar, player controller in [Container]
                             Container(
@@ -309,7 +325,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                                 size: 24.0,
                                               )),
                                           Text(
-                                              "${songMeta?.favorite ?? "좋아요 정보가 없어요"}"),
+                                              "${_songMeta?.favorite ?? "좋아요 정보가 없어요"}"),
                                         ])),
 
                                     /// SeekBar
@@ -360,30 +376,43 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   @override
   void initState() {
     super.initState();
-    controller =
+    _controller =
         AnimationController(duration: Duration(seconds: 10), vsync: this);
-    controller.repeat(reverse: true);
+    _controller.repeat(reverse: true);
 
     //[begin]: -600 ~ 0
-    animation = Tween<double>(begin: -255, end: 0).animate(CurvedAnimation(
-        parent: controller, curve: Curves.linear, reverseCurve: Curves.linear));
-    animation2 = Tween<double>(begin: -200, end: 0).animate(CurvedAnimation(
-        parent: controller, curve: Curves.linear, reverseCurve: Curves.linear));
-    animation3 = Tween<double>(begin: -300, end: 0).animate(CurvedAnimation(
-        parent: controller, curve: Curves.linear, reverseCurve: Curves.linear));
-    animation4 = Tween<double>(begin: -400, end: 0).animate(CurvedAnimation(
-        parent: controller, curve: Curves.linear, reverseCurve: Curves.linear));
+    _animation = Tween<double>(begin: -255, end: 0).animate(CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+        reverseCurve: Curves.linear));
+    _animation2 = Tween<double>(begin: -200, end: 0).animate(CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+        reverseCurve: Curves.linear));
+    _animation3 = Tween<double>(begin: -300, end: 0).animate(CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+        reverseCurve: Curves.linear));
+    _animation4 = Tween<double>(begin: -400, end: 0).animate(CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+        reverseCurve: Curves.linear));
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
-  Widget emotionButton(String emotion, String svgIcon) {
-    return GestureDetector(
-      onTap: () => setState(() => AudioManager.emotion = emotion),
+  Widget draggableEmotion(String emotion, String svgIcon) {
+    return LongPressDraggable(
+      data: emotion,
+      dragAnchorStrategy: pointerDragAnchorStrategy,
+      feedback: DraggingItem(
+        emotion: emotion,
+        svgIcon: svgIcon,
+      ),
       child: Container(
         child: Column(
           children: [
@@ -400,14 +429,47 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
           ],
         ),
         height: 64.0,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AudioManager.emotion == emotion
-              ? ((emotion == "happy" || emotion == "fear")
-                  ? EmotionColor.getLightColorFor(emotion).withOpacity(0.7)
-                  : EmotionColor.getDarkColorFor(emotion).withOpacity(0.5))
-              : Colors.transparent,
+      ),
+    );
+  }
+}
+
+class DraggingItem extends StatelessWidget {
+  const DraggingItem({
+    Key key,
+    this.emotion,
+    this.svgIcon,
+  }) : super(key: key);
+
+  final String emotion;
+  final String svgIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    return FractionalTranslation(
+      translation: const Offset(-0.5, -0.5),
+      child: Container(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+              height: 25,
+              width: 25,
+              child: SvgPicture.asset(
+                svgIcon,
+              ),
+            ),
+          ],
         ),
+        height: 64.0,
+        width: 64.0,
+        decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: (emotion == "happy" || emotion == "fear")
+                ? EmotionColor.getLightColorFor(emotion).withOpacity(0.7)
+                : EmotionColor.getDarkColorFor(emotion).withOpacity(0.5)),
       ),
     );
   }
