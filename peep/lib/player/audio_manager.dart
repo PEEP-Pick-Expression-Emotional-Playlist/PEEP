@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:async/async.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -142,7 +141,9 @@ class AudioManager {
         ' ' +
         item['genre'].keys.toList().toString() +
         ' ' +
-        item['tags'].keys.toList().toString());
+        item['tags'].keys.toList().toString() +
+        ' ' +
+        item['favorite'].toString());
 
     var audioInfo = await getAudioInfo(query);
     if (audioInfo == null) {
@@ -160,6 +161,7 @@ class AudioManager {
           item['emotions'].keys.toList(),
           item['genre'].keys.toList(),
           item['tags'].keys.toList(),
+          item['favorite'],
         ),
       ));
 
@@ -177,28 +179,30 @@ class AudioManager {
           ' ' +
           item['genre'].keys.toList().toString() +
           ' ' +
-          item['tags'].keys.toList().toString());
+          item['tags'].keys.toList().toString() +
+          ' ' +
+          item['favorite'].toString());
+
       //처음으로 넣으면 플레이리스트 변수를 등록
       if (_player.sequence == null || _player.sequence.isEmpty) {
         try {
-      // await _player.setAudioSource(BufferAudioSource(await file.readAsBytes()));
+          // await _player.setAudioSource(BufferAudioSource(await file.readAsBytes()));
           _player.setAudioSource(_playlist);
         } catch (e) {
           // Catch load errors: 404, invalid url ...
           print("Error loading playlist: $e");
         }
         download(path, audioInfo).then((value) {
-          debugPrint("ddddddddd"+path);
+          debugPrint("ddddddddd" + path);
           _player.play();
-        });//플레이함
-      }else {
+        }); //플레이함
+      } else {
         // if (_player.sequence == null || _player.sequence.isEmpty) {
         //   download(path, audioInfo).then;
         // } else {
         //   download(path, audioInfo);
         // }
         download(path, audioInfo);
-
       }
     }
   }
@@ -212,7 +216,7 @@ class AudioManager {
       var res = resList.first;
       // TODO: get total length
       duration = res.duration;
-      debugPrint("durationnnnnn"+res.duration.inSeconds.toString());
+      debugPrint("durationnnnnn" + res.duration.inSeconds.toString());
 
       await Permission.storage.request();
 

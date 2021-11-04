@@ -310,8 +310,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                                                 color: Colors.pinkAccent,
                                                 size: 24.0,
                                               )),
-                                          // TODO : 총 좋아요 수를 곡 정보에서 가져오기
-                                          Text("777"),
+                                          Text("${songMeta?.favorite ?? "좋아요 정보가 없어요"}"),
                                         ])),
 
                                     /// SeekBar
