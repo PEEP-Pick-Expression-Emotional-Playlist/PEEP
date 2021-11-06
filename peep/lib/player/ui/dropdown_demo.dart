@@ -3,7 +3,7 @@ import 'package:flutter/material.dart'
 import 'custom_dropdown.dart';
 import 'package:flutter/cupertino.dart';
 
-class DropDownDemo extends StatefulWidget {
+class DropdownDemo extends StatefulWidget {
   // TODO: Explain meaning of variable.
   final int value;
   final String hint;
@@ -12,7 +12,7 @@ class DropDownDemo extends StatefulWidget {
   final Function onChanged;
   final Color backgroundColor;
 
-  const DropDownDemo(
+  const DropdownDemo(
       {Key key,
       this.value,
       this.hint,
@@ -23,10 +23,10 @@ class DropDownDemo extends StatefulWidget {
       : super(key: key);
 
   @override
-  _DropDownDemoState createState() => _DropDownDemoState();
+  _DropdownDemoState createState() => _DropdownDemoState();
 }
 
-class _DropDownDemoState extends State<DropDownDemo> {
+class _DropdownDemoState extends State<DropdownDemo> {
   String _chosenValue;
 
   @override
