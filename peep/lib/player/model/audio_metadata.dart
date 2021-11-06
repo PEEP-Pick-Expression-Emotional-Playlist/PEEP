@@ -7,9 +7,10 @@ class AudioMetadata {
   final List emotions;
   final List genre;
   final List tags;
+  final int favorite;
 
   AudioMetadata(this.title, this.artist, this.artwork, this.year, this.emotions, this.genre,
-      this.tags);
+      this.tags, this.favorite);
 
   String getTags(){
     String tagStr = "";
