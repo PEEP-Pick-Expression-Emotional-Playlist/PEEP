@@ -18,7 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var userEmotionRef = DBManager.instance.ref
+   final userEmotionRef = DBManager.instance.ref
       .child("emotion")
       .child(UserManager.instance.user.uid);
   int blueFreq;

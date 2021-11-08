@@ -131,6 +131,8 @@ class AudioManager {
 
     debugPrint(_playlist.length.toString() +
         ' ' +
+        item['key']+
+        ' ' +
         item['title'] +
         ' ' +
         item['artist'] +
@@ -154,6 +156,7 @@ class AudioManager {
       _playlist.add(AudioSource.uri(
         Uri.file(path),
         tag: AudioMetadata(
+          item['key'],
           item['title'],
           item['artist'],
           item['artwork'],
@@ -168,6 +171,8 @@ class AudioManager {
       debugPrint(_playlist.length.toString() +
           ' ' +
           Uri.file(path).toString() +
+          ' ' +
+          item['key']+
           ' ' +
           item['title'] +
           ' ' +
@@ -248,12 +253,14 @@ class AudioManager {
     var file = File(filePath);
     var fileStream = file.openWrite();
 
-    var length = audioInfo.size.totalBytes;
-    var received = 0;
+    // TODO: bb
+    // var length = audioInfo.size.totalBytes;
+    // var received = 0;
 
     await yt.videos.streamsClient.get(audioInfo).map((s) {
-      received += s.length;
-      print("${(received / length) * 100} %");
+      // received += s.length;
+      // TODO: ㅠㅠ
+      // print("${(received / length) * 100} %");
       return s;
     }).pipe(fileStream);
 
@@ -296,7 +303,10 @@ class AudioManager {
     List tmp = [];
     value.value.forEach((key, values) {
       List list = values['emotions'].keys.toList();
-      if (list.contains(emotion)) tmp.add(values);
+      if (list.contains(emotion)) {
+        values['key']=key;
+        tmp.add(values);
+      }
     });
 
     int random = Random().nextInt(tmp.length);
@@ -310,6 +320,7 @@ class AudioManager {
 
     List tmp = [];
     value.value.forEach((key, values) {
+      values['key']=key;
       tmp.add(values);
     });
 

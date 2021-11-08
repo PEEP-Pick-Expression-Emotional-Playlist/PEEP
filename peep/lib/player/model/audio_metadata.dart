@@ -1,5 +1,6 @@
 //태그 등 정보
 class AudioMetadata {
+  final String key;
   final String title;
   final String artist;
   final String artwork;
@@ -9,7 +10,7 @@ class AudioMetadata {
   final List tags;
   final int favorite;
 
-  AudioMetadata(this.title, this.artist, this.artwork, this.year, this.emotions, this.genre,
+  AudioMetadata(this.key, this.title, this.artist, this.artwork, this.year, this.emotions, this.genre,
       this.tags, this.favorite);
 
   String getTags(){

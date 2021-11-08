@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:peep/home/emotion_manage.dart';
 import 'package:peep/player/audio_manager.dart';
+import 'package:peep/secret/secret.dart';
+import 'package:peep/secret/secret_loader.dart';
 import 'saveEmotion.dart';
 
 class ClientTest {
@@ -14,7 +16,8 @@ class ClientTest {
 
   Future<void> getResult() async {
     try {
-      var response = await dio.get('http://3.38.93.39:5000/result');
+      Secret secret = await SecretLoader(secretPath: "secrets.json").load();
+      var response = await dio.get(secret.webUrl+ '/result');
       print(response);
       testData = response.data;
       print(testData);
@@ -28,8 +31,9 @@ class ClientTest {
   Future<String> test(String imageTest) async {
 
     try {
+      Secret secret = await SecretLoader(secretPath: "secrets.json").load();
       Response response = await dio.post(
-          'http://3.38.93.39:5000/peep/image/emotion_read',
+          secret.webUrl+'/peep/image/emotion_read',
           data: {
             'image': json.encode(imageTest)
           }
