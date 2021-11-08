@@ -44,7 +44,6 @@ class _DropdownDemoState extends State<DropdownDemo> {
                 elevation: 0,
 
                 /// [dropdownColor] is background color of [DropdownMenuItem]
-                // TODO: Make [dropdownColor] suitably. Not Colors.grey
                 dropdownColor: widget.backgroundColor,
                 style: TextStyle(color: Colors.black),
                 items:
