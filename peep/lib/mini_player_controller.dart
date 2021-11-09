@@ -10,6 +10,7 @@ import 'package:peep/player/model/position_data.dart';
 import 'package:peep/player/music_player_page.dart';
 import 'package:peep/player/player_controller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:peep/player/playing_list_page.dart';
 
 class MiniPlayerController extends StatefulWidget {
   @override
@@ -124,10 +125,11 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
                                         'assets/icons/player_mini_list.svg'),
                                     iconSize: 24.0,
                                     onPressed: () {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(new SnackBar(
-                                              content: Text(
-                                                  'onPressed Playlist Button')));
+                                      Navigator.push(
+                                          context,
+                                          PageTransition(
+                                              type: PageTransitionType.bottomToTop,
+                                              child: NowPlayingPage()));
                                     },
                                   )
                                 ],

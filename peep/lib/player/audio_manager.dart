@@ -61,6 +61,10 @@ class AudioManager {
     return _player;
   }
 
+  ConcatenatingAudioSource get playlist {
+    return _playlist;
+  }
+
   Future<void> _init() async {
     //초기 설정
     final session = await AudioSession.instance;
