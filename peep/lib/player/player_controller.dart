@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:just_audio/just_audio.dart';
@@ -164,29 +162,29 @@ class _PlayerController extends State<PlayerController> {
     );
   }
 }
-
-class BufferAudioSource extends StreamAudioSource { //이 클래스는 무시하세요
-  Uint8List _buffer;
-
-  BufferAudioSource(this._buffer) : super("Bla");
-
-  @override
-  Future<StreamAudioResponse> request([int start, int end]) {
-    start = start ?? 0;
-    end = end ?? _buffer.length;
-
-    return Future.value(
-      StreamAudioResponse(
-        sourceLength: _buffer.length,
-        contentLength: end - start,
-        offset: start,
-        contentType: 'audio/mpeg',
-        stream:
-        Stream.value(List<int>.from(_buffer.skip(start).take(end - start))),
-      ),
-    );
-  }
-}
+//
+// class BufferAudioSource extends StreamAudioSource { //이 클래스는 무시하세요
+//   Uint8List _buffer;
+//
+//   BufferAudioSource(this._buffer) : super("Bla");
+//
+//   @override
+//   Future<StreamAudioResponse> request([int start, int end]) {
+//     start = start ?? 0;
+//     end = end ?? _buffer.length;
+//
+//     return Future.value(
+//       StreamAudioResponse(
+//         sourceLength: _buffer.length,
+//         contentLength: end - start,
+//         offset: start,
+//         contentType: 'audio/mpeg',
+//         stream:
+//         Stream.value(List<int>.from(_buffer.skip(start).take(end - start))),
+//       ),
+//     );
+//   }
+// }
 
 
 
