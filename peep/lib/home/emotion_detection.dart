@@ -9,6 +9,71 @@ import 'package:image_picker/image_picker.dart';
 import 'client.dart';
 import 'package:peep/player/music_player_page.dart';
 
+// 새로 만든 것(더한건 없고 빼기만함)
+class DetectEmotion {
+
+  final ImagePicker imagePicker = ImagePicker();
+
+  File _image;
+  String emotionResult;
+  var resultImg;
+
+  Future<void> readFile() async{
+    await takePicture();
+    var key ='first';
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    bool firstCheck = pref.getBool(key);
+    var dir = await getApplicationDocumentsDirectory();
+    //bool fileExist = await File(dir.path+'test.jpg').exists();
+
+    /*if(firstCheck == null || firstCheck == false || fileExist == false){
+      pref.setBool(key, true);
+      //var file = await DefaultAssetBundle.of(context).loadString('assets/test/test.jpg');
+      var file = await DefaultAssetBundle.of(context).load('assets/test/test.jpg');
+      //File(dir.path + '/test.jpg').writeAsStringSync(file);
+        File(dir.path+'/test.jpg').writeAsBytes(file);
+      //final bytes = await File(file).readAsBytes();
+      var base64Image = base64.encode(bytes);
+
+      return base64Image;
+      print("fail");
+
+    }else{
+      var file = await File(dir.path + '/test.jpg').readAsBytes();
+      var base64Image = base64.encode(file);
+      print("image to byte success");
+      return base64Image;
+    }*/
+
+    // var file = await File(dir.path + '/test.jpg').readAsBytes();
+    var file = await _image.readAsBytes();
+    var base64Image = base64.encode(file);
+    print("image to byte success");
+    //await ClientTest().getHttp();
+    await ClientTest().test(base64Image);
+    /*Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ClientTest(base64Image)))
+    ;*/
+    //return base64Image;
+  }
+
+  Future<void> takePicture() async{
+    print("take picture");
+    final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
+    if(imageFile == null){
+      print("no image");
+      return;
+    }
+    //final appDir = await getApplicationDocumentsDirectory();
+    //await File(appDir.path+'/test.jpg').create(recursive: true);
+    //final File newImage = await imageFile.
+
+    _image = File(imageFile.path);
+    print("took pic");
+  }
+
+}
 
 class EmotionDetect extends StatefulWidget{
   @override
@@ -21,8 +86,6 @@ class _EmotionDetect extends State<EmotionDetect>{
   File _image;
   String emotionResult;
   var resultImg;
-
-
 
   @override
   void initState() {

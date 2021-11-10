@@ -146,14 +146,23 @@ class _HomePageState extends State<HomePage> {
                               'assets/itd/ITD_camera_faceicon.svg',
                             ),
                             onPressed: () {
-                              // widthFactor: 5,
+
                               print('Camera button is clicked');
-                              Navigator.push(
-                                //getImage(ImagefSource.camera);
-                                  context,
-                                  MaterialPageRoute(builder: (context) => EmotionDetect()));
-                              //클릭 시 감정 분석 카메라로 이동
-                              //현재 임시 이미지 넣어둠
+                              DetectEmotion().readFile().then((value) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => MusicPlayerPage()));
+                                print("init state done");
+                              });
+
+                              // // widthFactor: 5,
+                              // print('Camera button is clicked');
+                              // Navigator.push(
+                              //   //getImage(ImagefSource.camera);
+                              //     context,
+                              //     MaterialPageRoute(builder: (context) => EmotionDetect()));
+                              // //클릭 시 감정 분석 카메라로 이동
+                              // //현재 임시 이미지 넣어둠
                             },
                           ),
                         ),
