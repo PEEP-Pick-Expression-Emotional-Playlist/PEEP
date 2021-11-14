@@ -67,5 +67,4 @@ class EmotionManger{
       "happy" : 0
     });
   }
-
 }

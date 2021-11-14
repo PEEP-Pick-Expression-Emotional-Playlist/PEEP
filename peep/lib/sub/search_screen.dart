@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:peep/home/emotion_detection.dart';
+import 'package:peep/player/music_player_page.dart';
 import 'package:shake/shake.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -30,11 +31,14 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    detector = ShakeDetector.autoStart(onPhoneShake: (){
+    detector = ShakeDetector.autoStart(onPhoneShake: ()
+    {
       print('Phone shaking detected');
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => EmotionDetect()));
+      DetectEmotion().readFile().then((value) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MusicPlayerPage()));
+      });
     });
   }
 
