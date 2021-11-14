@@ -8,10 +8,18 @@ class AudioMetadata {
   final List emotions;
   final List genre;
   final List tags;
-  final int favorite;
+  int _favorite;
+  final Duration duration;
 
   AudioMetadata(this.key, this.title, this.artist, this.artwork, this.year, this.emotions, this.genre,
-      this.tags, this.favorite);
+      this.tags, this._favorite, this.duration);
+
+  set favorite(int value) {
+    _favorite = value;
+  }
+
+
+  int get favorite => _favorite;
 
   String getTags(){
     String tagStr = "";

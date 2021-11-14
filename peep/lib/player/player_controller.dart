@@ -93,7 +93,9 @@ class _PlayerController extends State<PlayerController> {
                   //         AudioManager.year)));
 
                   try {
-                    audioManager.play(); //노래 재생하는 함수
+                    GlobalKey<State> _dialogKey = GlobalKey<State>();
+                    audioManager.play(context);
+                      //노래 재생하는 함수
                   } on NoFoundSearchResultException catch(e) {
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(
@@ -132,7 +134,7 @@ class _PlayerController extends State<PlayerController> {
                   _player.seek(Duration.zero,
                       index: _player.effectiveIndices.first);
                   try {
-                    audioManager.play(); //노래 재생하는 함수
+                    audioManager.play(context); //노래 재생하는 함수
                   } on NoFoundSearchResultException catch (e) {
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(

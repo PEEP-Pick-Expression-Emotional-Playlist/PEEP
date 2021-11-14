@@ -18,8 +18,8 @@ class MiniPlayerController extends StatefulWidget {
 }
 
 class MiniPlayerControllerState extends State<MiniPlayerController> {
-  AudioMetadata songMeta;
-  String playingEmotion = "default";
+  AudioMetadata _songMeta;
+  String _playingEmotion = "default";
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +29,10 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final playingData = snapshot.data;
-              songMeta = playingData.currentSource.tag as AudioMetadata;
-              final playingEmotions = songMeta.emotions;
-              int rand = Random().nextInt(songMeta.emotions.length);
-              playingEmotion = playingEmotions[rand];
+              _songMeta = playingData.currentSource.tag as AudioMetadata;
+              final playingEmotions = _songMeta.emotions;
+              int rand = Random().nextInt(_songMeta.emotions.length);
+              _playingEmotion = playingEmotions[rand];
             }
             return Column(mainAxisAlignment: MainAxisAlignment.end, children: [
               StreamBuilder<Duration>(
@@ -42,7 +42,7 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
                     stream: AudioManager.instance.positionDataStream,
                     builder: (context, snapshot) {
                       final positionData = snapshot.data;
-                      final duration = positionData?.duration ?? Duration.zero;
+                      final duration = _songMeta?.duration ?? Duration.zero;
                       final position = positionData?.position ?? Duration.zero;
 
                       return LinearProgressIndicator(
@@ -54,7 +54,7 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
                                   .toDouble(),
                           backgroundColor: Colors.black26,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                              EmotionColor.getProcessColorFor(playingEmotion)));
+                              EmotionColor.getProcessColorFor(_playingEmotion)));
                     },
                   );
                 },
@@ -67,7 +67,7 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
                     stops: [0.5, 1],
                     colors: [
                       Colors.white,
-                      EmotionColor.getBarColorFor(playingEmotion)
+                      EmotionColor.getBarColorFor(_playingEmotion)
                     ],
                   )),
                   child: Row(
@@ -84,9 +84,9 @@ class MiniPlayerControllerState extends State<MiniPlayerController> {
                                 bottom: 16.0,
                                 right: 8.0),
                             child: Text(
-                                (songMeta == null || songMeta.title == null)
+                                (_songMeta == null || _songMeta.title == null)
                                     ? "재생 중인 곡이 없습니다"
-                                    : songMeta.title),
+                                    : _songMeta.title),
                           ),
                           onTap: () {
                             Navigator.push(

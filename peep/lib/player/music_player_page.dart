@@ -85,12 +85,23 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
             /// year, genre
             title: _isExpanding
                 ? TwoStickyBorderDropdown(
-                    leftHint: "연도",
-                    leftItem: _yearValues,
-                    rightHint: "장르",
-                    rightItem: _genreValues,
+                    leftHint: "장르",
+                    leftItem: _genreValues,
+                    rightHint: "연도",
+                    rightItem: _yearValues,
                     backgroundColor:
-                        EmotionColor.getLightColorFor(playingEmotion))
+                        EmotionColor.getLightColorFor(playingEmotion),
+                    leftOnChanged: (String val) {
+                      setState(() {
+                      AudioManager.genre = val;
+                      });
+                    },
+                    rightOnChanged: (String val) {
+                      setState(() {
+                      AudioManager.year = val;
+                      });
+                    },
+                  )
                 : SizedBox(width: 0.0),
             children: [
               /// emotion button
@@ -151,9 +162,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                       Navigator.of(context).popUntil((route) => route.isFirst);
                     }
                   },
-                  // TODO 1: SHOW PLAYLIST
+
                   // TODO 2: SEARCH USING GENRE AND YEAR
-                  onDoubleTap: () => _favoriteHandling(),
+                  onDoubleTap: () => _favoriteHandling()
+                  ,
                   child: DragTarget<String>(
                     builder: (context, candidateItems, rejectedItems) {
                       return Stack(children: [
@@ -228,7 +240,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                       AudioManager.emotion = emotion;
                       try {
                         AudioManager.instance
-                            .addSong(RecommendationType.RANDOM_TAG);
+                            .addSong(RecommendationType.RANDOM_TAG, context);
                       } on NoFoundSearchResultException catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(e.toString())));
@@ -260,7 +272,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                     builder: (context, snapshot) {
                       final positionData = snapshot.data;
                       return SeekBar(
-                        duration: positionData?.duration ?? Duration.zero,
+                        duration: _songMeta?.duration ?? Duration.zero,
                         position: positionData?.position ?? Duration.zero,
                         bufferedPosition:
                             positionData?.bufferedPosition ?? Duration.zero,
@@ -292,6 +304,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   }
 
   void _favoriteHandling() {
+    // debugPrint(FirebaseAuth.instance.currentUser.uid);
+    // debugPrint(UserManager.instance.user.uid);
     // debugPrint("keyyy" + _songMeta.key);
     userFavoriteRef.child(_songMeta.key).get().then((value) {
       // debugPrint("get " + value.value.toString());
@@ -301,8 +315,11 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                 .child(_songMeta.key)
                 .child("favorite")
                 .set(ServerValue.increment(1))
-                .then((value) => ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text("이 음악을 좋아합니다")))));
+                .then((value)
+            {ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text("이 음악을 좋아합니다")));
+            _updateFavoriteCount();
+            }));
         // debugPrint("item " + _songMeta.key + " add");
         return true;
       } else {
@@ -311,16 +328,30 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                 .child(_songMeta.key)
                 .child("favorite")
                 .set(ServerValue.increment(-1))
-            .then((value) => ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("이 음악을 좋아하지 않습니다")))
-          )
-        );
+                .then((value)
+            {ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text("이 음악을 좋아하지 않습니다")));
+            _updateFavoriteCount();
+            }));
         // debugPrint("item " + _songMeta.key + " removed");
         return false;
       }
     }).catchError((error, stackTrace) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("다시 시도해 주시기 바랍니다")));
+    });
+  }
+
+  void _updateFavoriteCount(){
+    songsFavoriteRef
+        .child(_songMeta.key)
+        .child("favorite")
+        .get()
+        .then((value) {
+      setState(() {
+        print(value.value.toString());
+        _songMeta.favorite = value.value;
+      });
     });
   }
 

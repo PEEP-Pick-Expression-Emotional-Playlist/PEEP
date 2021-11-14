@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peep/db_manager.dart';
@@ -18,6 +19,8 @@ class AppFramePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    UserManager.instance.user = FirebaseAuth.instance.currentUser;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'PEEP',

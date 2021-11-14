@@ -7,9 +7,11 @@ class UserManager {
 
   static User _user;
 
-  UserManager._(){
-    _user = FirebaseAuth.instance.currentUser;
+  set user(User user){
+    _user = user;
   }
+
+  UserManager._();
 
   User get user {
     if (_user == null) {

@@ -69,6 +69,7 @@ class _DropdownDemoState extends State<DropdownDemo> {
                   setState(() {
                     _chosenValue = value;
                   });
+                  widget.onChanged(value);
                 },
               ))),
     );

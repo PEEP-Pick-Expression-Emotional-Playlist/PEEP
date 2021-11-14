@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -44,12 +45,14 @@ class AudioManager {
   static String year;
   static String genre;
 
+  static double downloadPercentage;
+
   AudioManager._() {
     _init();
     _player = AudioPlayer(); //플레이를 관리하는 객체 생성
     emotion = "happy"; //초기에는 happy로 설정. 파이어베이스에 감정에 따른 곡 검색할때 보냄
-    year = "all"; //변수 만들기만하고 딱히 영향이없음.
-    genre = "all";
+    year = "모든 연도";
+    genre = "모든 장르";
   }
 
   AudioPlayer get player {
@@ -88,11 +91,11 @@ class AudioManager {
           (position, bufferedPosition, duration) => PositionData(
               position, bufferedPosition, duration ?? Duration.zero));
 
-  play() {
+  play(context) {
     if (_player.sequence == null || _player.sequence.isEmpty) {
       //만약 플레이어에 현재 곡이 없다면
       //선택된 감정에 맞는 곡들 중 랜덤으로 곡을 검색하고 다운로드해서 재생함
-      addSong(RecommendationType.RANDOM_ALL);
+      addSong(RecommendationType.RANDOM_ALL, context);
 
       // if (_player.sequence == null || _player.sequence.isEmpty) {
       //   try {
@@ -109,24 +112,25 @@ class AudioManager {
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       //     content: Text(lists[0]["title"] + ' ' + lists[0]["artist"])));
       // debugPrint("peep "+playList[0]["title"] + ' ' + playList[0]["artist"]);
+    } else {
+      _player.play(); //현재 있는 곡 재생
     }
-    _player.play(); //현재 있는 곡 재생
   }
 
-  addSong(recommendationType) async {
+  addSong(recommendationType, context) async {
     debugPrint(emotion);
 
     var item;
 
     switch (recommendationType) {
       case RecommendationType.RANDOM_ALL:
-        item = await getRandomAllItem();
+        item = await _getRandomAllItem();
         break;
       case RecommendationType.RANDOM_TAG:
         try {
-          item = await getRandomTagItem();
+          item = await _getRandomTagItem();
         } catch (e) {
-          item = await getRandomAllItem();
+          item = await _getRandomAllItem();
         }
         break;
     }
@@ -135,7 +139,7 @@ class AudioManager {
 
     debugPrint(_playlist.length.toString() +
         ' ' +
-        item['key']+
+        item['key'] +
         ' ' +
         item['title'] +
         ' ' +
@@ -151,88 +155,113 @@ class AudioManager {
         ' ' +
         item['favorite'].toString());
 
-    var audioInfo = await getAudioInfo(query);
+    final list = await getAudioInfo(query);
+    var audioInfo = list[0];
+    Duration duration = list[1];
     if (audioInfo == null) {
       throwResultException();
     } else {
       var path = await getPath(audioInfo, query);
       //다운로드 되면 플레이리스트에 정보 추가
-      _playlist.add(AudioSource.uri(
+      _playlist
+          .add(AudioSource.uri(
         Uri.file(path),
         tag: AudioMetadata(
-          item['key'],
-          item['title'],
-          item['artist'],
-          item['artwork'],
-          item['year'],
-          item['emotions'].keys.toList(),
-          item['genre'].keys.toList(),
-          item['tags'].keys.toList(),
-          item['favorite'],
-        ),
-      ));
-
-      debugPrint(_playlist.length.toString() +
-          ' ' +
-          Uri.file(path).toString() +
-          ' ' +
-          item['key']+
-          ' ' +
-          item['title'] +
-          ' ' +
-          item['artist'] +
-          ' ' +
-          item['year'] +
-          ' ' +
-          item['emotions'].keys.toList().toString() +
-          ' ' +
-          item['genre'].keys.toList().toString() +
-          ' ' +
-          item['tags'].keys.toList().toString() +
-          ' ' +
-          item['favorite'].toString());
-
-      //처음으로 넣으면 플레이리스트 변수를 등록
-      if (_player.sequence == null || _player.sequence.isEmpty) {
-        try {
-          // await _player.setAudioSource(BufferAudioSource(await file.readAsBytes()));
-          _player.setAudioSource(_playlist);
-        } catch (e) {
-          // Catch load errors: 404, invalid url ...
-          print("Error loading playlist: $e");
+            item['key'],
+            item['title'],
+            item['artist'],
+            item['artwork'],
+            item['year'],
+            item['emotions'].keys.toList(),
+            item['genre'].keys.toList(),
+            item['tags'].keys.toList(),
+            item['favorite'],
+            duration),
+      ))
+          .then((value) {
+        //처음으로 넣으면 플레이리스트 변수를 등록
+        if (_player.sequence == null || _player.sequence.isEmpty) {
+          try {
+            // await _player.setAudioSource(BufferAudioSource(await file.readAsBytes()));
+            _player.setAudioSource(_playlist, preload: false);
+            var prePercentage = -1;
+            download(path, audioInfo).listen((event) {
+              if (prePercentage < event) {
+                prePercentage = event;
+                // print(event);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content:
+                          Text("다운로드 후 자동실행됩니다 $event %"),
+                    ));
+              }
+            }, onDone: () {
+              debugPrint("ddddddddd" + path);
+              _player.pause();
+              _player.play();
+            });
+          } catch (e) {
+            // Catch load errors: 404, invalid url ...
+            print("Error loading playlist: $e");
+          }
+        }else {
+          download(path, audioInfo).listen((event) {}
+          , onDone: () {
+            debugPrint("ddddddddd" + path);
+            _player.play();
+          });
         }
-        download(path, audioInfo).then((value) {
-          debugPrint("ddddddddd" + path);
-          _player.play();
-        }); //플레이함
-      } else {
         // if (_player.sequence == null || _player.sequence.isEmpty) {
         //   download(path, audioInfo).then;
         // } else {
         //   download(path, audioInfo);
         // }
-        download(path, audioInfo);
-      }
+        //
+        // download(path, audioInfo).then((value) {
+        //   debugPrint("ddddddddd" + path);
+        //   _player.pause();
+        //   _player.play();
+        // }); //플레이함
+
+        debugPrint(_playlist.length.toString() +
+            ' ' +
+            Uri.file(path).toString() +
+            ' ' +
+            item['key'] +
+            ' ' +
+            item['title'] +
+            ' ' +
+            item['artist'] +
+            ' ' +
+            item['year'] +
+            ' ' +
+            item['emotions'].keys.toList().toString() +
+            ' ' +
+            item['genre'].keys.toList().toString() +
+            ' ' +
+            item['tags'].keys.toList().toString() +
+            ' ' +
+            item['favorite'].toString());
+      });
     }
   }
 
-  getAudioInfo(query) async {
+  Future<List> getAudioInfo(query) async {
     var resList = await yt.search.getVideos(query);
 
     if (resList == null || resList.isEmpty) {
       return null;
     } else {
       var res = resList.first;
-      // TODO: get total length
       duration = res.duration;
-      debugPrint("durationnnnnn" + res.duration.inSeconds.toString());
+      // debugPrint("durationnnnnn" + res.duration.inSeconds.toString());
 
       await Permission.storage.request();
 
       var manifest = await yt.videos.streamsClient.getManifest(res.id);
       var streams = manifest.audioOnly.toList(growable: false);
       var audioInfo = streams.first;
-      return audioInfo;
+
+      return [audioInfo, res.duration];
     }
   }
 
@@ -252,21 +281,36 @@ class AudioManager {
     return filePath;
   }
 
-  Future<void> download(filePath, audioInfo) async {
+  Stream<int> download(filePath, audioInfo) async* {
     // Open the file to write.
     var file = File(filePath);
     var fileStream = file.openWrite();
 
-    // TODO: bb
-    // var length = audioInfo.size.totalBytes;
-    // var received = 0;
+    var length = audioInfo.size.totalBytes;
+    var received = 0;
 
-    await yt.videos.streamsClient.get(audioInfo).map((s) {
-      // received += s.length;
-      // TODO: ㅠㅠ
-      // print("${(received / length) * 100} %");
-      return s;
-    }).pipe(fileStream);
+    StreamController<int> streamController = StreamController();
+    try {
+      yt.videos.streamsClient
+          .get(audioInfo)
+          .map((s) {
+            received += s.length;
+            var percentage = ((received / length) * 100).toInt();
+            var checkList = [1,5,10,20,40,50,70,90,99];
+            if (checkList.contains(percentage)) {
+              streamController.add(percentage);
+            }
+            // print("${(received / length)} %");
+            return s;
+          })
+          .pipe(fileStream)
+          .whenComplete(() {
+            streamController.close();
+          });
+      yield* streamController.stream;
+    } catch (e) {
+      throw e;
+    }
 
     // Pipe all the content of the stream into our file.
     // await yt.videos.streamsClient.get(audioInfo).pipe(fileStream);
@@ -294,7 +338,7 @@ class AudioManager {
     // );
   }
 
-  getRandomTagItem() async {
+  _getRandomTagItem() async {
     var metadata =
         _playlist.sequence[_player.currentIndex].tag as AudioMetadata;
     var tags = metadata.tags;
@@ -304,11 +348,21 @@ class AudioManager {
     var value =
         await ref.orderByChild("tags/" + randomTag).equalTo(true).once();
 
+    Map queryResult = value.value;
+    // value.value type: _InternalLinkedHashMap
+    debugPrint("now genre:"+genre+", year"+year);
+    if(genre != "모든 장르"){
+      queryResult = _searchGenre(queryResult);
+    }
+    if(year != "모든 연도"){
+      queryResult = _searchYear(queryResult);
+    }
+
     List tmp = [];
-    value.value.forEach((key, values) {
+    queryResult.forEach((key, values) {
       List list = values['emotions'].keys.toList();
       if (list.contains(emotion)) {
-        values['key']=key;
+        values['key'] = key;
         tmp.add(values);
       }
     });
@@ -318,13 +372,49 @@ class AudioManager {
     return tmp[random];
   }
 
-  getRandomAllItem() async {
+  Map _searchGenre(Map map){
+    debugPrint("genrrrr"+genre);
+    Map res = Map();
+    map.forEach((key, value) {
+      List list = value['genre'].keys.toList();
+      debugPrint("원래"+list.toString());
+      if(list.contains(genre)){
+        res[key]=value;
+      }else {
+        debugPrint("안지움"+list.toString());
+      }
+    });
+    return map;
+  }
+  Map _searchYear(Map map){
+    debugPrint("yearrrr"+year);
+    Map res = Map();
+    map.forEach((key, value) {
+      if(value['year']==year){
+        res[key]=value;
+      }
+    });
+    return map;
+  }
+
+  _getRandomAllItem() async {
     var value =
         await ref.orderByChild("emotions/" + emotion).equalTo(true).once();
 
+    Map queryResult = value.value;
+    // value.value type: _InternalLinkedHashMap
+    debugPrint("now genre:"+genre+", year"+year);
+    if(genre != "모든 장르"){
+      queryResult = _searchGenre(queryResult);
+    }
+    if(year != "모든 연도"){
+      queryResult = _searchYear(queryResult);
+    }
+
     List tmp = [];
-    value.value.forEach((key, values) {
-      values['key']=key;
+    // debugPrint("value.value type is..."+value.value.runtimeType.toString());
+    queryResult.forEach((key, values) {
+      values['key'] = key;
       tmp.add(values);
     });
 
