@@ -8,7 +8,6 @@ class EmotionChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SfCircularChart(
-
         series: <CircularSeries>[
           // Renders radial bar chart
           RadialBarSeries<ChartData, String>(

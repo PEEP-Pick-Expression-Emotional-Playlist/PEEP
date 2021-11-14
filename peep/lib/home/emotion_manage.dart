@@ -1,5 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:peep/login/user_manager.dart';
+import 'package:peep/player/player_controller.dart';
 
 //Firebase에 현재 사용자 감정 입력 & 사용자 감정 빈도 값 축적
 class EmotionManger{
@@ -7,7 +9,8 @@ class EmotionManger{
   var uid;
 
   final user = FirebaseAuth.instance.currentUser;
-  final databaseReference = FirebaseDatabase.instance.reference().child("emotion");
+  final databaseReference = FirebaseDatabase.instance.reference().child("emotion")
+                            .child(UserManager.instance.user.uid);
 
   Future<void> readWriteEmotion(String emotionField) async{
 
@@ -18,30 +21,30 @@ class EmotionManger{
       uid=user.uid;
     }
 
-    await databaseReference.child(uid +"/"+ "freq" + emotionField).once().then((DataSnapshot snapshot){
-      freqValue = snapshot.value;
+    await databaseReference.child("freq").get().then((snapshot){
+      final data = new Map<String, dynamic>.from(snapshot.value);
+      // print(data[emotionField]);
+      freqValue = data[emotionField];
     });
+
     ///데이터 값이 없는 감정일 경우 디폴트값 0 선언
     if(freqValue == null){
-      await databaseReference.child(uid +"/"+ "freq").update({
+      await databaseReference.child("freq").update({
         emotionField : 0
       });
       freqValue = 0;
     }
-
-    print("freqvalue");
-    print(freqValue);
 
     ///테스트를 위해 빈도수 기본 + 10
     freqValue = freqValue.toInt() + 10;
     print(freqValue);
 
     ///빈도수 값 업데이트
-    await databaseReference.child(uid +"/"+ "freq").update({
+    await databaseReference.child("freq").update({
       emotionField : freqValue
     });
     ///사용자 현재 감정 업데이트
-    await databaseReference.child(uid +"/"+ "current").update({
+    await databaseReference.child("current").update({
       "emotion" : emotionField
     });
   }
@@ -56,7 +59,7 @@ class EmotionManger{
       uid=user.uid;
     }
 
-    await databaseReference.child(uid +"/"+ "freq").update({
+    await databaseReference.child("freq").update({
       "angry" : 0,
       "blue" : 0,
       "calm" : 0,
@@ -64,5 +67,4 @@ class EmotionManger{
       "happy" : 0
     });
   }
-
 }
