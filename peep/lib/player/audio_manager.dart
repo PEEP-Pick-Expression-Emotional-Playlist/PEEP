@@ -373,21 +373,16 @@ class AudioManager {
   }
 
   Map _searchGenre(Map map){
-    debugPrint("genrrrr"+genre);
     Map res = Map();
     map.forEach((key, value) {
       List list = value['genre'].keys.toList();
-      debugPrint("원래"+list.toString());
       if(list.contains(genre)){
         res[key]=value;
-      }else {
-        debugPrint("안지움"+list.toString());
       }
     });
     return map;
   }
   Map _searchYear(Map map){
-    debugPrint("yearrrr"+year);
     Map res = Map();
     map.forEach((key, value) {
       if(value['year']==year){
