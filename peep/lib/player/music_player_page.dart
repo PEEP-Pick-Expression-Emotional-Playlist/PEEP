@@ -147,13 +147,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
 
           /// gesture, artwork and waves in [Expanded]
           Expanded(
-
               /// gesture
               child: GestureDetector(
                   onPanUpdate: (dis) {
                     if (dis.delta.dx < 0) {
-                      //User swiped from left to right
-                      //pass
+                      /// pass (right to left)
+                      AudioManager.passList.add(_songMeta.key);
                     } else if (dis.delta.dy < 0) {
                       /// down to up
                     } else if (dis.delta.dy > 0) {
@@ -162,8 +161,6 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                       Navigator.of(context).popUntil((route) => route.isFirst);
                     }
                   },
-
-                  // TODO 2: SEARCH USING GENRE AND YEAR
                   onDoubleTap: () => _favoriteHandling()
                   ,
                   child: DragTarget<String>(

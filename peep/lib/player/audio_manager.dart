@@ -47,6 +47,10 @@ class AudioManager {
 
   static double downloadPercentage;
 
+  static List<String> passList = [];
+
+  static YoutubeExplode yt = YoutubeExplode(); //유튜브에 검색하고 다운로드하는 라이브러리
+
   AudioManager._() {
     _init();
     _player = AudioPlayer(); //플레이를 관리하는 객체 생성
@@ -79,10 +83,6 @@ class AudioManager {
     });
   }
 
-  static List<String> passList = []; // 패스한 곡 저장하려고 만들었는데 아직 쓰지를 못했음
-
-  static YoutubeExplode yt = YoutubeExplode(); //유튜브에 검색하고 다운로드하는 라이브러리
-
   Stream<PositionData> get positionDataStream =>
       Rx.combineLatest3<Duration, Duration, Duration, PositionData>(
           _player.positionStream,
@@ -96,22 +96,6 @@ class AudioManager {
       //만약 플레이어에 현재 곡이 없다면
       //선택된 감정에 맞는 곡들 중 랜덤으로 곡을 검색하고 다운로드해서 재생함
       addSong(RecommendationType.RANDOM_ALL, context);
-
-      // if (_player.sequence == null || _player.sequence.isEmpty) {
-      //   try {
-      //     _player.setAudioSource(_playlist);
-      //   } catch (e) {
-      //     // Catch load errors: 404, invalid url ...
-      //     print("Error loading playlist: $e");
-      //   }
-      //   _player.play(); //플레이함
-      // }
-
-      // lists.add(value.value);
-
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //     content: Text(lists[0]["title"] + ' ' + lists[0]["artist"])));
-      // debugPrint("peep "+playList[0]["title"] + ' ' + playList[0]["artist"]);
     } else {
       _player.play(); //현재 있는 곡 재생
     }
@@ -124,13 +108,13 @@ class AudioManager {
 
     switch (recommendationType) {
       case RecommendationType.RANDOM_ALL:
-        item = await _getRandomAllItem();
+        item = await _getByRandom();
         break;
       case RecommendationType.RANDOM_TAG:
         try {
-          item = await _getRandomTagItem();
+          item = await _getByTag();
         } catch (e) {
-          item = await _getRandomAllItem();
+          item = await _getByRandom();
         }
         break;
     }
@@ -210,17 +194,6 @@ class AudioManager {
             _player.play();
           });
         }
-        // if (_player.sequence == null || _player.sequence.isEmpty) {
-        //   download(path, audioInfo).then;
-        // } else {
-        //   download(path, audioInfo);
-        // }
-        //
-        // download(path, audioInfo).then((value) {
-        //   debugPrint("ddddddddd" + path);
-        //   _player.pause();
-        //   _player.play();
-        // }); //플레이함
 
         debugPrint(_playlist.length.toString() +
             ' ' +
@@ -338,7 +311,7 @@ class AudioManager {
     // );
   }
 
-  _getRandomTagItem() async {
+  _getByTag() async {
     var metadata =
         _playlist.sequence[_player.currentIndex].tag as AudioMetadata;
     var tags = metadata.tags;
@@ -349,13 +322,14 @@ class AudioManager {
         await ref.orderByChild("tags/" + randomTag).equalTo(true).once();
 
     Map queryResult = value.value;
+    queryResult = _removeByPass(queryResult);
     // value.value type: _InternalLinkedHashMap
     debugPrint("now genre:"+genre+", year"+year);
     if(genre != "모든 장르"){
-      queryResult = _searchGenre(queryResult);
+      queryResult = _getByGenre(queryResult);
     }
     if(year != "모든 연도"){
-      queryResult = _searchYear(queryResult);
+      queryResult = _getByYear(queryResult);
     }
 
     List tmp = [];
@@ -372,7 +346,7 @@ class AudioManager {
     return tmp[random];
   }
 
-  Map _searchGenre(Map map){
+  Map _getByGenre(Map map){
     Map res = Map();
     map.forEach((key, value) {
       List list = value['genre'].keys.toList();
@@ -382,7 +356,7 @@ class AudioManager {
     });
     return map;
   }
-  Map _searchYear(Map map){
+  Map _getByYear(Map map){
     Map res = Map();
     map.forEach((key, value) {
       if(value['year']==year){
@@ -391,19 +365,29 @@ class AudioManager {
     });
     return map;
   }
+  Map _removeByPass(Map map){
+    Map res = Map();
+    map.forEach((key, value) {
+      if(!passList.contains(value['key'])){
+        res[key]=value;
+      }
+    });
+    return map;
+  }
 
-  _getRandomAllItem() async {
+  _getByRandom() async {
     var value =
         await ref.orderByChild("emotions/" + emotion).equalTo(true).once();
 
     Map queryResult = value.value;
+    queryResult = _removeByPass(queryResult);
     // value.value type: _InternalLinkedHashMap
     debugPrint("now genre:"+genre+", year"+year);
     if(genre != "모든 장르"){
-      queryResult = _searchGenre(queryResult);
+      queryResult = _getByGenre(queryResult);
     }
     if(year != "모든 연도"){
-      queryResult = _searchYear(queryResult);
+      queryResult = _getByYear(queryResult);
     }
 
     List tmp = [];
