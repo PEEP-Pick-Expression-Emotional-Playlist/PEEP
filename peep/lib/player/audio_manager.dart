@@ -324,7 +324,7 @@ class AudioManager {
     Map queryResult = value.value;
     queryResult = _removeByPass(queryResult);
     // value.value type: _InternalLinkedHashMap
-    debugPrint("now genre:"+genre+", year"+year);
+    // debugPrint("now genre:"+genre+", year"+year);
     if(genre != "모든 장르"){
       queryResult = _getByGenre(queryResult);
     }
@@ -382,7 +382,7 @@ class AudioManager {
     Map queryResult = value.value;
     queryResult = _removeByPass(queryResult);
     // value.value type: _InternalLinkedHashMap
-    debugPrint("now genre:"+genre+", year"+year);
+    // debugPrint("now genre:"+genre+", year"+year);
     if(genre != "모든 장르"){
       queryResult = _getByGenre(queryResult);
     }

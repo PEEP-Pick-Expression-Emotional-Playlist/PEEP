@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:peep/login/user_manager.dart';
 import 'package:peep/player/ui/animated_wave.dart';
@@ -46,7 +47,11 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
       .child("favorite")
       .child(UserManager.instance.user.uid);
 
-  final songsFavoriteRef = DBManager.instance.ref.child("songs");
+  final songsRef = DBManager.instance.ref.child("songs");
+
+  final userRatingRef = DBManager.instance.ref
+      .child("ratings")
+      .child(UserManager.instance.user.uid);
 
   @override
   Widget build(BuildContext topContext) {
@@ -93,12 +98,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                         EmotionColor.getLightColorFor(playingEmotion),
                     leftOnChanged: (String val) {
                       setState(() {
-                      AudioManager.genre = val;
+                        AudioManager.genre = val;
                       });
                     },
                     rightOnChanged: (String val) {
                       setState(() {
-                      AudioManager.year = val;
+                        AudioManager.year = val;
                       });
                     },
                   )
@@ -147,6 +152,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
 
           /// gesture, artwork and waves in [Expanded]
           Expanded(
+
               /// gesture
               child: GestureDetector(
                   onPanUpdate: (dis) {
@@ -161,8 +167,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                       Navigator.of(context).popUntil((route) => route.isFirst);
                     }
                   },
-                  onDoubleTap: () => _favoriteHandling()
-                  ,
+                  onDoubleTap: () =>
+                      (_songMeta != null) ? _favoriteHandling() : null,
                   child: DragTarget<String>(
                     builder: (context, candidateItems, rejectedItems) {
                       return Stack(children: [
@@ -252,16 +258,37 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                 children: [
                   /// favorite info
                   Padding(
-                      padding: EdgeInsets.only(left: 16.0),
-                      child: Row(children: [
-                        Icon(
-                          Icons.favorite_rounded,
-                          color: Colors.pinkAccent,
-                          size: 24.0,
-                        ),
-                        SizedBox(width: 4),
-                        Text("${_songMeta?.favorite ?? "좋아요 정보가 없어요"}"),
-                      ])),
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(children: [
+                              Icon(
+                                Icons.favorite_rounded,
+                                color: Colors.pinkAccent,
+                                size: 24.0,
+                              ),
+                              SizedBox(width: 4),
+                              Text("${_songMeta?.favorite ?? "좋아요 정보가 없어요"}")
+                            ]),
+                            RatingBar.builder(
+                              initialRating: 0,
+                              minRating: 0.5,
+                              direction: Axis.horizontal,
+                              allowHalfRating: true,
+                              itemSize: 30,
+                              itemCount: 5,
+                              itemPadding:
+                                  EdgeInsets.symmetric(horizontal: 1.0),
+                              itemBuilder: (context, _) => Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                              ),
+                              onRatingUpdate: (rating) => (_songMeta != null)
+                                  ? _setRating(rating)
+                                  : null,
+                            ),
+                          ])),
 
                   /// SeekBar
                   StreamBuilder<PositionData>(
@@ -300,6 +327,9 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
         ]);
   }
 
+  void _setRating(double rating) =>
+      userRatingRef.child(_songMeta.key).set(rating);
+
   void _favoriteHandling() {
     // debugPrint(FirebaseAuth.instance.currentUser.uid);
     // debugPrint(UserManager.instance.user.uid);
@@ -307,28 +337,26 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
     userFavoriteRef.child(_songMeta.key).get().then((value) {
       // debugPrint("get " + value.value.toString());
       if (!value.exists) {
-        userFavoriteRef.child(_songMeta.key).set(true).then((value) =>
-            songsFavoriteRef
+        userFavoriteRef.child(_songMeta.key).set(true).then((value) => songsRef
                 .child(_songMeta.key)
                 .child("favorite")
                 .set(ServerValue.increment(1))
-                .then((value)
-            {ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("이 음악을 좋아합니다")));
-            _updateFavoriteCount();
+                .then((value) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("이 음악을 좋아합니다")));
+              _updateFavoriteCount();
             }));
         // debugPrint("item " + _songMeta.key + " add");
         return true;
       } else {
-        userFavoriteRef.child(_songMeta.key).remove().then((value) =>
-            songsFavoriteRef
+        userFavoriteRef.child(_songMeta.key).remove().then((value) => songsRef
                 .child(_songMeta.key)
                 .child("favorite")
                 .set(ServerValue.increment(-1))
-                .then((value)
-            {ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("이 음악을 좋아하지 않습니다")));
-            _updateFavoriteCount();
+                .then((value) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("이 음악을 좋아하지 않습니다")));
+              _updateFavoriteCount();
             }));
         // debugPrint("item " + _songMeta.key + " removed");
         return false;
@@ -339,14 +367,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
     });
   }
 
-  void _updateFavoriteCount(){
-    songsFavoriteRef
-        .child(_songMeta.key)
-        .child("favorite")
-        .get()
-        .then((value) {
+  void _updateFavoriteCount() {
+    songsRef.child(_songMeta.key).child("favorite").get().then((value) {
       setState(() {
-        print(value.value.toString());
+        // print(value.value.toString());
         _songMeta.favorite = value.value;
       });
     });
