@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:peep/home/emotion_manage.dart';
 import 'package:peep/login/user_manager.dart';
 import 'package:peep/player/ui/animated_wave.dart';
 import 'package:peep/player/ui/draggable_emotion.dart';
@@ -238,6 +239,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                     },
                     onAccept: (emotion) {
                       AudioManager.emotion = emotion;
+                      EmotionManger().readWriteEmotion(emotion);
                       try {
                         AudioManager.instance
                             .addSong(RecommendationType.RANDOM_TAG, context);
