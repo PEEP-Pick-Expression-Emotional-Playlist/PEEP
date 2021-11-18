@@ -159,6 +159,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                     if (dis.delta.dx < 0) {
                       /// pass (right to left)
                       AudioManager.passList.add(_songMeta.key);
+                      _setRating(0.5);
+                      if(AudioManager.instance.player.hasNext){
+                        AudioManager.instance.player.seekToNext();
+                      }
                     } else if (dis.delta.dy < 0) {
                       /// down to up
                     } else if (dis.delta.dy > 0) {
