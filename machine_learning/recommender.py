@@ -72,7 +72,6 @@ def main():
     """Data Processing. Dict to DataFrame
     
     :type id: string
-    :type emotions: list
     :type genres: list
     :type tags: list
     :type titile: string
@@ -80,8 +79,11 @@ def main():
     :type vote_count: int
     :type year: string
 
-    unused:
-        artist, artwork, favorite
+    :unused:
+        :type emotions: list
+        :type artist: string
+        :type artwork: string
+        :type favorite: int
     """
     processed_list = list()
     try:
@@ -95,12 +97,13 @@ def main():
             # row['artist'] = value['artist'] # unused
             # row['artwork'] = value['artwork'] # unused
 
-            emotions = list()
-            for emotion in value['emotions']:
-                # Debug info
-                # print('key: ',emotion)
-                emotions.append(emotion)
-            row['emotions'] = emotions
+            # unused
+            # emotions = list()
+            # for emotion in value['emotions']:
+            #     # Debug info
+            #     # print('key: ',emotion)
+            #     emotions.append(emotion)
+            # row['emotions'] = emotions
 
             # row['favorite'] = value['favorite'] # unused
             genres = list()
@@ -125,7 +128,15 @@ def main():
         pass
 
     df = pd.DataFrame(processed_list)
-    print(df)
+    # Debug info
+    # print(df)
+
+    if(recommender_type == 'content'):
+        pass
+    elif(recommender_type == 'collaborative'):
+        pass
+
+    pass
 
 if __name__ == '__main__':
     main()
