@@ -17,15 +17,17 @@ class Recommender:
         df = self.df
 
         """Count-Based Vectorize Features"""
-        ## TODO: Replace df['genres'] to df[['genres','keywords']]
+        # 장르, 태그, 연도를 기준으로 유사한 것
         # CountVectorizer를 적용하기 위해 공백문자로 word 단위가 구분되는 문자열로 변환
-        df['genres_literal'] = df['genres'].apply(lambda x : (' ').join(x))
+        standard_list = df['genres']+df['tags']
+        standard_list.append(df['year'])
+        df['standard_literal'] = standard_list.apply(lambda x : (' ').join(x))
         count_vect = CountVectorizer(min_df=0, ngram_range=(1,2))
-        genre_mat = count_vect.fit_transform(df['genres_literal'])
+        mat = count_vect.fit_transform(df['standard_literal'])
 
         """Cosine Similarity"""
-        genre_sim = cosine_similarity(genre_mat, genre_mat)
-        genre_sim_sorted_ind = genre_sim.argsort()[:,::-1]  # 반환값이 numpy일 경우에 실제 추출은 dataframe 해야할 경우, numpy의 idx를 가져오는 연산
+        sim = cosine_similarity(mat, mat)
+        sim_sorted_ind = sim.argsort()[:,::-1]  # 반환값이 numpy일 경우에 실제 추출은 dataframe 해야할 경우, numpy의 idx를 가져오는 연산
 
         """Weighted Rating""" # 평점이 높아도 낮은 것보다 밀려나는 문제해결위함
         percentile = 0.6
@@ -38,7 +40,7 @@ class Recommender:
         df[['id','vote_average','weighted_vote','vote_count']].sort_values('weighted_vote',ascending=False)[:top_n]
 
         # [df]에 없으면 에러난거 고침(미리 필터링했기 때문에 기준 음악이 선택한 감정, 연도, 장르에 포함안되면 목록에없었어서 [has_target] 이용해서 넣었음)
-        similar_movies = self.find_sim_movie(df, genre_sim_sorted_ind, target_id, top_n)
+        similar_movies = self.find_sim_movie(df, sim_sorted_ind, target_id, top_n)
         return dict.fromkeys(similar_movies['id'].values.tolist(),True)
 
 
