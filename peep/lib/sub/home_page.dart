@@ -32,11 +32,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    detector = ShakeDetector.autoStart(onPhoneShake: (){
+    detector = ShakeDetector.autoStart(onPhoneShake: ()
+    {
       print('Phone shaking detected');
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => EmotionDetect()));
+      DetectEmotion().readFile().then((value) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MusicPlayerPage()));
+      });
     });
   }
 
