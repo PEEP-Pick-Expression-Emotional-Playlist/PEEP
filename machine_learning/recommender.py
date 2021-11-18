@@ -13,7 +13,7 @@ class Recommender:
     def __init__(self, df):
         self.df = df
 
-    def content_based(self,target_title,top_n):
+    def content_based(self,target_id,top_n):
         df = self.df
 
         """Count-Based Vectorize Features"""
@@ -35,23 +35,24 @@ class Recommender:
         R = df['vote_average']
 
         df['weighted_vote'] = ((v/(v+m)) * R) + ((m/(m+v))*C)
-        df[['title','vote_average','weighted_vote','vote_count']].sort_values('weighted_vote',ascending=False)[:top_n]
+        df[['id','vote_average','weighted_vote','vote_count']].sort_values('weighted_vote',ascending=False)[:top_n]
 
-        similar_movies = self.find_sim_movie(df, genre_sim_sorted_ind, target_title, top_n)
+        similar_movies = self.find_sim_movie(df, genre_sim_sorted_ind, target_id, top_n)
         return dict.fromkeys(similar_movies['id'].values.tolist(),True)
 
 
-    def find_sim_movie(self, df, sorted_ind, title_name, top_n=20): # title_name: 기준 음악, top_n: 기준 음악과 유사한 음악 추천 갯수
-        title_movie = df[df['title'] == title_name]
-        title_index = title_movie.index.values
+    def find_sim_movie(self, df, sorted_ind, song_id, top_n=20): # title_name: 기준 음악, top_n: 기준 음악과 유사한 음악 추천 갯수
+        id_song = df[df['id'] == song_id]
+        id_index = id_song.index.values
         
-        similar_indexes = sorted_ind[title_index, :(top_n*2)] # 2배로 뽑음
+        similar_indexes = sorted_ind[id_index, :(top_n*2)] # 2배로 뽑음
         similar_indexes = similar_indexes.reshape(-1) # 1dem for fancy indexing
         
-        similar_indexes = similar_indexes[similar_indexes != title_index] # 기준 음악 index는 제외
+        similar_indexes = similar_indexes[similar_indexes != id_index] # 기준 음악 index는 제외
         return df.iloc[similar_indexes].sort_values('weighted_vote', ascending=False)[:top_n] # 2배의 후보군 중 weighted_vote 높은 순으로 top_n만큼 추출
 
     def collaborative(self,top_n):
+        
         return dict()
 
 
@@ -81,23 +82,23 @@ def main():
 
     """Set Firebase and Get songs by client from Firebase
 
-    Get [emotion], [genre], [year], [target_title] from client
+    Get [emotion], [genre], [year], [target_id] from client
     ---------------------------------------------------------------
     
     :emotion: 'happy', 'angry', 'fear', 'calm', 'blue'
     :genre: '모든 장르', '댄스', '발라드', '랩∙힙합', '록∙메탈'
     :year: '모든 연도', '2020', '2010', '2000', '1990'
-    :target_title: string type title
+    :target_id: song id for recommendation
     """
 
     set_firebase()
 
-    # TODO: Get [emotion], [genre], [year], [target_title] from client
+    # TODO: Get [emotion], [genre], [year], [target_id] from client
 
     emotion = 'happy'
     genre = '댄스'
     year = '2020'
-    target_title = 'DREAMER'
+    target_id = '-MohtWR6AEiu53ztW4xU'
 
     """Get songs by emotion, genre, year."""
     songs = db.reference("songs").order_by_child('emotions/'+emotion).equal_to(True).get()
@@ -112,18 +113,22 @@ def main():
     :type id: string
     :type genres: list
     :type tags: list
-    :type titile: string
     :type vote_average: float
     :type vote_count: int
     :type year: string
 
     :unused:
+        :type titile: string
         :type emotions: list
         :type artist: string
         :type artwork: string
         :type favorite: int
+
+    .. note::
+        :song_id_list: filltered song id only for collaborative
     """
     song_list = list()
+    song_id_list = list()
     try:
         for key, value in songs.items():
             # Debug info
@@ -132,6 +137,7 @@ def main():
 
             row = dict()
             row['id'] = key
+            song_id_list.append(row['id'])
             # row['artist'] = value['artist'] # unused
             # row['artwork'] = value['artwork'] # unused
 
@@ -154,7 +160,7 @@ def main():
                 tags.append(tag)
             row['tags'] = tags
 
-            row['title'] = value['title']
+            # row['title'] = value['title'] # unused
             row['vote_average'] = value['vote_average']
             row['vote_count'] = value['vote_count']
             row['year'] = value['year']
@@ -164,7 +170,8 @@ def main():
             song_list.append(row)
             pass
         pass
-    except:
+    except Exception as e:
+        print(e)
         pass
 
     songs_df = pd.DataFrame(song_list)
@@ -177,6 +184,8 @@ def main():
     :type song_id: string
     :type rating: float
 
+    .. note::
+        :song_id_list: filltered by emotion, year, genre
     """
 
     ratings = db.reference("ratings").get()
@@ -185,17 +194,18 @@ def main():
     try:
         for key, value in ratings.items():
             # Debug info
-            print("key:",key)
-            print("value:",value)
+            # print("key:",key)
+            # print("value:",value)
 
             for song_id, rating in value.items():
+                if song_id not in song_id_list : continue
                 row = dict()
                 row['user_id'] = key
                 row['song_id'] = song_id
                 row['rating'] = rating
                 rating_list.append(row)
                 # Debug info
-                print(row)
+                # print(row)
                 pass
             pass
         pass
@@ -209,7 +219,7 @@ def main():
     """Recommendation"""
     top_n = 10 # Number of songs to be recommended
     res = dict()
-    res.update(Recommender(df=songs_df).content_based(target_title,top_n))
+    res.update(Recommender(df=songs_df).content_based(target_id,top_n))
     res.update(Recommender(df=ratings_df).collaborative(top_n))
 
     """send recommended songs to client"""
