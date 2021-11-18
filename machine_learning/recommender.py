@@ -37,6 +37,7 @@ class Recommender:
         df['weighted_vote'] = ((v/(v+m)) * R) + ((m/(m+v))*C)
         df[['id','vote_average','weighted_vote','vote_count']].sort_values('weighted_vote',ascending=False)[:top_n]
 
+        # [df]에 없으면 에러난거 고침(미리 필터링했기 때문에 기준 음악이 선택한 감정, 연도, 장르에 포함안되면 목록에없었어서 [has_target] 이용해서 넣었음)
         similar_movies = self.find_sim_movie(df, genre_sim_sorted_ind, target_id, top_n)
         return dict.fromkeys(similar_movies['id'].values.tolist(),True)
 
@@ -89,6 +90,15 @@ def main():
     :genre: '모든 장르', '댄스', '발라드', '랩∙힙합', '록∙메탈'
     :year: '모든 연도', '2020', '2010', '2000', '1990'
     :target_id: song id for recommendation
+    
+    Target song data is always needed.
+    So, If target conditions are not equal to selected conditions, 
+    needs:
+        :target_genre: list. ex.['댄스','발라드']
+        :target_tags: list
+        :target_vote_average: float
+        :target_vote_count: int
+        :target_year: string
     """
 
     set_firebase()
@@ -98,7 +108,13 @@ def main():
     emotion = 'happy'
     genre = '댄스'
     year = '2020'
-    target_id = '-MohtWR6AEiu53ztW4xU'
+    target_id = '-MohtWR6AEiu53ztW4xU' # it has same conditions
+    target_id = '-MoiIKxUXuWAaFSw5h3i'
+    target_genre = ['국내드라마','댄스']
+    target_tags = ['노래','바른연애길잡이','분노','빡침','스트레스', '야경', '웹툰OST', '한강', '화날때', '힙합'] 
+    target_vote_average = 4.3
+    target_vote_count = 1724
+    target_year = '2020'
 
     """Get songs by emotion, genre, year."""
     songs = db.reference("songs").order_by_child('emotions/'+emotion).equal_to(True).get()
@@ -129,6 +145,23 @@ def main():
     """
     song_list = list()
     song_id_list = list()
+
+    has_target = False
+    for key, value in songs.items():
+        if key == target_id:
+            has_target = True
+            break
+
+    if has_target is False:
+        row = dict()
+        row['id'] = target_id
+        row['genres'] = target_genre
+        row['tags'] = target_tags
+        row['vote_average'] = target_vote_average
+        row['vote_count'] = target_vote_count
+        row['year'] = target_year
+        song_list.append(row)
+
     try:
         for key, value in songs.items():
             # Debug info
