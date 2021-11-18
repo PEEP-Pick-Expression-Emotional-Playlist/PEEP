@@ -50,10 +50,6 @@ class _PlayerController extends State<PlayerController> {
                   ),
                   iconSize: widget.previousSize,
                   onPressed: _player.hasPrevious ? _player.seekToPrevious : null,
-
-                  //     (){
-                  //   audioManager.prev(context);
-                  // }
                 )),
         /// Play Button
         StreamBuilder<PlayerState>(
@@ -81,19 +77,8 @@ class _PlayerController extends State<PlayerController> {
                   fit: BoxFit.scaleDown,
                 ),
                 iconSize: widget.playSize,
-                // onPressed: () => search(query)
-                // _player.play,
                 onPressed: () { //재생하는 버튼 눌렀을 때
-                  // ScaffoldMessenger.of(context)
-                  //     .showSnackBar(SnackBar(content: Text('Wait a minute')));
-
-                  // ScaffoldMessenger.of(context).showSnackBar(SnackBar( //선택된 감정과 연도를 보여줌
-                  //     content: Text(AudioManager.emotion +
-                  //         ' ' +
-                  //         AudioManager.year)));
-
                   try {
-                    GlobalKey<State> _dialogKey = GlobalKey<State>();
                     audioManager.play(context);
                       //노래 재생하는 함수
                   } on NoFoundSearchResultException catch(e) {
@@ -101,16 +86,6 @@ class _PlayerController extends State<PlayerController> {
                         .showSnackBar(SnackBar(
                         content: Text(e.toString())));
                   }
-
-                  // if (_player.sequence == null || _player.sequence.isEmpty)
-                  //   {
-                  //     // search(query)
-                  //
-                  //     ScaffoldMessenger.of(context).showSnackBar(
-                  //         SnackBar(content: Text('재생할 수 있는 노래가 존재하지 않습니다')))
-                  //   }
-                  // else
-                  //   {audioManager.play(context)}
                 },
               );
             } else if (processingState != ProcessingState.completed) { //재생중일때
