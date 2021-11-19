@@ -165,7 +165,7 @@ def main():
 
     """Set Firebase and Get songs by client from Firebase
 
-    Get [emotion], [genre], [year], [target_id] from client
+    Get [emotion], [genre], [year], [target_id], [user_id] from client
     ---------------------------------------------------------------
     
     :emotion: 'happy', 'angry', 'fear', 'calm', 'blue'
@@ -191,13 +191,8 @@ def main():
     emotion = 'happy'
     genre = '댄스'
     year = '2020'
-    target_id = '-MohtWR6AEiu53ztW4xU' # it has same conditions
-    # target_id = '-MoiIKxUXuWAaFSw5h3i'
-    target_genre = ['국내드라마','댄스']
-    target_tags = ['노래','바른연애길잡이','분노','빡침','스트레스', '야경', '웹툰OST', '한강', '화날때', '힙합'] 
-    target_vote_average = 4.3
-    target_vote_count = 1724
-    target_year = '2020'
+    # target_id = '-MohtWR6AEiu53ztW4xU' # it has same conditions
+    target_id = '-MoiIKxUXuWAaFSw5h3i'
     user_id = 'q1ysgPq4AXarDDW1e5GKqlBaj5L2'
     user_id = 'dd'
 
@@ -238,14 +233,25 @@ def main():
             break
 
     if has_target is False:
+        target = db.reference("songs/"+target_id).get()
         row = dict()
+
         row['id'] = target_id
         song_id_list.append(row['id'])
-        row['genres'] = target_genre
+
+        target_genres = list()
+        for genre in target['genre']:
+            target_genres.append(genre)
+        row['genres'] = target_genres
+
+        target_tags = list()
+        for tag in target['tags']:
+            target_tags.append(tag)
         row['tags'] = target_tags
-        row['vote_average'] = target_vote_average
-        row['vote_count'] = target_vote_count
-        row['year'] = target_year
+        
+        row['vote_average'] = target['vote_average']
+        row['vote_count'] = target['vote_count']
+        row['year'] = target['year']
         song_list.append(row)
 
     try:
@@ -332,7 +338,10 @@ def main():
     except:
         pass
 
-    if not has_user_id and ratings is not None:
+    # Debug info
+    print(rating_list)
+    
+    if (not has_user_id) and (rating_list):
         row = dict()
         row['user_id'] = user_id
         row['song_id'] = target_id
@@ -353,10 +362,9 @@ def main():
     res.update(Recommender(df=songs_df).content_based(target_id,top_n))
 
     """send recommended songs to client"""
-    # TODO: send song information to client using res and firebase
-    # TODO: [res] is dict of song id
-    # TODO: So, 1. get *items* from '/songs' in firebase using [res]
-    # TODO: and 2. send *items* to client
+    # TODO: send [res] to client
+    # TODO: [res] is dict of song ids
+
     for r in res:
         print(r)
         pass
