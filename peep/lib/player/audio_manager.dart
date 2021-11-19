@@ -85,8 +85,8 @@ class AudioManager {
     // Listen to errors during playback.
     _player.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
-    });
+          print('A stream error occurred: $e');
+        });
   }
 
   Stream<PositionData> get positionDataStream =>
@@ -94,8 +94,9 @@ class AudioManager {
           _player.positionStream,
           _player.bufferedPositionStream,
           _player.durationStream,
-          (position, bufferedPosition, duration) => PositionData(
-              position, bufferedPosition, duration ?? Duration.zero));
+              (position, bufferedPosition, duration) =>
+              PositionData(
+                  position, bufferedPosition, duration ?? Duration.zero));
 
   play(context) {
     if (_player.sequence == null || _player.sequence.isEmpty) {
@@ -110,7 +111,7 @@ class AudioManager {
   addSong(recommendationType, context) async {
     debugPrint(emotion);
 
-    List<dynamic> items =[];
+    List<dynamic> items = [];
 
     switch (recommendationType) {
       case RecommendationType.RANDOM_ALL:
@@ -126,7 +127,7 @@ class AudioManager {
         break;
     }
 
-    items.forEach ((item) async {
+    items.forEach((item) async {
       var query = item['title'] + ' ' + item['artist'];
 
       debugPrint(_playlist.length.toString() +
@@ -229,18 +230,19 @@ class AudioManager {
 
 
   Future<List> getRecommendedSongs() async {
-    var metadata = _playlist.sequence[_player.currentIndex].tag as AudioMetadata;
+    var metadata = _playlist.sequence[_player.currentIndex]
+        .tag as AudioMetadata;
     try {
       Secret secret = await SecretLoader(secretPath: "secrets.json").load();
       Dio dio = new Dio();
-       await dio.post(
-          secret.webUrl+??, //TODO: recommender.py 돌릴 주소
+      await dio.post(
+          secret.webUrl+ ?? , //TODO: recommender.py 돌릴 주소
           data: {
             'emotion': json.encode(emotion),
-            'genre':json.encode(genre),
-            'year':json.encode(year),
-            'target_id':json.encode(metadata.key),
-            'user_id':json.encode(UserManager.instance.uid),
+            'genre': json.encode(genre),
+            'year': json.encode(year),
+            'target_id': json.encode(metadata.key),
+            'user_id': json.encode(UserManager.instance.uid),
           }
       ).then((value) {
         dio.close();
@@ -253,14 +255,16 @@ class AudioManager {
       //받아온 결과가 곡 아이디 문자열로 이루어진 list라 가정
       List<String> res = [];
       res = response.data;
-      res.forEach((element) {
-        DBManager.instance.ref.child("songs/"+element).get();
-        //TODO: 테스트 필요
-        //나이거지금 하는중임
+      List<Map> ret = [];
+      res.forEach((element) async {
+        var value = await DBManager.instance.ref.child("songs/" + element)
+            .get();
+        Map val = value.value;
+        val['key'] = element;
+        //TODO: 잘 들어갔는지 확인 필요
+        ret.add(val);
       });
-
-
-      return ;
+      return ret;
     } catch (e) {
       Exception(e);
     }
@@ -315,19 +319,19 @@ class AudioManager {
       yt.videos.streamsClient
           .get(audioInfo)
           .map((s) {
-            received += s.length;
-            var percentage = ((received / length) * 100).toInt();
-            var checkList = [1,5,10,20,40,50,70,90,99];
-            if (checkList.contains(percentage)) {
-              streamController.add(percentage);
-            }
-            // print("${(received / length)} %");
-            return s;
-          })
+        received += s.length;
+        var percentage = ((received / length) * 100).toInt();
+        var checkList = [1, 5, 10, 20, 40, 50, 70, 90, 99];
+        if (checkList.contains(percentage)) {
+          streamController.add(percentage);
+        }
+        // print("${(received / length)} %");
+        return s;
+      })
           .pipe(fileStream)
           .whenComplete(() {
-            streamController.close();
-          });
+        streamController.close();
+      });
       yield* streamController.stream;
     } catch (e) {
       throw e;
@@ -361,22 +365,22 @@ class AudioManager {
 
   _getByTag() async {
     var metadata =
-        _playlist.sequence[_player.currentIndex].tag as AudioMetadata;
+    _playlist.sequence[_player.currentIndex].tag as AudioMetadata;
     var tags = metadata.tags;
     var randomTag = tags[Random().nextInt(metadata.tags.length)];
     debugPrint(randomTag);
 
     var value =
-        await ref.orderByChild("tags/" + randomTag).equalTo(true).once();
+    await ref.orderByChild("tags/" + randomTag).equalTo(true).once();
 
     Map queryResult = value.value;
     queryResult = _removeByPass(queryResult);
     // value.value type: _InternalLinkedHashMap
     // debugPrint("now genre:"+genre+", year"+year);
-    if(genre != "모든 장르"){
+    if (genre != "모든 장르") {
       queryResult = _getByGenre(queryResult);
     }
-    if(year != "모든 연도"){
+    if (year != "모든 연도") {
       queryResult = _getByYear(queryResult);
     }
 
@@ -394,30 +398,32 @@ class AudioManager {
     return tmp[random];
   }
 
-  Map _getByGenre(Map map){
+  Map _getByGenre(Map map) {
     Map res = Map();
     map.forEach((key, value) {
       List list = value['genre'].keys.toList();
-      if(list.contains(genre)){
-        res[key]=value;
+      if (list.contains(genre)) {
+        res[key] = value;
       }
     });
     return map;
   }
-  Map _getByYear(Map map){
+
+  Map _getByYear(Map map) {
     Map res = Map();
     map.forEach((key, value) {
-      if(value['year']==year){
-        res[key]=value;
+      if (value['year'] == year) {
+        res[key] = value;
       }
     });
     return map;
   }
-  Map _removeByPass(Map map){
+
+  Map _removeByPass(Map map) {
     Map res = Map();
     map.forEach((key, value) {
-      if(!passList.contains(value['key'])){
-        res[key]=value;
+      if (!passList.contains(value['key'])) {
+        res[key] = value;
       }
     });
     return map;
@@ -425,16 +431,16 @@ class AudioManager {
 
   _getByRandom() async {
     var value =
-        await ref.orderByChild("emotions/" + emotion).equalTo(true).once();
+    await ref.orderByChild("emotions/" + emotion).equalTo(true).once();
 
     Map queryResult = value.value;
     queryResult = _removeByPass(queryResult);
     // value.value type: _InternalLinkedHashMap
     // debugPrint("now genre:"+genre+", year"+year);
-    if(genre != "모든 장르"){
+    if (genre != "모든 장르") {
       queryResult = _getByGenre(queryResult);
     }
-    if(year != "모든 연도"){
+    if (year != "모든 연도") {
       queryResult = _getByYear(queryResult);
     }
 
@@ -446,9 +452,9 @@ class AudioManager {
     });
 
     List res = [];
-    for(int i =0 ;i<5;i++){
-    int random = Random().nextInt(tmp.length);
-    res.add(tmp[random]);
+    for (int i = 0; i < 5; i++) {
+      int random = Random().nextInt(tmp.length);
+      res.add(tmp[random]);
     }
 
     return res;
