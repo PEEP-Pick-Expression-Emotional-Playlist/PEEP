@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:peep/login/user_manager.dart';
+import 'package:peep/sub/search_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../db_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -134,95 +135,54 @@ class _UserPageState extends State<UserPage> {
             // 컨테이너들을 ListView의 자식들로 추가
             children: <Widget>[
               Container(
-                child: SvgPicture.asset('assets/itd/ITD_button_1-1.svg')
-                /*child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xfff6f7f9),
-                    ),
-                    onPressed: () {
-                      //버튼 클릭 시 사용자가 커스터마이징한 CALM 플레이리스트
-                    },
-                    child: Text(
-                      'HAPPY',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),*/
+                child: InkWell(child:SvgPicture.asset('assets/itd/ITD_button_1-1.svg'),
+                onTap: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHappyPlayList()),
+                  );
+                },)
+
               ),
               Container(
-                  child: SvgPicture.asset('assets/itd/ITD_button_1-2.svg')
-                /*child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xfff6f7f9),
-                    ),
-                    onPressed: () {
-                      //버튼 클릭 시 사용자가 커스터마이징한 CALM 플레이리스트
-                    },
-                    child: Text(
-                      'BLUE',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),*/
+                  child: InkWell(child:SvgPicture.asset('assets/itd/ITD_button_1-2.svg'),
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyBluePlayList()),
+                      );
+                    },)
+
               ),
               Container(
-                  child: SvgPicture.asset('assets/itd/ITD_button_1-3.svg')
-                /*child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xfff6f7f9),
-                    ),
-                    onPressed: () {
-                      //버튼 클릭 시 사용자가 커스터마이징한 CALM 플레이리스트
-                    },
-                    child: Text(
-                      'ANGRY',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),*/
+                  child: InkWell(child:SvgPicture.asset('assets/itd/ITD_button_1-3.svg'),
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyAngryPlayList()),
+                      );
+                    },)
+
               ),
               Container(
-                  child: SvgPicture.asset('assets/itd/ITD_button_1-4.svg')
-                /*child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xfff6f7f9),
-                    ),
-                    onPressed: () {
-                      //버튼 클릭 시 사용자가 커스터마이징한 CALM 플레이리스트
-                    },
-                    child: Text(
-                      'CALM',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),*/
+                  child: InkWell(child:SvgPicture.asset('assets/itd/ITD_button_1-4.svg'),
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyCalmPlayList()),
+                      );
+                    },)
+
               ),
               Container(
-                  child: SvgPicture.asset('assets/itd/ITD_button_1-5.svg')
-                /*child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xfff6f7f9),
-                    ),
-                    onPressed: () {
-                      //버튼 클릭 시 사용자가 커스터마이징한 CALM 플레이리스트
-                    },
-                    
-                    child: Text(
-                      'FEAR',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),*/
+                  child: InkWell(child:SvgPicture.asset('assets/itd/ITD_button_1-5.svg'),
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyFearPlayList()),
+                      );
+                    },)
+
                 )
                     ],
                   ),
@@ -230,24 +190,8 @@ class _UserPageState extends State<UserPage> {
                 SizedBox(
                 height: 10.0,
                 ),
-                // SizedBox(
-                //   width: double.infinity,
-                //   height: 50,
-                //   child: Container(
-                //     alignment: Alignment.centerLeft,
-                //     color: Color(0xFFF3F4F6),
-                //     child: Text(
-                //       '   좋아요 한 곡',
-                //       style: TextStyle(
-                //           color: Colors.black,
-                //           fontSize: 15,
-                //           fontWeight: FontWeight.bold),
-                //     ),
-                    
-                //   ),
-                  
 
-                // ),
+
                 Container(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -358,7 +302,6 @@ class _likeSongState extends State<likeSongs>{
                     
                     Text(snap.data.snapshot.value.toString()),
                     Text(snap.data.snapshot.value[1].toString()),
-                    //controlSearching('-MnYGbGO4FDnYZIzp7qe'),
                       
                   ],
                 );
@@ -369,193 +312,6 @@ class _likeSongState extends State<likeSongs>{
   }
 }
 
-class LikeSongs extends StatefulWidget {
-  @override
-  _SearchScreenState createState() => _SearchScreenState();
-}
-
-class _SearchScreenState extends State<LikeSongs> {
-  final fb = FirebaseDatabase.instance;
-  
-  String _searchText = "";
-
-  _SearchScreenState() {
-    
-  }
-
- 
-
-  @override
-  Widget build(BuildContext context) {
-    final ref = fb.reference();
-    controlSearching("-MnYFlz3HZWuz10dTQD4");
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.0,
-        
-      ),
-      body: Center(
-          child: SingleChildScrollView(
-        child: Column(
-          
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              controlSearching("-MnYFlz3HZWuz10dTQD4"),
-              futureSearchResults == null
-                  ? displayNoSearchResultScreen()
-                  : diplaySearchResultScreen(),
-            ]),
-      )),
-    );
-  }
-}
-
-displayNoSearchResultScreen() {
-  return Container(
-      child: Center(
-    child: ListView(
-      shrinkWrap: true,
-      children: <Widget>[
-        Text(
-          '좋아요 한 곡이 없습니다.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 20),
-        )
-      ],
-    ),
-  ));
-}
-
-diplaySearchResultScreen() {
-  return SongResult();
-}
-
-class SongResult extends StatefulWidget {
-  @override
-  _SongResultState createState() => _SongResultState();
-}
-
-class _SongResultState extends State<SongResult> {
-  bool _favoriteSong = false;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.all(3),
-        child: Container(
-          child: Column(
-            children: <Widget>[
-              ListTile(
-                leading: (
-                  Image.network(GetSongCover(futureSearchResults))),
-
-
-                title: Text(
-                  GetSongTitle(futureSearchResults),
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(
-                  GetSongArtist(futureSearchResults),
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 13,
-                  ),
-                ),
-                
-              ),
-            ],
-          ),
-        ));
-  }
-}
-
-
-
-class SongInfo {
-  String artist;
-  //List<String> emotions;
-  //List<String> genre;
-  //List<String> tags;
-  String title;
-  //int year;
-
-  SongInfo(String artist, String title) {
-    this.artist = artist;
-    this.title = title;
-  }
-
-  String getTitle() {
-    return this.title;
-  }
-
-  String getArtist() {
-    return this.artist;
-  }
-}
-
-GetSongTitle(String sinfo) {
-  String songTitle;
-  String info;
-  info = sinfo;
-
-  String token = ', tags:';
-  String token2 = 'title: ';
-  int lastIndex = info.indexOf(token);
-  int startIndex = info.indexOf(token2);
-  songTitle = info.substring(startIndex + 7, lastIndex);
-  return songTitle;
-}
-
-GetSongArtist(String sinfo) {
-  String songArtist;
-  String info;
-  info = sinfo;
-
-  String token = ', year:';
-  String token2 = 'artist: ';
-  int lastIndex = info.indexOf(token);
-  int startIndex = info.indexOf(token2);
-  songArtist = info.substring(startIndex + 8, lastIndex);
-  return songArtist;
-}
-
-GetSongCover(String sinfo){
-  String songCover;
-  String info;
-  info = sinfo;
-
-  String token = ', title';
-  String token2 = 'artwork: ';
-  int lastIndex = info.indexOf(token);
-  int startIndex = info.indexOf(token2);
-  songCover = info.substring(startIndex + 9, lastIndex);
-  return songCover;
-}
-
-
-String futureSearchResults;
-controlSearching(str) {
-  String _searchText = '-MnYFlz3HZWuz10dTQD4';
-  final ref = FirebaseDatabase.instance.reference();
-
-  ref
-      .child("songs")
-      .equalTo("-MnYFlz3HZWuz10dTQD4")
-      .once()
-      .then((DataSnapshot data) {
-    if (data != null) {
-      print(data.value);
-      print(GetSongTitle(data.value.toString()));
-      print(GetSongArtist(data.value.toString()));
-      futureSearchResults = data.value.toString();
-    } else
-      print('일치하는 곡이 없습니다.');
-  });
-}
 
 // 최근에 들은 곡
 class recentPlayList extends StatefulWidget{
@@ -627,5 +383,228 @@ class _recentPlayList extends State<recentPlayList>{
 }
 
 
+class MyHappyPlayList extends StatefulWidget {
+  _MyHappyPlayList createState() => _MyHappyPlayList();
+}
 
+class _MyHappyPlayList extends State<MyHappyPlayList>{
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Happy PlayList',
+        ),),
+      body: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemCount: HappySongList.length,
+          itemBuilder: (BuildContext context, int i){
+            return ListTile(
+                leading: (
+                Image.network(HappySongList[i]['artwork'])),
+
+
+            title: Text(HappySongList[i]['title'],
+            style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(HappySongList[i]['artist'],
+            style: TextStyle(
+            color: Colors.black,
+            fontSize: 13,
+            ),
+            ),
+              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
+              onTap: (){},),
+            );
+          }),
+      );
+  }
+}
+
+class MyBluePlayList extends StatefulWidget {
+  _MyBluePlayList createState() => _MyBluePlayList();
+}
+
+class _MyBluePlayList extends State<MyBluePlayList>{
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Blue PlayList',
+        ),),
+      body: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemCount: BlueSongList.length,
+          itemBuilder: (BuildContext context, int i){
+            return ListTile(
+              leading: (
+                  Image.network(BlueSongList[i]['artwork'])),
+
+
+              title: Text(BlueSongList[i]['title'],
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(BlueSongList[i]['artist'],
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13,
+                ),
+              ),
+              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
+                onTap: (){},),
+            );
+          }),
+    );
+  }
+}
+
+class MyAngryPlayList extends StatefulWidget {
+  _MyAngryPlayList createState() => _MyAngryPlayList();
+}
+
+class _MyAngryPlayList extends State<MyAngryPlayList>{
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Angry PlayList',
+        ),),
+      body: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemCount: AngrySongList.length,
+          itemBuilder: (BuildContext context, int i){
+            return ListTile(
+              leading: (
+                  Image.network(AngrySongList[i]['artwork'])),
+
+
+              title: Text(AngrySongList[i]['title'],
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(AngrySongList[i]['artist'],
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13,
+                ),
+              ),
+              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
+                onTap: (){},),
+            );
+          }),
+    );
+  }
+}
+
+class MyCalmPlayList extends StatefulWidget {
+  _MyCalmPlayList createState() => _MyCalmPlayList();
+}
+
+class _MyCalmPlayList extends State<MyCalmPlayList>{
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Calm PlayList',
+        ),),
+      body: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemCount: CalmSongList.length,
+          itemBuilder: (BuildContext context, int i){
+            return ListTile(
+              leading: (
+                  Image.network(CalmSongList[i]['artwork'])),
+
+
+              title: Text(CalmSongList[i]['title'],
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(CalmSongList[i]['artist'],
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13,
+                ),
+              ),
+              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
+                onTap: (){},),
+            );
+          }),
+    );
+  }
+}
+
+class MyFearPlayList extends StatefulWidget {
+  _MyFearPlayList createState() => _MyFearPlayList();
+}
+
+class _MyFearPlayList extends State<MyFearPlayList>{
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Fear PlayList',
+        ),),
+      body: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemCount: FearSongList.length,
+          itemBuilder: (BuildContext context, int i){
+            return ListTile(
+              leading: (
+                  Image.network(FearSongList[i]['artwork'])),
+
+
+              title: Text(FearSongList[i]['title'],
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(FearSongList[i]['artist'],
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13,
+                ),
+              ),
+              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
+                onTap: (){},),
+            );
+          }),
+    );
+  }
+}
 
