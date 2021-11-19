@@ -119,8 +119,9 @@ class AudioManager {
         break;
       case RecommendationType.RANDOM_TAG:
         try {
-          // item = await _getByTag();
-          items = await getRecommendedSongs();
+          items = await _getByTag();
+          /// TODO NOW BELOW
+          // items = await getRecommendedSongs();
         } catch (e) {
           items = await _getByRandom();
         }
@@ -228,47 +229,49 @@ class AudioManager {
     });
   }
 
-
-  Future<List> getRecommendedSongs() async {
-    var metadata = _playlist.sequence[_player.currentIndex]
-        .tag as AudioMetadata;
-    try {
-      Secret secret = await SecretLoader(secretPath: "secrets.json").load();
-      Dio dio = new Dio();
-      await dio.post(
-          secret.webUrl+ ?? , //TODO: recommender.py 돌릴 주소
-          data: {
-            'emotion': json.encode(emotion),
-            'genre': json.encode(genre),
-            'year': json.encode(year),
-            'target_id': json.encode(metadata.key),
-            'user_id': json.encode(UserManager.instance.uid),
-          }
-      ).then((value) {
-        dio.close();
-
-        //
-      });
-      //TODO: 곡 정보를 받아서 반환
-      var response = await dio.get(secret.webUrl+ ??);
-      print(response);
-      //받아온 결과가 곡 아이디 문자열로 이루어진 list라 가정
-      List<String> res = [];
-      res = response.data;
-      List<Map> ret = [];
-      res.forEach((element) async {
-        var value = await DBManager.instance.ref.child("songs/" + element)
-            .get();
-        Map val = value.value;
-        val['key'] = element;
-        //TODO: 잘 들어갔는지 확인 필요
-        ret.add(val);
-      });
-      return ret;
-    } catch (e) {
-      Exception(e);
-    }
-  }
+  /// TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW
+  /// 에러나는 코드라 주석처리해놈
+  // Future<List> getRecommendedSongs() async {
+  //   var metadata = _playlist.sequence[_player.currentIndex]
+  //       .tag as AudioMetadata;
+  //   try {
+  //     Secret secret = await SecretLoader(secretPath: "secrets.json").load();
+  //     Dio dio = new Dio();
+  //     await dio.post(
+  //         secret.webUrl+ ?? , //TODO: recommender.py 돌릴 주소
+  //         data: {
+  //           'emotion': json.encode(emotion),
+  //           'genre': json.encode(genre),
+  //           'year': json.encode(year),
+  //           'target_id': json.encode(metadata.key),
+  //           'user_id': json.encode(UserManager.instance.uid),
+  //         }
+  //     ).then((value) {
+  //       dio.close();
+  //
+  //       //
+  //     });
+  //     //TODO: 곡 정보를 받아서 반환
+  //     var response = await dio.get(secret.webUrl+ ??);
+  //     print(response);
+  //     //받아온 결과가 곡 아이디 문자열로 이루어진 list라 가정
+  //     List<String> res = [];
+  //     res = response.data;
+  //     List<Map> ret = [];
+  //     res.forEach((element) async {
+  //       var value = await DBManager.instance.ref.child("songs/" + element)
+  //           .get();
+  //       Map val = value.value;
+  //       val['key'] = element;
+  //       //TODO: 잘 들어갔는지 확인 필요
+  //       ret.add(val);
+  //     });
+  //     return ret;
+  //   } catch (e) {
+  //     Exception(e);
+  //   }
+  // }
+  /// TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW
 
   Future<List> getAudioInfo(query) async {
     var resList = await yt.search.getVideos(query);
@@ -393,9 +396,13 @@ class AudioManager {
       }
     });
 
-    int random = Random().nextInt(tmp.length);
+    List res = [];
+    for (int i = 0; i < 5; i++) {
+      int random = Random().nextInt(tmp.length);
+      res.add(tmp[random]);
+    }
 
-    return tmp[random];
+    return res;
   }
 
   Map _getByGenre(Map map) {
