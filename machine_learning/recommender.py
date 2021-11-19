@@ -8,6 +8,9 @@ import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+from sklearn.metrics import mean_squared_error
+import warnings; warnings.filterwarnings('ignore')
+
 class Recommender:
 
     def __init__(self, df):
@@ -54,10 +57,87 @@ class Recommender:
         similar_indexes = similar_indexes[similar_indexes != id_index] # 기준 음악 index는 제외
         return df.iloc[similar_indexes].sort_values('weighted_vote', ascending=False)[:top_n] # 2배의 후보군 중 weighted_vote 높은 순으로 top_n만큼 추출
 
-    def collaborative(self,top_n):
-        
-        return dict()
+    def collaborative(self,user_id, top_n):
+        ratings = self.df
 
+        """사용자-아이템 평점 행렬"""
+        ratings_matrix = ratings.pivot_table('rating', index='user_id', columns='song_id')
+        ratings_matrix = ratings_matrix.fillna(0) # NaN 값을 모두 0 으로 변환
+
+
+        """Cosine Similarity"""
+        ratings_matrix_T = ratings_matrix.transpose()
+        item_sim = cosine_similarity(ratings_matrix_T, ratings_matrix_T)
+        # cosine_similarity() 로 반환된 넘파이 행렬을 DataFrame으로 변환
+        item_sim_df = pd.DataFrame(data=item_sim, index=ratings_matrix.columns,columns=ratings_matrix.columns)
+        # print(item_sim_df.get(target_id).sort_values(ascending=False)[:6]) # item_sim_df.get(target_id) : None
+
+        # top-n 유사도를 가진 데이터들에 대해서만 예측 평점 계산
+        ratings_pred = self.predict_rating_topsim(ratings_matrix.values , item_sim_df.values, n=(top_n*2))
+
+        # 계산된 예측 평점 데이터는 DataFrame으로 재생성
+        ratings_pred_matrix = pd.DataFrame(data=ratings_pred, index= ratings_matrix.index, columns = ratings_matrix.columns)
+
+        # Debug info
+        # user_rating_id = ratings_matrix.loc[user_id, :]
+        # print(user_rating_id[ user_rating_id > 0].sort_values(ascending=False)[:10])
+
+        # 사용자가 관람하지 않는 음악id 추출 
+        unlistened_list = self.get_unlistened_songs(ratings_matrix, user_id)
+
+        # 아이템 기반의 인접 이웃 협업 필터링으로 음악 추천 
+        recomm_songs = self.recomm_song_by_userid(ratings_pred_matrix, user_id, unlistened_list, top_n=top_n)
+
+        # 평점 데이타를 DataFrame으로 생성. 
+        # recomm_songs = pd.DataFrame(data=recomm_songs.values,index=recomm_songs.index,columns=['pred_score'])
+
+        d = dict()
+        d.update((x[0],True) for x in recomm_songs.items())
+        return d
+
+    # 사용자가 평점을 부여한 영화에 대해서만 예측 성능 평가 MSE 를 구함. 
+    def get_mse(pred, actual):
+        # Ignore nonzero terms.
+        pred = pred[actual.nonzero()].flatten()
+        actual = actual[actual.nonzero()].flatten()
+        return mean_squared_error(pred, actual)
+
+    def predict_rating_topsim(self, ratings_arr, item_sim_arr, n=20):
+        # 사용자-아이템 평점 행렬 크기만큼 0으로 채운 예측 행렬 초기화
+        pred = np.zeros(ratings_arr.shape)
+
+        # 사용자-아이템 평점 행렬의 열 크기만큼 Loop 수행. 
+        for col in range(ratings_arr.shape[1]):
+            # 유사도 행렬에서 유사도가 큰 순으로 n개 데이터 행렬의 index 반환
+            top_n_items = [np.argsort(item_sim_arr[:, col])[:-n-1:-1]]
+            # 개인화된 예측 평점을 계산
+            for row in range(ratings_arr.shape[0]):
+                pred[row, col] = item_sim_arr[col, :][top_n_items].dot(ratings_arr[row, :][top_n_items].T)
+                pred[row, col] /= np.sum(np.abs(item_sim_arr[col, :][top_n_items]))        
+        return pred
+
+    def get_unlistened_songs(self,ratings_matrix, user_id):
+        # user_id로 입력받은 사용자의 모든 음악정보 추출하여 Series로 반환함. 
+        # 반환된 user_rating 은 음악 id를 index로 가지는 Series 객체임. 
+        user_rating = ratings_matrix.loc[user_id,:]
+        
+        # user_rating이 0보다 크면 기존에 관람한 음악임. 대상 index를 추출하여 list 객체로 만듬
+        already_listened = user_rating[ user_rating > 0].index.tolist()
+        
+        # 모든 음악명을 list 객체로 만듬. 
+        songs_list = ratings_matrix.columns.tolist()
+        
+        # list comprehension으로 already_listened에 해당하는 movie는 songs_list에서 제외함. 
+        unlistened_list = [ movie for movie in songs_list if movie not in already_listened]
+        
+        return unlistened_list
+
+    def recomm_song_by_userid(self,pred_df, user_id, unlistened_list, top_n=10):
+        # 예측 평점 DataFrame에서 사용자id index와 unlistened_list로 들어온 음악명 컬럼을 추출하여
+        # 가장 예측 평점이 높은 순으로 정렬함. 
+        recomm_songs = pred_df.loc[user_id, unlistened_list].sort_values(ascending=False)[:top_n]
+        return recomm_songs
+    
 
 def set_firebase():
     firebase_config_path = './firebaseConfig.json'
@@ -91,7 +171,8 @@ def main():
     :emotion: 'happy', 'angry', 'fear', 'calm', 'blue'
     :genre: '모든 장르', '댄스', '발라드', '랩∙힙합', '록∙메탈'
     :year: '모든 연도', '2020', '2010', '2000', '1990'
-    :target_id: song id for recommendation
+    :target_id: string. song id for recommendation
+    :user_id: string. client id
     
     Target song data is always needed.
     So, If target conditions are not equal to selected conditions, 
@@ -111,12 +192,14 @@ def main():
     genre = '댄스'
     year = '2020'
     target_id = '-MohtWR6AEiu53ztW4xU' # it has same conditions
-    target_id = '-MoiIKxUXuWAaFSw5h3i'
+    # target_id = '-MoiIKxUXuWAaFSw5h3i'
     target_genre = ['국내드라마','댄스']
     target_tags = ['노래','바른연애길잡이','분노','빡침','스트레스', '야경', '웹툰OST', '한강', '화날때', '힙합'] 
     target_vote_average = 4.3
     target_vote_count = 1724
     target_year = '2020'
+    user_id = 'q1ysgPq4AXarDDW1e5GKqlBaj5L2'
+    user_id = 'dd'
 
     """Get songs by emotion, genre, year."""
     songs = db.reference("songs").order_by_child('emotions/'+emotion).equal_to(True).get()
@@ -157,6 +240,7 @@ def main():
     if has_target is False:
         row = dict()
         row['id'] = target_id
+        song_id_list.append(row['id'])
         row['genres'] = target_genre
         row['tags'] = target_tags
         row['vote_average'] = target_vote_average
@@ -173,18 +257,7 @@ def main():
             row = dict()
             row['id'] = key
             song_id_list.append(row['id'])
-            # row['artist'] = value['artist'] # unused
-            # row['artwork'] = value['artwork'] # unused
 
-            # unused
-            # emotions = list()
-            # for emotion in value['emotions']:
-            #     # Debug info
-            #     # print('key: ',emotion)
-            #     emotions.append(emotion)
-            # row['emotions'] = emotions
-
-            # row['favorite'] = value['favorite'] # unused
             genres = list()
             for genre in value['genre']:
                 genres.append(genre)
@@ -195,7 +268,6 @@ def main():
                 tags.append(tag)
             row['tags'] = tags
 
-            # row['title'] = value['title'] # unused
             row['vote_average'] = value['vote_average']
             row['vote_count'] = value['vote_count']
             row['year'] = value['year']
@@ -205,8 +277,7 @@ def main():
             song_list.append(row)
             pass
         pass
-    except Exception as e:
-        print(e)
+    except:
         pass
 
     songs_df = pd.DataFrame(song_list)
@@ -223,17 +294,31 @@ def main():
         :song_id_list: filltered by emotion, year, genre
     """
 
+    # Test Query ##################################
+    # with open("collaborative_item.json", "r") as f:
+    #     file_contents = json.load(f)
+    # db.reference("ratings").set(file_contents)
+    ###############################################
+
     ratings = db.reference("ratings").get()
 
+    # Test Query ####################
+    # db.reference("ratings").set({})
+    #################################
+
     rating_list = list()
+    # Debug info
+    # print(song_id_list)
+    has_user_id = False
     try:
         for key, value in ratings.items():
             # Debug info
             # print("key:",key)
             # print("value:",value)
+            if key == user_id: has_user_id = True
 
             for song_id, rating in value.items():
-                if song_id not in song_id_list : continue
+                if song_id not in song_id_list: continue
                 row = dict()
                 row['user_id'] = key
                 row['song_id'] = song_id
@@ -245,7 +330,14 @@ def main():
             pass
         pass
     except:
-         pass
+        pass
+
+    if not has_user_id and ratings is not None:
+        row = dict()
+        row['user_id'] = user_id
+        row['song_id'] = target_id
+        row['rating'] = 0
+        rating_list.append(row)
 
     ratings_df = pd.DataFrame(rating_list)
     # Debug info
@@ -254,8 +346,11 @@ def main():
     """Recommendation"""
     top_n = 10 # Number of songs to be recommended
     res = dict()
+    if not ratings_df.empty: # 조건에 맞는 음악이 하나라도 평가되지 않았으면 추천해줄 수가 없다
+        res.update(Recommender(df=ratings_df).collaborative(user_id,top_n))
+    else:
+        top_n = 20
     res.update(Recommender(df=songs_df).content_based(target_id,top_n))
-    res.update(Recommender(df=ratings_df).collaborative(top_n))
 
     """send recommended songs to client"""
     # TODO: send song information to client using res and firebase
