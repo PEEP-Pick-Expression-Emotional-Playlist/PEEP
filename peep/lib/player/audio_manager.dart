@@ -1,12 +1,18 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:audio_session/audio_session.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:peep/login/user_manager.dart';
+import 'package:peep/secret/secret.dart';
+import 'package:peep/secret/secret_loader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -79,8 +85,8 @@ class AudioManager {
     // Listen to errors during playback.
     _player.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
-    });
+          print('A stream error occurred: $e');
+        });
   }
 
   Stream<PositionData> get positionDataStream =>
@@ -88,8 +94,9 @@ class AudioManager {
           _player.positionStream,
           _player.bufferedPositionStream,
           _player.durationStream,
-          (position, bufferedPosition, duration) => PositionData(
-              position, bufferedPosition, duration ?? Duration.zero));
+              (position, bufferedPosition, duration) =>
+              PositionData(
+                  position, bufferedPosition, duration ?? Duration.zero));
 
   play(context) {
     if (_player.sequence == null || _player.sequence.isEmpty) {
@@ -104,119 +111,167 @@ class AudioManager {
   addSong(recommendationType, context) async {
     debugPrint(emotion);
 
-    var item;
+    List<dynamic> items = [];
 
     switch (recommendationType) {
       case RecommendationType.RANDOM_ALL:
-        item = await _getByRandom();
+        items = await _getByRandom();
         break;
       case RecommendationType.RANDOM_TAG:
         try {
-          item = await _getByTag();
+          items = await _getByTag();
+          /// TODO NOW BELOW
+          // items = await getRecommendedSongs();
         } catch (e) {
-          item = await _getByRandom();
+          items = await _getByRandom();
         }
         break;
     }
 
-    var query = item['title'] + ' ' + item['artist'];
+    items.forEach((item) async {
+      var query = item['title'] + ' ' + item['artist'];
 
-    debugPrint(_playlist.length.toString() +
-        ' ' +
-        item['key'] +
-        ' ' +
-        item['title'] +
-        ' ' +
-        item['artist'] +
-        ' ' +
-        item['year'] +
-        ' ' +
-        item['emotions'].keys.toList().toString() +
-        ' ' +
-        item['genre'].keys.toList().toString() +
-        ' ' +
-        item['tags'].keys.toList().toString() +
-        ' ' +
-        item['favorite'].toString());
+      debugPrint(_playlist.length.toString() +
+          ' ' +
+          item['key'] +
+          ' ' +
+          item['title'] +
+          ' ' +
+          item['artist'] +
+          ' ' +
+          item['year'] +
+          ' ' +
+          item['emotions'].keys.toList().toString() +
+          ' ' +
+          item['genre'].keys.toList().toString() +
+          ' ' +
+          item['tags'].keys.toList().toString() +
+          ' ' +
+          item['favorite'].toString());
 
-    final list = await getAudioInfo(query);
-    var audioInfo = list[0];
-    Duration duration = list[1];
-    if (audioInfo == null) {
-      throwResultException();
-    } else {
-      var path = await getPath(audioInfo, query);
-      //다운로드 되면 플레이리스트에 정보 추가
-      _playlist
-          .add(AudioSource.uri(
-        Uri.file(path),
-        tag: AudioMetadata(
-            item['key'],
-            item['title'],
-            item['artist'],
-            item['artwork'],
-            item['year'],
-            item['emotions'].keys.toList(),
-            item['genre'].keys.toList(),
-            item['tags'].keys.toList(),
-            item['favorite'],
-            duration),
-      ))
-          .then((value) {
-        //처음으로 넣으면 플레이리스트 변수를 등록
-        if (_player.sequence == null || _player.sequence.isEmpty) {
-          try {
-            // await _player.setAudioSource(BufferAudioSource(await file.readAsBytes()));
-            _player.setAudioSource(_playlist, preload: false);
-            var prePercentage = -1;
-            download(path, audioInfo).listen((event) {
-              if (prePercentage < event) {
-                prePercentage = event;
-                // print(event);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      final list = await getAudioInfo(query);
+      var audioInfo = list[0];
+      Duration duration = list[1];
+      if (audioInfo == null) {
+        throwResultException();
+      } else {
+        var path = await getPath(audioInfo, query);
+        //다운로드 되면 플레이리스트에 정보 추가
+        _playlist
+            .add(AudioSource.uri(
+          Uri.file(path),
+          tag: AudioMetadata(
+              item['key'],
+              item['title'],
+              item['artist'],
+              item['artwork'],
+              item['year'],
+              item['emotions'].keys.toList(),
+              item['genre'].keys.toList(),
+              item['tags'].keys.toList(),
+              item['favorite'],
+              duration),
+        ))
+            .then((value) {
+          //처음으로 넣으면 플레이리스트 변수를 등록
+          if (_player.sequence == null || _player.sequence.isEmpty) {
+            try {
+              // await _player.setAudioSource(BufferAudioSource(await file.readAsBytes()));
+              _player.setAudioSource(_playlist, preload: false);
+              var prePercentage = -1;
+              download(path, audioInfo).listen((event) {
+                if (prePercentage < event) {
+                  prePercentage = event;
+                  // print(event);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content:
-                          Text("다운로드 후 자동실행됩니다 $event %"),
-                    ));
-              }
-            }, onDone: () {
-              debugPrint("ddddddddd" + path);
-              _player.pause();
-              _player.play();
-            });
-          } catch (e) {
-            // Catch load errors: 404, invalid url ...
-            print("Error loading playlist: $e");
+                    Text("다운로드 후 자동실행됩니다 $event %"),
+                  ));
+                }
+              }, onDone: () {
+                debugPrint("ddddddddd" + path);
+                _player.pause();
+                _player.play();
+              });
+            } catch (e) {
+              // Catch load errors: 404, invalid url ...
+              print("Error loading playlist: $e");
+            }
+          } else {
+            download(path, audioInfo).listen((event) {}
+                , onDone: () {
+                  debugPrint("ddddddddd" + path);
+                  _player.play();
+                });
           }
-        }else {
-          download(path, audioInfo).listen((event) {}
-          , onDone: () {
-            debugPrint("ddddddddd" + path);
-            _player.play();
-          });
-        }
 
-        debugPrint(_playlist.length.toString() +
-            ' ' +
-            Uri.file(path).toString() +
-            ' ' +
-            item['key'] +
-            ' ' +
-            item['title'] +
-            ' ' +
-            item['artist'] +
-            ' ' +
-            item['year'] +
-            ' ' +
-            item['emotions'].keys.toList().toString() +
-            ' ' +
-            item['genre'].keys.toList().toString() +
-            ' ' +
-            item['tags'].keys.toList().toString() +
-            ' ' +
-            item['favorite'].toString());
-      });
-    }
+          debugPrint(_playlist.length.toString() +
+              ' ' +
+              Uri.file(path).toString() +
+              ' ' +
+              item['key'] +
+              ' ' +
+              item['title'] +
+              ' ' +
+              item['artist'] +
+              ' ' +
+              item['year'] +
+              ' ' +
+              item['emotions'].keys.toList().toString() +
+              ' ' +
+              item['genre'].keys.toList().toString() +
+              ' ' +
+              item['tags'].keys.toList().toString() +
+              ' ' +
+              item['favorite'].toString());
+        });
+      }
+    });
   }
+
+  /// TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW
+  /// 에러나는 코드라 주석처리해놈
+  // Future<List> getRecommendedSongs() async {
+  //   var metadata = _playlist.sequence[_player.currentIndex]
+  //       .tag as AudioMetadata;
+  //   try {
+  //     Secret secret = await SecretLoader(secretPath: "secrets.json").load();
+  //     Dio dio = new Dio();
+  //     await dio.post(
+  //         secret.webUrl+ ?? , //TODO: recommender.py 돌릴 주소
+  //         data: {
+  //           'emotion': json.encode(emotion),
+  //           'genre': json.encode(genre),
+  //           'year': json.encode(year),
+  //           'target_id': json.encode(metadata.key),
+  //           'user_id': json.encode(UserManager.instance.uid),
+  //         }
+  //     ).then((value) {
+  //       dio.close();
+  //
+  //       //
+  //     });
+  //     //TODO: 곡 정보를 받아서 반환
+  //     var response = await dio.get(secret.webUrl+ ??);
+  //     print(response);
+  //     //받아온 결과가 곡 아이디 문자열로 이루어진 list라 가정
+  //     List<String> res = [];
+  //     res = response.data;
+  //     List<Map> ret = [];
+  //     res.forEach((element) async {
+  //       var value = await DBManager.instance.ref.child("songs/" + element)
+  //           .get();
+  //       Map val = value.value;
+  //       val['key'] = element;
+  //       //TODO: 잘 들어갔는지 확인 필요
+  //       ret.add(val);
+  //     });
+  //     return ret;
+  //   } catch (e) {
+  //     Exception(e);
+  //   }
+  // }
+  /// TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW
 
   Future<List> getAudioInfo(query) async {
     var resList = await yt.search.getVideos(query);
@@ -267,19 +322,19 @@ class AudioManager {
       yt.videos.streamsClient
           .get(audioInfo)
           .map((s) {
-            received += s.length;
-            var percentage = ((received / length) * 100).toInt();
-            var checkList = [1,5,10,20,40,50,70,90,99];
-            if (checkList.contains(percentage)) {
-              streamController.add(percentage);
-            }
-            // print("${(received / length)} %");
-            return s;
-          })
+        received += s.length;
+        var percentage = ((received / length) * 100).toInt();
+        var checkList = [1, 5, 10, 20, 40, 50, 70, 90, 99];
+        if (checkList.contains(percentage)) {
+          streamController.add(percentage);
+        }
+        // print("${(received / length)} %");
+        return s;
+      })
           .pipe(fileStream)
           .whenComplete(() {
-            streamController.close();
-          });
+        streamController.close();
+      });
       yield* streamController.stream;
     } catch (e) {
       throw e;
@@ -313,22 +368,22 @@ class AudioManager {
 
   _getByTag() async {
     var metadata =
-        _playlist.sequence[_player.currentIndex].tag as AudioMetadata;
+    _playlist.sequence[_player.currentIndex].tag as AudioMetadata;
     var tags = metadata.tags;
     var randomTag = tags[Random().nextInt(metadata.tags.length)];
     debugPrint(randomTag);
 
     var value =
-        await ref.orderByChild("tags/" + randomTag).equalTo(true).once();
+    await ref.orderByChild("tags/" + randomTag).equalTo(true).once();
 
     Map queryResult = value.value;
     queryResult = _removeByPass(queryResult);
     // value.value type: _InternalLinkedHashMap
     // debugPrint("now genre:"+genre+", year"+year);
-    if(genre != "모든 장르"){
+    if (genre != "모든 장르") {
       queryResult = _getByGenre(queryResult);
     }
-    if(year != "모든 연도"){
+    if (year != "모든 연도") {
       queryResult = _getByYear(queryResult);
     }
 
@@ -341,35 +396,41 @@ class AudioManager {
       }
     });
 
-    int random = Random().nextInt(tmp.length);
+    List res = [];
+    for (int i = 0; i < 5; i++) {
+      int random = Random().nextInt(tmp.length);
+      res.add(tmp[random]);
+    }
 
-    return tmp[random];
+    return res;
   }
 
-  Map _getByGenre(Map map){
+  Map _getByGenre(Map map) {
     Map res = Map();
     map.forEach((key, value) {
       List list = value['genre'].keys.toList();
-      if(list.contains(genre)){
-        res[key]=value;
+      if (list.contains(genre)) {
+        res[key] = value;
       }
     });
     return map;
   }
-  Map _getByYear(Map map){
+
+  Map _getByYear(Map map) {
     Map res = Map();
     map.forEach((key, value) {
-      if(value['year']==year){
-        res[key]=value;
+      if (value['year'] == year) {
+        res[key] = value;
       }
     });
     return map;
   }
-  Map _removeByPass(Map map){
+
+  Map _removeByPass(Map map) {
     Map res = Map();
     map.forEach((key, value) {
-      if(!passList.contains(value['key'])){
-        res[key]=value;
+      if (!passList.contains(value['key'])) {
+        res[key] = value;
       }
     });
     return map;
@@ -377,16 +438,16 @@ class AudioManager {
 
   _getByRandom() async {
     var value =
-        await ref.orderByChild("emotions/" + emotion).equalTo(true).once();
+    await ref.orderByChild("emotions/" + emotion).equalTo(true).once();
 
     Map queryResult = value.value;
     queryResult = _removeByPass(queryResult);
     // value.value type: _InternalLinkedHashMap
     // debugPrint("now genre:"+genre+", year"+year);
-    if(genre != "모든 장르"){
+    if (genre != "모든 장르") {
       queryResult = _getByGenre(queryResult);
     }
-    if(year != "모든 연도"){
+    if (year != "모든 연도") {
       queryResult = _getByYear(queryResult);
     }
 
@@ -397,8 +458,12 @@ class AudioManager {
       tmp.add(values);
     });
 
-    int random = Random().nextInt(tmp.length);
+    List res = [];
+    for (int i = 0; i < 5; i++) {
+      int random = Random().nextInt(tmp.length);
+      res.add(tmp[random]);
+    }
 
-    return tmp[random];
+    return res;
   }
 }
