@@ -37,6 +37,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   };
 
   bool _isExpanding = false;
+  double rate = 0;
 
   List<Animation<double>> _animations = [];
   AnimationController _controller;
@@ -278,7 +279,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                               Text("${_songMeta?.favorite ?? "좋아요 정보가 없어요"}")
                             ]),
                             RatingBar.builder(
-                              initialRating: 0,
+                              initialRating: rate,
                               minRating: 0.5,
                               direction: Axis.horizontal,
                               allowHalfRating: true,
@@ -336,6 +337,15 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   void _setRating(double rating) =>
       userRatingRef.child(_songMeta.key).set(rating);
 
+  void _getRating() {
+    userRatingRef.get().then((DataSnapshot snapshot){
+      final data = new Map<String, dynamic>.from(snapshot.value);
+      rate = data[_songMeta.key].toDouble();
+      print(rate);
+    });
+  }
+
+
   void _favoriteHandling() {
     // debugPrint(FirebaseAuth.instance.currentUser.uid);
     // debugPrint(UserManager.instance.user.uid);
@@ -388,6 +398,8 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
     _controller =
         AnimationController(duration: Duration(seconds: 10), vsync: this);
     _controller.repeat(reverse: true);
+
+    _getRating();
 
     final CurvedAnimation curvedAnimation = CurvedAnimation(
         parent: _controller, curve: Curves.linear, reverseCurve: Curves.linear);
