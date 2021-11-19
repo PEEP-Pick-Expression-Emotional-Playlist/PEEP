@@ -1,12 +1,18 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:audio_session/audio_session.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:peep/login/user_manager.dart';
+import 'package:peep/secret/secret.dart';
+import 'package:peep/secret/secret_loader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -104,117 +110,159 @@ class AudioManager {
   addSong(recommendationType, context) async {
     debugPrint(emotion);
 
-    var item;
+    List<dynamic> items =[];
 
     switch (recommendationType) {
       case RecommendationType.RANDOM_ALL:
-        item = await _getByRandom();
+        items = await _getByRandom();
         break;
       case RecommendationType.RANDOM_TAG:
         try {
-          item = await _getByTag();
+          // item = await _getByTag();
+          items = await getRecommendedSongs();
         } catch (e) {
-          item = await _getByRandom();
+          items = await _getByRandom();
         }
         break;
     }
 
-    var query = item['title'] + ' ' + item['artist'];
+    items.forEach ((item) async {
+      var query = item['title'] + ' ' + item['artist'];
 
-    debugPrint(_playlist.length.toString() +
-        ' ' +
-        item['key'] +
-        ' ' +
-        item['title'] +
-        ' ' +
-        item['artist'] +
-        ' ' +
-        item['year'] +
-        ' ' +
-        item['emotions'].keys.toList().toString() +
-        ' ' +
-        item['genre'].keys.toList().toString() +
-        ' ' +
-        item['tags'].keys.toList().toString() +
-        ' ' +
-        item['favorite'].toString());
+      debugPrint(_playlist.length.toString() +
+          ' ' +
+          item['key'] +
+          ' ' +
+          item['title'] +
+          ' ' +
+          item['artist'] +
+          ' ' +
+          item['year'] +
+          ' ' +
+          item['emotions'].keys.toList().toString() +
+          ' ' +
+          item['genre'].keys.toList().toString() +
+          ' ' +
+          item['tags'].keys.toList().toString() +
+          ' ' +
+          item['favorite'].toString());
 
-    final list = await getAudioInfo(query);
-    var audioInfo = list[0];
-    Duration duration = list[1];
-    if (audioInfo == null) {
-      throwResultException();
-    } else {
-      var path = await getPath(audioInfo, query);
-      //다운로드 되면 플레이리스트에 정보 추가
-      _playlist
-          .add(AudioSource.uri(
-        Uri.file(path),
-        tag: AudioMetadata(
-            item['key'],
-            item['title'],
-            item['artist'],
-            item['artwork'],
-            item['year'],
-            item['emotions'].keys.toList(),
-            item['genre'].keys.toList(),
-            item['tags'].keys.toList(),
-            item['favorite'],
-            duration),
-      ))
-          .then((value) {
-        //처음으로 넣으면 플레이리스트 변수를 등록
-        if (_player.sequence == null || _player.sequence.isEmpty) {
-          try {
-            // await _player.setAudioSource(BufferAudioSource(await file.readAsBytes()));
-            _player.setAudioSource(_playlist, preload: false);
-            var prePercentage = -1;
-            download(path, audioInfo).listen((event) {
-              if (prePercentage < event) {
-                prePercentage = event;
-                // print(event);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      final list = await getAudioInfo(query);
+      var audioInfo = list[0];
+      Duration duration = list[1];
+      if (audioInfo == null) {
+        throwResultException();
+      } else {
+        var path = await getPath(audioInfo, query);
+        //다운로드 되면 플레이리스트에 정보 추가
+        _playlist
+            .add(AudioSource.uri(
+          Uri.file(path),
+          tag: AudioMetadata(
+              item['key'],
+              item['title'],
+              item['artist'],
+              item['artwork'],
+              item['year'],
+              item['emotions'].keys.toList(),
+              item['genre'].keys.toList(),
+              item['tags'].keys.toList(),
+              item['favorite'],
+              duration),
+        ))
+            .then((value) {
+          //처음으로 넣으면 플레이리스트 변수를 등록
+          if (_player.sequence == null || _player.sequence.isEmpty) {
+            try {
+              // await _player.setAudioSource(BufferAudioSource(await file.readAsBytes()));
+              _player.setAudioSource(_playlist, preload: false);
+              var prePercentage = -1;
+              download(path, audioInfo).listen((event) {
+                if (prePercentage < event) {
+                  prePercentage = event;
+                  // print(event);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content:
-                          Text("다운로드 후 자동실행됩니다 $event %"),
-                    ));
-              }
-            }, onDone: () {
-              debugPrint("ddddddddd" + path);
-              _player.pause();
-              _player.play();
-            });
-          } catch (e) {
-            // Catch load errors: 404, invalid url ...
-            print("Error loading playlist: $e");
+                    Text("다운로드 후 자동실행됩니다 $event %"),
+                  ));
+                }
+              }, onDone: () {
+                debugPrint("ddddddddd" + path);
+                _player.pause();
+                _player.play();
+              });
+            } catch (e) {
+              // Catch load errors: 404, invalid url ...
+              print("Error loading playlist: $e");
+            }
+          } else {
+            download(path, audioInfo).listen((event) {}
+                , onDone: () {
+                  debugPrint("ddddddddd" + path);
+                  _player.play();
+                });
           }
-        }else {
-          download(path, audioInfo).listen((event) {}
-          , onDone: () {
-            debugPrint("ddddddddd" + path);
-            _player.play();
-          });
-        }
 
-        debugPrint(_playlist.length.toString() +
-            ' ' +
-            Uri.file(path).toString() +
-            ' ' +
-            item['key'] +
-            ' ' +
-            item['title'] +
-            ' ' +
-            item['artist'] +
-            ' ' +
-            item['year'] +
-            ' ' +
-            item['emotions'].keys.toList().toString() +
-            ' ' +
-            item['genre'].keys.toList().toString() +
-            ' ' +
-            item['tags'].keys.toList().toString() +
-            ' ' +
-            item['favorite'].toString());
+          debugPrint(_playlist.length.toString() +
+              ' ' +
+              Uri.file(path).toString() +
+              ' ' +
+              item['key'] +
+              ' ' +
+              item['title'] +
+              ' ' +
+              item['artist'] +
+              ' ' +
+              item['year'] +
+              ' ' +
+              item['emotions'].keys.toList().toString() +
+              ' ' +
+              item['genre'].keys.toList().toString() +
+              ' ' +
+              item['tags'].keys.toList().toString() +
+              ' ' +
+              item['favorite'].toString());
+        });
+      }
+    });
+  }
+
+
+  Future<List> getRecommendedSongs() async {
+    var metadata = _playlist.sequence[_player.currentIndex].tag as AudioMetadata;
+    try {
+      Secret secret = await SecretLoader(secretPath: "secrets.json").load();
+      Dio dio = new Dio();
+       await dio.post(
+          secret.webUrl+??, //TODO: recommender.py 돌릴 주소
+          data: {
+            'emotion': json.encode(emotion),
+            'genre':json.encode(genre),
+            'year':json.encode(year),
+            'target_id':json.encode(metadata.key),
+            'user_id':json.encode(UserManager.instance.uid),
+          }
+      ).then((value) {
+        dio.close();
+
+        //
       });
+      //TODO: 곡 정보를 받아서 반환
+      var response = await dio.get(secret.webUrl+ ??);
+      print(response);
+      //받아온 결과가 곡 아이디 문자열로 이루어진 list라 가정
+      List<String> res = [];
+      res = response.data;
+      res.forEach((element) {
+        DBManager.instance.ref.child("songs/"+element).get();
+        //TODO: 테스트 필요
+        //나이거지금 하는중임
+      });
+
+
+      return ;
+    } catch (e) {
+      Exception(e);
     }
   }
 
@@ -397,8 +445,12 @@ class AudioManager {
       tmp.add(values);
     });
 
+    List res = [];
+    for(int i =0 ;i<5;i++){
     int random = Random().nextInt(tmp.length);
+    res.add(tmp[random]);
+    }
 
-    return tmp[random];
+    return res;
   }
 }
