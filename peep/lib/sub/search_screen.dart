@@ -1,12 +1,16 @@
 import 'dart:collection';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:peep/db_manager.dart';
 import 'package:peep/home/emotion_detection.dart';
+import 'package:peep/login/user_manager.dart';
 import 'package:peep/player/music_player_page.dart';
 import 'package:shake/shake.dart';
+import 'package:flutter_svg/svg.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -28,15 +32,14 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   ShakeDetector detector;
+
   @override
   void initState() {
     super.initState();
-    detector = ShakeDetector.autoStart(onPhoneShake: ()
-    {
+    detector = ShakeDetector.autoStart(onPhoneShake: () {
       print('Phone shaking detected');
       DetectEmotion().readFile().then((value) {
-        Navigator.push(
-            context,
+        Navigator.push(context,
             MaterialPageRoute(builder: (context) => MusicPlayerPage()));
       });
     });
@@ -45,6 +48,8 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void dispose() {
     detector.stopListening();
+    _filter.dispose();
+    super.dispose();
   }
 
   @override
@@ -59,7 +64,12 @@ class _SearchScreenState extends State<SearchScreen> {
           decoration: InputDecoration(
             hintText: '검색할 곡을 입력하세요',
             filled: true,
-            prefixIcon: Icon(Icons.search, color: Colors.grey),
+            prefixIcon: IconButton(
+              icon: Icon(Icons.search, color: Colors.grey),
+              onPressed: () {
+                controlSearching(_searchText);
+              },
+            ),
             suffixIcon: IconButton(
               icon: Icon(
                 Icons.cancel,
@@ -68,109 +78,85 @@ class _SearchScreenState extends State<SearchScreen> {
               onPressed: () {
                 setState(() {
                   _filter.clear();
-                  _searchText = "";
-                  futureSearchResults = null;
+                  SongList.clear();
                 });
               },
             ),
           ),
-          onFieldSubmitted: controlSearching(_searchText),
+          //onFieldSubmitted: controlSearching(_searchText),
         ),
       ),
-      body: Center(
-          child: SingleChildScrollView(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              futureSearchResults == null
-                  ? displayNoSearchResultScreen()
-                  : diplaySearchResultScreen(),
-            ]),
-      )),
-    );
+      body: SongList.isEmpty? displayNoSearchResultScreen():
+          SingleChildScrollView(
+        child: diplaySearchResultScreen(),
+          ),
+      );
   }
 }
 
-class SongInfo {
-  String artist;
-  //List<String> emotions;
-  //List<String> genre;
-  //List<String> tags;
-  String title;
-  //int year;
+List SongList = [];
+List HappySongList = [];
+List BlueSongList = [];
+List AngrySongList = [];
+List CalmSongList = [];
+List FearSongList = [];
 
-  SongInfo(String artist, String title) {
-    this.artist = artist;
-    this.title = title;
-  }
-
-  String getTitle() {
-    return this.title;
-  }
-
-  String getArtist() {
-    return this.artist;
-  }
-}
-
-GetSongTitle(String sinfo) {
-  String songTitle;
-  String info;
-  info = sinfo;
-
-  String token = ', tags:';
-  String token2 = 'title: ';
-  int lastIndex = info.indexOf(token);
-  int startIndex = info.indexOf(token2);
-  songTitle = info.substring(startIndex + 7, lastIndex);
-  return songTitle;
-}
-
-GetSongArtist(String sinfo) {
-  String songArtist;
-  String info;
-  info = sinfo;
-
-  String token = ', year:';
-  String token2 = 'artist: ';
-  int lastIndex = info.indexOf(token);
-  int startIndex = info.indexOf(token2);
-  songArtist = info.substring(startIndex + 8, lastIndex);
-  return songArtist;
-}
-
-GetSongCover(String sinfo){
-  String songCover;
-  String info;
-  info = sinfo;
-
-  String token = ', title';
-  String token2 = 'artwork: ';
-  int lastIndex = info.indexOf(token);
-  int startIndex = info.indexOf(token2);
-  songCover = info.substring(startIndex + 9, lastIndex);
-  return songCover;
-}
-
-String futureSearchResults;
 controlSearching(str) {
+  bool hasItem = false;
   String _searchText = str;
-  final ref = FirebaseDatabase.instance.reference();
+  if (_searchText != "") {
+    //final ref = FirebaseDatabase.instance.reference();
+    var ref = FirebaseDatabase.instance.reference().child("songs");
+    ref
+        .orderByChild("title")
+        .startAt(_searchText)
+        .endAt(_searchText + "\uf8ff")
+        .once()
+        .then((value) {
+      if (value.value != null) {
+        value.value.forEach((key, values) {
+          values['key'] = key;
+          for(Map map in SongList){
+            if(map.containsKey("key")){
+              if(map["key"]==key){
+                hasItem = true;
+              }
+            }
+          }
+          if (!hasItem){
+            SongList.add(values);
+          }
+        });
+      } else {
+        print('일치하는 곡이 없습니다.');
+      }
+    });
 
-  ref
-      .child("songs")
-      .orderByChild("title")
-      .equalTo(_searchText)
-      .once()
-      .then((DataSnapshot data) {
-    if (data != null) {
-      print(data.value);
-      print(GetSongTitle(data.value.toString()));
-      print(GetSongArtist(data.value.toString()));
-      futureSearchResults = data.value.toString();
-    } else
-      print('일치하는 곡이 없습니다.');
-  });
+    ref
+        .orderByChild("artist")
+        .startAt(_searchText)
+        .endAt(_searchText + "\uf8ff")
+        .once()
+        .then((value) {
+      if (value.value != null) {
+        value.value.forEach((key, values) {
+          values['key'] = key;
+          for(Map map in SongList){
+            if(map.containsKey("key")){
+              if(map["key"]==key){
+                hasItem = true;
+              }
+            }
+          }
+          if (!hasItem){
+            SongList.add(values);
+          }
+        });
+      } else {
+        print('일치하는 곡이 없습니다.');
+      }
+    });
+  }
 }
 
 displayNoSearchResultScreen() {
@@ -200,50 +186,250 @@ class SongResult extends StatefulWidget {
 }
 
 class _SongResultState extends State<SongResult> {
-  bool _favoriteSong = false;
+  var uid;
+  final user = FirebaseAuth.instance.currentUser;
+  final userDB = FirebaseDatabase.instance
+      .reference()
+      .child("user")
+      .child(UserManager.instance.user.uid);
+
+  String getEmotionImage(String emo) {
+    if (emo == '(happy)') {
+      return 'assets/itd/ITD_icon_happy.svg';
+    } else if (emo == '(blue)') {
+      return 'assets/itd/ITD_icon_blue.svg';
+    } else if (emo == '(angry)') {
+      return 'assets/itd/ITD_icon_angry.svg';
+    } else if (emo == '(calm)') {
+      return 'assets/itd/ITD_icon_calm.svg';
+    } else if (emo == '(fear)') {
+      return 'assets/itd/ITD_icon_fear.svg';
+    }
+  }
+
+  String getEmotion(String emo) {
+    if (emo == '(happy)') {
+      return 'happy';
+    } else if (emo == '(blue)') {
+      return 'blue';
+    } else if (emo == '(angry)') {
+      return 'angry';
+    } else if (emo == '(calm)') {
+      return 'calm';
+    } else if (emo == '(fear)') {
+      return 'fear';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.all(3),
-        child: Container(
-          child: Column(
-            children: <Widget>[
-              ListTile(
-                leading: (
-                  Image.network(GetSongCover(futureSearchResults))),
+    for (int i = 0; i < SongList.length; i++) {
+      var item = SongList[i];
+      debugPrint("songlist " +
+          item['title'] +
+          ' ' +
+          item['artist'] +
+          ' ' +
+          item['artwork'] +
+          ' ' +
+          item['emotions'].keys.toString());
+    }
 
-
-                title: Text(
-                  GetSongTitle(futureSearchResults),
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(
-                  GetSongArtist(futureSearchResults),
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 13,
-                  ),
-                ),
-                trailing: Icon(
-                    _favoriteSong ? Icons.favorite : Icons.favorite_border,
-                    color: _favoriteSong ? Colors.red : null),
-                onTap: () {
-                  setState(() {
-                    if (_favoriteSong == false) {
-                      _favoriteSong = true;
-                      //여기서 true 되면 좋아요 누른 곡에 추가되게
-                    } else {
-                      _favoriteSong = false;
-                      //여기서 false 되면 좋아요 누른 곡에서 제외
-                    }
-                  });
-                },
-              ),
-            ],
+    return ListView.builder(
+      shrinkWrap: true,
+      scrollDirection: Axis.vertical,
+      itemCount: SongList.length,
+      itemBuilder: (BuildContext context, int i) {
+        return ListTile(
+          leading: (Image.network(SongList[i]['artwork'])),
+          title: Text(
+            SongList[i]['title'],
           ),
-        ));
+          subtitle: Text(
+            SongList[i]['artist'],
+
+          ),
+          trailing: InkWell(
+            child: SvgPicture.asset(
+                getEmotionImage(SongList[i]['emotions'].keys.toString())),
+            onTap: () => showMessage(
+                i, getEmotion(SongList[i]['emotions'].keys.toString())),
+          ),
+        );
+      },
+    );
   }
+
+  void showMessage(int i, String emotion) {
+    bool hasItem = false;
+
+    if (emotion == 'happy') {
+      for(Map map in HappySongList){
+        if(map.containsKey("key")){
+          if(map["key"]==SongList[i]['key']){
+            hasItem = true;
+          }
+        }
+      }
+      if (!hasItem){
+        HappySongList.add(SongList[i]);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('플레이리스트에 추가되었습니다.'),
+        ));
+      }
+      else if (hasItem){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('이미 추가된 곡입니다'),
+        ));
+      }
+
+      for (int i = 0; i < HappySongList.length; i++) {
+        var item = HappySongList[i];
+        debugPrint("HappySongList " +
+            item['title'] +
+            ' ' +
+            item['artist'] +
+            ' ' +
+            item['artwork'] +
+            ' ' +
+            item['emotions'].keys.toString());
+      }
+    } else if (emotion == 'blue') {
+      for(Map map in BlueSongList){
+        if(map.containsKey("key")){
+          if(map["key"]==SongList[i]['key']){
+            hasItem = true;
+          }
+        }
+      }
+      if (!hasItem){
+        BlueSongList.add(SongList[i]);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('플레이리스트에 추가되었습니다.'),
+        ));
+      }
+      else if (hasItem){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('이미 추가된 곡입니다'),
+        ));
+      }
+      for (int i = 0; i < BlueSongList.length; i++) {
+        var item = BlueSongList[i];
+        debugPrint("BlueSongList " +
+            item['title'] +
+            ' ' +
+            item['artist'] +
+            ' ' +
+            item['artwork'] +
+            ' ' +
+            item['emotions'].keys.toString());
+      }
+    } else if (emotion == 'angry') {
+      for(Map map in AngrySongList){
+        if(map.containsKey("key")){
+          if(map["key"]==SongList[i]['key']){
+            hasItem = true;
+          }
+        }
+      }
+      if (!hasItem){
+        AngrySongList.add(SongList[i]);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('플레이리스트에 추가되었습니다.'),
+        ));
+      }
+      else if (hasItem){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('이미 추가된 곡입니다'),
+        ));
+      }
+      for (int i = 0; i < AngrySongList.length; i++) {
+        var item = AngrySongList[i];
+        debugPrint("AngrySongList " +
+            item['title'] +
+            ' ' +
+            item['artist'] +
+            ' ' +
+            item['artwork'] +
+            ' ' +
+            item['emotions'].keys.toString());
+      }
+    } else if (emotion == 'calm') {
+      for(Map map in CalmSongList){
+        if(map.containsKey("key")){
+          if(map["key"]==SongList[i]['key']){
+            hasItem = true;
+          }
+        }
+      }
+      if (!hasItem){
+        CalmSongList.add(SongList[i]);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('플레이리스트에 추가되었습니다.'),
+        ));
+      }
+      else if (hasItem){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('이미 추가된 곡입니다'),
+        ));
+      }
+      for (int i = 0; i < CalmSongList.length; i++) {
+        var item = CalmSongList[i];
+        debugPrint("CalmSongList " +
+            item['title'] +
+            ' ' +
+            item['artist'] +
+            ' ' +
+            item['artwork'] +
+            ' ' +
+            item['emotions'].keys.toString());
+      }
+    } else if (emotion == 'fear') {
+      for(Map map in FearSongList){
+        if(map.containsKey("key")){
+          if(map["key"]==SongList[i]['key']){
+            hasItem = true;
+          }
+        }
+      }
+      if (!hasItem){
+        FearSongList.add(SongList[i]);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('플레이리스트에 추가되었습니다.'),
+        ));
+      }
+      else if (hasItem){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('이미 추가된 곡입니다'),
+        ));
+      }
+      for (int i = 0; i < FearSongList.length; i++) {
+        var item = FearSongList[i];
+        debugPrint("FearSongList " +
+            item['title'] +
+            ' ' +
+            item['artist'] +
+            ' ' +
+            item['artwork'] +
+            ' ' +
+            item['emotions'].keys.toString());
+      }
+    }
+    Map tmpVal = SongList[i];
+    String tmpKey = SongList[i]['key'];
+    tmpVal.forEach((key, value) {
+      DBManager.instance.ref
+          .child('playlist')
+          .child(UserManager.instance.uid)
+      .child(emotion)
+          .child(tmpKey).child(key).set(value);
+    });
+  }
+}
+
+class Todo {
+  final String title;
+  final String artist;
+
+  Todo(this.title, this.artist);
 }
