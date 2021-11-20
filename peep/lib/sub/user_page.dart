@@ -197,7 +197,7 @@ class _UserPageState extends State<UserPage> {
                     style: ElevatedButton.styleFrom(
                       primary: Color(0xfff6f7f9),
                       minimumSize: Size.fromHeight(45),
-                      shadowColor: Colors.white,
+                      shadowColor: Colors.transparent,
                     ),
                     onPressed: () {
                       Navigator.push(
@@ -226,7 +226,7 @@ class _UserPageState extends State<UserPage> {
                       
                       primary: Color(0xfff6f7f9),
                       minimumSize: Size.fromHeight(45),
-                      shadowColor: Colors.white,
+                      shadowColor: Colors.transparent,
                     ),
                     onPressed: () {
                       Navigator.push(
