@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:audio_session/audio_session.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,6 +55,7 @@ class AudioManager {
   static double downloadPercentage;
 
   static List<String> passList = [];
+  List<String> sendingData = [];
 
   static YoutubeExplode yt = YoutubeExplode(); //유튜브에 검색하고 다운로드하는 라이브러리
 
@@ -231,14 +233,53 @@ class AudioManager {
 
   /// TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW
   /// 에러나는 코드라 주석처리해놈
+  // Future<List> getRecommendedSongs() async{
+  //
+  //   print("getRecommended in");
+  //   String localIP = "3.38.93.39";
+  //   int port = 9999;
+  //   Socket clientSocket;
+  //
+  //   print(localIP);
+  //   try{
+  //      await Socket.connect(localIP, port, timeout: Duration(seconds: 5))
+  //     .then((socket){
+  //         clientSocket = socket;
+  //     });
+  //     print("Connected");
+  //
+  //     await putData();
+  //     for(int i=0; i < sendingData.length; i++) {
+  //       clientSocket.add(utf8.encode(sendingData[i]));
+  //     }
+  //
+  //     // await Future.delayed(Duration(seconds: 5));
+  //     clientSocket.close();
+  //   }catch(e){
+  //     print(e);
+  //   }
+  // }
+  //
+  // Future<void> putData() async{
+  //   var metadata = _playlist.sequence[_player.currentIndex]
+  //       .tag as AudioMetadata;
+  //   sendingData[0] = emotion;
+  //   sendingData[1] = genre;
+  //   sendingData[2]= year;
+  //   sendingData[3] = metadata.key;
+  //   sendingData[4] = UserManager.instance.uid;
+  // }
+
+
   // Future<List> getRecommendedSongs() async {
   //   var metadata = _playlist.sequence[_player.currentIndex]
   //       .tag as AudioMetadata;
   //   try {
-  //     Secret secret = await SecretLoader(secretPath: "secrets.json").load();
+  //     // Secret secret = await SecretLoader(secretPath: "secrets.json").load();
   //     Dio dio = new Dio();
   //     await dio.post(
-  //         secret.webUrl+ ?? , //TODO: recommender.py 돌릴 주소
+  //         // secret.webUrl+ ?? , //TODO: recommender.py 돌릴 주소
+  //         "http://3.38.93.39:9999/peep/ml/data_read",
   //         data: {
   //           'emotion': json.encode(emotion),
   //           'genre': json.encode(genre),
@@ -252,7 +293,7 @@ class AudioManager {
   //       //
   //     });
   //     //TODO: 곡 정보를 받아서 반환
-  //     var response = await dio.get(secret.webUrl+ ??);
+  //     var response = await dio.get("http://3.38.93.39:9999/ml/result");
   //     print(response);
   //     //받아온 결과가 곡 아이디 문자열로 이루어진 list라 가정
   //     List<String> res = [];

@@ -340,7 +340,9 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   void _getRating() {
     userRatingRef.get().then((DataSnapshot snapshot){
       final data = new Map<String, dynamic>.from(snapshot.value);
-      rate = data[_songMeta.key].toDouble();
+      setState(() {
+        rate = data[_songMeta.key].toDouble();
+      });
       print(rate);
     });
   }
@@ -411,6 +413,11 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
       Tween<double>(begin: -300, end: 0).animate(curvedAnimation),
       Tween<double>(begin: -400, end: 0).animate(curvedAnimation)
     ]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    _getRating();
   }
 
   @override

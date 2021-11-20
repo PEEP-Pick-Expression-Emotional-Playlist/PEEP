@@ -72,7 +72,6 @@ class DetectEmotion {
     _image = File(imageFile.path);
     print("took pic");
   }
-
 }
 
 class EmotionDetect extends StatefulWidget{
