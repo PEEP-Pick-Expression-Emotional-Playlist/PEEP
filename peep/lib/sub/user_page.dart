@@ -345,13 +345,14 @@ class _likeSongState extends State<likeSongs>{
               title: Text(likesonglist[i]['title'],
                 style: TextStyle(
                     color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+                    // fontSize: 20,
+                    // fontWeight: FontWeight.bold
+                    ),
               ),
               subtitle: Text(likesonglist[i]['artist'],
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 13,
+                  //fontSize: 13,
                 ),
               ),
               trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
@@ -450,7 +451,7 @@ class _recentPlayList extends State<recentPlayList>{
         ),),
       body: Container(
         
-        height: 580.0,
+        height: double.infinity,
         child: StreamBuilder<SequenceState>(
           stream: AudioManager.instance.player.sequenceStateStream,
           builder: (context, snapshot) {
