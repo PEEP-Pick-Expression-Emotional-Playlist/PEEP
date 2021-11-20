@@ -86,17 +86,11 @@ class _SearchScreenState extends State<SearchScreen> {
           //onFieldSubmitted: controlSearching(_searchText),
         ),
       ),
-      body: Center(
-          child: SingleChildScrollView(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SongList.isEmpty
-                  ? displayNoSearchResultScreen()
-                  : diplaySearchResultScreen(),
-            ]),
-      )),
-    );
+      body: SongList.isEmpty? displayNoSearchResultScreen():
+          SingleChildScrollView(
+        child: diplaySearchResultScreen(),
+          ),
+      );
   }
 }
 
