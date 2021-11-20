@@ -348,16 +348,10 @@ class _likeSongState extends State<likeSongs>{
 
 
               title: Text(likesonglist[i]['title'],
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+
               ),
               subtitle: Text(likesonglist[i]['artist'],
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 13,
-                ),
+
               ),
               trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
                 onTap: (){},),
@@ -534,16 +528,10 @@ class _MyHappyPlayList extends State<MyHappyPlayList>{
 
 
             title: Text(HappySongList[i]['title'],
-            style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold),
+
             ),
             subtitle: Text(HappySongList[i]['artist'],
-            style: TextStyle(
-            color: Colors.black,
-            fontSize: 13,
-            ),
+
             ),
               trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
               onTap: (){},),
@@ -579,16 +567,10 @@ class _MyBluePlayList extends State<MyBluePlayList>{
 
 
               title: Text(BlueSongList[i]['title'],
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+
               ),
               subtitle: Text(BlueSongList[i]['artist'],
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 13,
-                ),
+
               ),
               trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
                 onTap: (){},),
@@ -624,16 +606,10 @@ class _MyAngryPlayList extends State<MyAngryPlayList>{
 
 
               title: Text(AngrySongList[i]['title'],
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+
               ),
               subtitle: Text(AngrySongList[i]['artist'],
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 13,
-                ),
+
               ),
               trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
                 onTap: (){},),
@@ -669,16 +645,10 @@ class _MyCalmPlayList extends State<MyCalmPlayList>{
 
 
               title: Text(CalmSongList[i]['title'],
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+
               ),
               subtitle: Text(CalmSongList[i]['artist'],
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 13,
-                ),
+
               ),
               trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
                 onTap: (){},),
@@ -714,16 +684,10 @@ class _MyFearPlayList extends State<MyFearPlayList>{
 
 
               title: Text(FearSongList[i]['title'],
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+
               ),
               subtitle: Text(FearSongList[i]['artist'],
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 13,
-                ),
+
               ),
               trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
                 onTap: (){},),

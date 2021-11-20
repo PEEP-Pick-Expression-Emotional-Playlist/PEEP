@@ -102,6 +102,7 @@ List CalmSongList = [];
 List FearSongList = [];
 
 controlSearching(str) {
+  bool hasItem = false;
   String _searchText = str;
   if (_searchText != "") {
     //final ref = FirebaseDatabase.instance.reference();
@@ -112,10 +113,19 @@ controlSearching(str) {
         .endAt(_searchText + "\uf8ff")
         .once()
         .then((value) {
-      if (value != null) {
+      if (value.value != null) {
         value.value.forEach((key, values) {
           values['key'] = key;
-          SongList.add(values);
+          for(Map map in SongList){
+            if(map.containsKey("key")){
+              if(map["key"]==key){
+                hasItem = true;
+              }
+            }
+          }
+          if (!hasItem){
+            SongList.add(values);
+          }
         });
       } else {
         print('일치하는 곡이 없습니다.');
@@ -128,10 +138,19 @@ controlSearching(str) {
         .endAt(_searchText + "\uf8ff")
         .once()
         .then((value) {
-      if (value != null) {
+      if (value.value != null) {
         value.value.forEach((key, values) {
           values['key'] = key;
-          SongList.add(values);
+          for(Map map in SongList){
+            if(map.containsKey("key")){
+              if(map["key"]==key){
+                hasItem = true;
+              }
+            }
+          }
+          if (!hasItem){
+            SongList.add(values);
+          }
         });
       } else {
         print('일치하는 곡이 없습니다.');
@@ -225,15 +244,10 @@ class _SongResultState extends State<SongResult> {
           leading: (Image.network(SongList[i]['artwork'])),
           title: Text(
             SongList[i]['title'],
-            style: TextStyle(
-                color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
             SongList[i]['artist'],
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 13,
-            ),
+
           ),
           trailing: InkWell(
             child: SvgPicture.asset(
@@ -247,13 +261,28 @@ class _SongResultState extends State<SongResult> {
   }
 
   void showMessage(int i, String emotion) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('플레이리스트에 추가되었습니다.'),
-    ));
-    debugPrint("클릭");
-    debugPrint(SongList[i]['title']);
+    bool hasItem = false;
+
     if (emotion == 'happy') {
-      HappySongList.add(SongList[i]);
+      for(Map map in HappySongList){
+        if(map.containsKey("key")){
+          if(map["key"]==SongList[i]['key']){
+            hasItem = true;
+          }
+        }
+      }
+      if (!hasItem){
+        HappySongList.add(SongList[i]);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('플레이리스트에 추가되었습니다.'),
+        ));
+      }
+      else if (hasItem){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('이미 추가된 곡입니다'),
+        ));
+      }
+
       for (int i = 0; i < HappySongList.length; i++) {
         var item = HappySongList[i];
         debugPrint("HappySongList " +
@@ -266,7 +295,24 @@ class _SongResultState extends State<SongResult> {
             item['emotions'].keys.toString());
       }
     } else if (emotion == 'blue') {
-      BlueSongList.add(SongList[i]);
+      for(Map map in BlueSongList){
+        if(map.containsKey("key")){
+          if(map["key"]==SongList[i]['key']){
+            hasItem = true;
+          }
+        }
+      }
+      if (!hasItem){
+        BlueSongList.add(SongList[i]);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('플레이리스트에 추가되었습니다.'),
+        ));
+      }
+      else if (hasItem){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('이미 추가된 곡입니다'),
+        ));
+      }
       for (int i = 0; i < BlueSongList.length; i++) {
         var item = BlueSongList[i];
         debugPrint("BlueSongList " +
@@ -279,7 +325,24 @@ class _SongResultState extends State<SongResult> {
             item['emotions'].keys.toString());
       }
     } else if (emotion == 'angry') {
-      AngrySongList.add(SongList[i]);
+      for(Map map in AngrySongList){
+        if(map.containsKey("key")){
+          if(map["key"]==SongList[i]['key']){
+            hasItem = true;
+          }
+        }
+      }
+      if (!hasItem){
+        AngrySongList.add(SongList[i]);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('플레이리스트에 추가되었습니다.'),
+        ));
+      }
+      else if (hasItem){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('이미 추가된 곡입니다'),
+        ));
+      }
       for (int i = 0; i < AngrySongList.length; i++) {
         var item = AngrySongList[i];
         debugPrint("AngrySongList " +
@@ -292,7 +355,24 @@ class _SongResultState extends State<SongResult> {
             item['emotions'].keys.toString());
       }
     } else if (emotion == 'calm') {
-      CalmSongList.add(SongList[i]);
+      for(Map map in CalmSongList){
+        if(map.containsKey("key")){
+          if(map["key"]==SongList[i]['key']){
+            hasItem = true;
+          }
+        }
+      }
+      if (!hasItem){
+        CalmSongList.add(SongList[i]);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('플레이리스트에 추가되었습니다.'),
+        ));
+      }
+      else if (hasItem){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('이미 추가된 곡입니다'),
+        ));
+      }
       for (int i = 0; i < CalmSongList.length; i++) {
         var item = CalmSongList[i];
         debugPrint("CalmSongList " +
@@ -305,7 +385,24 @@ class _SongResultState extends State<SongResult> {
             item['emotions'].keys.toString());
       }
     } else if (emotion == 'fear') {
-      FearSongList.add(SongList[i]);
+      for(Map map in FearSongList){
+        if(map.containsKey("key")){
+          if(map["key"]==SongList[i]['key']){
+            hasItem = true;
+          }
+        }
+      }
+      if (!hasItem){
+        FearSongList.add(SongList[i]);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('플레이리스트에 추가되었습니다.'),
+        ));
+      }
+      else if (hasItem){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('이미 추가된 곡입니다'),
+        ));
+      }
       for (int i = 0; i < FearSongList.length; i++) {
         var item = FearSongList[i];
         debugPrint("FearSongList " +
