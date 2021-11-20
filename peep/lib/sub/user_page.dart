@@ -96,9 +96,11 @@ class _UserPageState extends State<UserPage> {
               SizedBox(height: 8.0,),
               Center(
                 child: ElevatedButton(
+
                   style: ElevatedButton.styleFrom(
                       primary: Color(0xfff6f7f9),
-                    shadowColor: Colors.transparent
+                    shadowColor: Colors.transparent,
+                    elevation: 0,
                     ),
                   //logout 버튼
                   onPressed: () {
@@ -199,6 +201,7 @@ class _UserPageState extends State<UserPage> {
                       primary: Color(0xfff6f7f9),
                       minimumSize: Size.fromHeight(45),
                       shadowColor: Colors.transparent,
+                      elevation: 0,
                     ),
                     onPressed: () {
                       Navigator.push(
@@ -228,6 +231,7 @@ class _UserPageState extends State<UserPage> {
                       primary: Color(0xfff6f7f9),
                       minimumSize: Size.fromHeight(45),
                       shadowColor: Colors.transparent,
+                      elevation: 0,
                     ),
                     onPressed: () {
                       Navigator.push(
