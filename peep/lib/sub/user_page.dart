@@ -277,9 +277,48 @@ class likeSongs extends StatefulWidget{
   _likeSongState createState() => _likeSongState();
 }
 
+List likesonglist = [];
+
 class _likeSongState extends State<likeSongs>{
+  
   @override
   Widget build(BuildContext context){
+    listLike.child("favorite").child(uid).get().then((value) {
+
+      value.value.forEach((k,v) {
+        String tmp_key= k;
+              Map tmp_song = Map();
+
+      bool hasItem = false;
+      
+      songdb.child(tmp_key).get().then((value) {
+          tmp_song['key'] = tmp_key;
+        value.value.forEach((k,v){
+          tmp_song[k] = v;
+        });
+      for(Map map in likesonglist){
+        if(map.containsKey("key")){
+          if(map["key"]==tmp_song['key']){
+            hasItem = true;
+          }
+        }
+      }
+      if (!hasItem){
+            likesonglist.add(tmp_song);
+      }
+      
+      });
+
+        });
+
+  
+      
+
+      }
+      );
+
+   
+    
     return Scaffold(
       appBar: AppBar(
           iconTheme: const IconThemeData(color: Colors.black),
@@ -288,33 +327,41 @@ class _likeSongState extends State<likeSongs>{
         title: Text(
           '좋아요 한 곡',
         ),),
-        body: Container(
-          margin: EdgeInsets.symmetric(
-            vertical: 20.0
-          ),
-          child: StreamBuilder(
-            stream: listLike.child("favorite").child(uid).onValue,
-            builder: (context, AsyncSnapshot<Event> snap){
-                String temp = songdb.equalTo("-Moi-_EGqeR8XhGFyv9x").orderByChild("title").toString();
-                if(!snap.hasData) return Text("loading");
-               
-                return Column(
-                  children: <Widget>[
-                    
-                    
-                    Text(snap.data.snapshot.value.toString()),
-                    Text(temp),
-                   // Text(snap.data.snapshot.value[1].toString()),
-                    
-                      
-                  ],
-                );
-              },
-            )
-          ),
-        );
+        // body: Container(
+        //   margin: EdgeInsets.symmetric(
+        //     vertical: 20.0
+        //   ),
+         body: likesonglist.isEmpty?Container(width: 50,height: 50,): ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemCount: likesonglist.length,
+          itemBuilder: (BuildContext context, int i){
+
+            return ListTile(
+              leading: (
+                  Image.network(likesonglist[i]['artwork'])),
+
+
+              title: Text(likesonglist[i]['title'],
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(likesonglist[i]['artist'],
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13,
+                ),
+              ),
+              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
+                onTap: (){},),
+            );
+          }));
+          }
+        
   }
-}
+
 
 class favoriteSongs extends StatefulWidget{
   _favoriteSongs createState() => _favoriteSongs();

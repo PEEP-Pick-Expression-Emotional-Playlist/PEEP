@@ -98,9 +98,12 @@ class _AppFrameState extends State<AppFrame>
         backgroundColor: Colors.white,
         elevation: 0.0,
         actions:[
-          IconButton(icon: Icon(Icons.settings), onPressed: (){
-            Scaffold.of(context).openEndDrawer();
-          })
+          //Icons.settings
+          IconButton(icon: Icon(null), 
+          // onPressed: (){
+          // Scaffold.of(context).openEndDrawer();
+          // }
+          )
         ],
         //<Widget>[],
       ),
