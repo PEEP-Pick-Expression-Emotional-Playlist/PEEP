@@ -269,6 +269,7 @@ final songsFavoriteRef = DBManager.instance.ref.child("songs");
 DatabaseReference listLike = new FirebaseDatabase().reference();
 
 final db = FirebaseDatabase.instance.reference().child("favorite").child(uid);
+final songdb = FirebaseDatabase.instance.reference().child("songs");
 
 final ref = FirebaseDatabase.instance.reference();
 
@@ -294,14 +295,17 @@ class _likeSongState extends State<likeSongs>{
           child: StreamBuilder(
             stream: listLike.child("favorite").child(uid).onValue,
             builder: (context, AsyncSnapshot<Event> snap){
+                String temp = songdb.equalTo("-Moi-_EGqeR8XhGFyv9x").orderByChild("title").toString();
                 if(!snap.hasData) return Text("loading");
                
                 return Column(
                   children: <Widget>[
-                    //Text(snap.data.snapshot.value.runtimeType.toString()),
+                    
                     
                     Text(snap.data.snapshot.value.toString()),
-                    Text(snap.data.snapshot.value[1].toString()),
+                    Text(temp),
+                   // Text(snap.data.snapshot.value[1].toString()),
+                    
                       
                   ],
                 );
@@ -310,6 +314,73 @@ class _likeSongState extends State<likeSongs>{
           ),
         );
   }
+}
+
+class favoriteSongs extends StatefulWidget{
+  _favoriteSongs createState() => _favoriteSongs();
+}
+
+class _favoriteSongs extends State<favoriteSongs>{
+  @override
+  Widget build(BuildContext context) {
+    
+    return Scaffold(
+      appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.black),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        title: Text(
+          '좋아요 한 곡',
+        ),),
+      body: Container(
+        
+        height: 480.0,
+        child: StreamBuilder<SequenceState>(
+          //stream: DBManager.instance.ref.child("songs"),
+          builder: (context, snapshot) {
+           
+            final state = snapshot.data;
+            final sequence = state?.sequence ?? [];
+            // void findLikes(){
+            //     db.once().then((DataSnapshot snapshot){
+            //     Map<dynamic, dynamic> values = snapshot.value;
+            //       values.forEach((key,values) {
+            //         print(values["like"]);
+            //       });
+            //   });
+            //   }
+
+            return ReorderableListView(
+              onReorder: (int oldIndex, int newIndex) {
+                if (oldIndex < newIndex) newIndex--;
+                AudioManager.instance.playlist.move(oldIndex, newIndex);
+              },
+              children: [
+                 for (var i = 0; i < sequence.length; i++)
+                    Material(
+                      key: ValueKey(sequence[i]),
+                      color: i == state.currentIndex
+                          ? Colors.grey.shade300
+                          : null,
+                      child: ListTile(
+                        leading: (
+                        Image.network(sequence[i].tag.artwork)),
+                        title: Text(sequence[i].tag.title as String),
+                        subtitle: Text(sequence[i].tag.artist as String),
+                        
+                        onTap: () {
+                          AudioManager.instance.player.seek(Duration.zero, index: i);
+                        },
+                      ),
+                    ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
 }
 
 
@@ -332,7 +403,7 @@ class _recentPlayList extends State<recentPlayList>{
         ),),
       body: Container(
         
-        height: 480.0,
+        height: 580.0,
         child: StreamBuilder<SequenceState>(
           stream: AudioManager.instance.player.sequenceStateStream,
           builder: (context, snapshot) {
@@ -364,6 +435,8 @@ class _recentPlayList extends State<recentPlayList>{
                           ? Colors.grey.shade300
                           : null,
                       child: ListTile(
+                        leading: (
+                        Image.network(sequence[i].tag.artwork)),
                         title: Text(sequence[i].tag.title as String),
                         subtitle: Text(sequence[i].tag.artist as String),
                         
