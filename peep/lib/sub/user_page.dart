@@ -98,6 +98,7 @@ class _UserPageState extends State<UserPage> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       primary: Color(0xfff6f7f9),
+                    shadowColor: Colors.transparent
                     ),
                   //logout 버튼
                   onPressed: () {
