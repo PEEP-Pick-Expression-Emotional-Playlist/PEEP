@@ -18,7 +18,7 @@ class _NowPlayingPageState extends State<NowPlayingPage>{
           '재생 목록',
         ),),
       body: Container(
-        height: 240.0,
+        height: double.infinity,
         child: StreamBuilder<SequenceState>(
           stream: AudioManager.instance.player.sequenceStateStream,
           builder: (context, snapshot) {
