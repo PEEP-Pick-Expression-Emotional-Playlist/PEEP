@@ -353,8 +353,7 @@ class _likeSongState extends State<likeSongs>{
               subtitle: Text(likesonglist[i]['artist'],
 
               ),
-              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
-                onTap: (){},),
+
             );
           }));
           }
@@ -438,6 +437,7 @@ class recentPlayList extends StatefulWidget{
 class _recentPlayList extends State<recentPlayList>{
   @override
   Widget build(BuildContext context) {
+
     
     return Scaffold(
       appBar: AppBar(
@@ -485,7 +485,6 @@ class _recentPlayList extends State<recentPlayList>{
                         Image.network(sequence[i].tag.artwork)),
                         title: Text(sequence[i].tag.title as String),
                         subtitle: Text(sequence[i].tag.artist as String),
-                        
                         onTap: () {
                           AudioManager.instance.player.seek(Duration.zero, index: i);
                         },
@@ -533,8 +532,15 @@ class _MyHappyPlayList extends State<MyHappyPlayList>{
             subtitle: Text(HappySongList[i]['artist'],
 
             ),
-              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
-              onTap: (){},),
+              trailing: IconButton(icon: Icon(
+              Icons.cancel,
+              color: Colors.grey,),
+
+                onPressed: () {
+                  setState(() {
+                    HappySongList.removeAt(i);
+                  });
+                })
             );
           }),
       );
@@ -572,8 +578,15 @@ class _MyBluePlayList extends State<MyBluePlayList>{
               subtitle: Text(BlueSongList[i]['artist'],
 
               ),
-              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
-                onTap: (){},),
+              trailing: IconButton(icon: Icon(
+                Icons.cancel,
+                color: Colors.grey,),
+
+                  onPressed: () {
+                    setState(() {
+                      BlueSongList.removeAt(i);
+                    });
+                  })
             );
           }),
     );
@@ -611,8 +624,15 @@ class _MyAngryPlayList extends State<MyAngryPlayList>{
               subtitle: Text(AngrySongList[i]['artist'],
 
               ),
-              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
-                onTap: (){},),
+              trailing: IconButton(icon: Icon(
+                Icons.cancel,
+                color: Colors.grey,),
+
+                  onPressed: () {
+                    setState(() {
+                      AngrySongList.removeAt(i);
+                    });
+                  })
             );
           }),
     );
@@ -650,8 +670,15 @@ class _MyCalmPlayList extends State<MyCalmPlayList>{
               subtitle: Text(CalmSongList[i]['artist'],
 
               ),
-              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
-                onTap: (){},),
+              trailing: IconButton(icon: Icon(
+                Icons.cancel,
+                color: Colors.grey,),
+
+                  onPressed: () {
+                    setState(() {
+                      CalmSongList.removeAt(i);
+                    });
+                  })
             );
           }),
     );
@@ -689,8 +716,15 @@ class _MyFearPlayList extends State<MyFearPlayList>{
               subtitle: Text(FearSongList[i]['artist'],
 
               ),
-              trailing: InkWell(child: SvgPicture.asset('assets/icons/player_mini_play.svg'),
-                onTap: (){},),
+              trailing: IconButton(icon: Icon(
+                Icons.cancel,
+                color: Colors.grey,),
+
+                  onPressed: () {
+                    setState(() {
+                      FearSongList.removeAt(i);
+                    });
+                  })
             );
           }),
     );
