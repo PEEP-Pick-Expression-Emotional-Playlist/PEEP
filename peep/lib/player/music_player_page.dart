@@ -99,11 +99,13 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                     backgroundColor:
                         EmotionColor.getLightColorFor(playingEmotion),
                     leftOnChanged: (String val) {
+                      debugPrint('##### 선택 장르: '+val+' #####');
                       setState(() {
                         AudioManager.genre = val;
                       });
                     },
                     rightOnChanged: (String val) {
+                      debugPrint('##### 선택 연도: '+val+' #####');
                       setState(() {
                         AudioManager.year = val;
                       });
@@ -157,17 +159,16 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
 
               /// gesture
               child: GestureDetector(
-                  onPanUpdate: (dis) {
-                    if (dis.delta.dx < 0) {
+                  onVerticalDragEnd: (dis) {
+                    if (dis.velocity.pixelsPerSecond.dx < 0) {
                       /// pass (right to left)
+                      debugPrint('##### 패스 음악 정보: key- '+_songMeta.key+' // 곡 명-'+_songMeta.title+' #####');
                       AudioManager.passList.add(_songMeta.key);
                       _setRating(0.5);
                       if(AudioManager.instance.player.hasNext){
                         AudioManager.instance.player.seekToNext();
                       }
-                    } else if (dis.delta.dy < 0) {
-                      /// down to up
-                    } else if (dis.delta.dy > 0) {
+                    } else if (dis.velocity.pixelsPerSecond.dy > 0) {
                       /// up to down
                       // Navigator.of(context).pop();
                       Navigator.of(context).popUntil((route) => route.isFirst);
@@ -334,8 +335,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
         ]);
   }
 
-  void _setRating(double rating) =>
-      userRatingRef.child(_songMeta.key).set(rating);
+  void _setRating(double rating) {
+  userRatingRef.child(_songMeta.key).set(rating);
+  debugPrint('##### 평점 매긴 음악 정보: key- '+_songMeta.key+' // 곡 명-'+_songMeta.title+' // 평점-'+rating.toString()+' #####');
+}
 
   void _getRating() {
     userRatingRef.get().then((DataSnapshot snapshot){
@@ -360,6 +363,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                 .child("favorite")
                 .set(ServerValue.increment(1))
                 .then((value) {
+          debugPrint('##### 좋아요한 음악 정보: key- '+_songMeta.key+' // 곡 명-'+_songMeta.title+' #####');
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text("이 음악을 좋아합니다")));
               _updateFavoriteCount();
@@ -372,6 +376,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                 .child("favorite")
                 .set(ServerValue.increment(-1))
                 .then((value) {
+          debugPrint('##### 좋아요 취소한 음악 정보: key- '+_songMeta.key+' // 곡 명-'+_songMeta.title+' #####');
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text("이 음악을 좋아하지 않습니다")));
               _updateFavoriteCount();

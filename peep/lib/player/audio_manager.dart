@@ -112,18 +112,21 @@ class AudioManager {
   }
 
   addSong(recommendationType, context) async {
-    debugPrint(emotion);
+    debugPrint('##### 선택된 조건: 감정-'+emotion+' // 장르-'+genre+' // 연도-'+year+' #####');
 
     List<dynamic> items = [];
 
     switch (recommendationType) {
       case RecommendationType.RANDOM_ALL:
+        debugPrint('##### 전체 곡 중, 조건에 맞는 5곡을 랜덤 추천하겠습니다 #####');
         items = await _getByRandom();
         break;
       case RecommendationType.RANDOM_TAG:
         try {
+          debugPrint('##### 콘텐츠 기반 필터링과 아이템 기반 협업 필터링을 이용해 추천합니다 #####');
           items = await getRecommendedSongs();
         } catch (e) {
+          debugPrint('##### 전체 곡 중, 조건에 맞는 5곡을 랜덤 추천하겠습니다 #####');
           items = await _getByRandom();
         }
         break;
@@ -132,23 +135,24 @@ class AudioManager {
     items.forEach((item) async {
       var query = item['title'] + ' ' + item['artist'];
 
-      debugPrint(_playlist.length.toString() +
-          ' ' +
-          item['key'] +
-          ' ' +
-          item['title'] +
-          ' ' +
-          item['artist'] +
-          ' ' +
-          item['year'] +
-          ' ' +
-          item['emotions'].keys.toList().toString() +
-          ' ' +
-          item['genre'].keys.toList().toString() +
-          ' ' +
-          item['tags'].keys.toList().toString() +
-          ' ' +
-          item['favorite'].toString());
+      debugPrint('##### 추천된 곡을 유튜브에서 다운로드 합니다 #####');
+
+      // debugPrint('추천된 곡의 정보: ' +
+      //     '곡 ID- '+item['key'] +
+      //     '//곡 명- ' +
+      //     item['title'] +
+      //     '//아티스트 명- ' +
+      //     item['artist'] +
+      //     '//연도- ' +
+      //     item['year'] +
+      //     '//감정- ' +
+      //     item['emotions'].keys.toList().toString() +
+      //     '//장르- ' +
+      //     item['genre'].keys.toList().toString() +
+      //     '//태그- ' +
+      //     item['tags'].keys.toList().toString() +
+      //     '//좋아요 수- ' +
+      //     item['favorite'].toString());
 
       final list = await getAudioInfo(query);
       var audioInfo = list[0];
@@ -190,7 +194,7 @@ class AudioManager {
                   ));
                 }
               }, onDone: () {
-                debugPrint("ddddddddd" + path);
+                // debugPrint("ddddddddd" + path);
                 _player.pause();
                 _player.play();
               });
@@ -201,47 +205,39 @@ class AudioManager {
           } else {
             download(path, audioInfo).listen((event) {}
                 , onDone: () {
-                  debugPrint("ddddddddd" + path);
+                  // debugPrint("ddddddddd" + path);
                   _player.play();
                 });
           }
 
-          debugPrint(_playlist.length.toString() +
-              ' ' +
-              Uri.file(path).toString() +
-              ' ' +
-              item['key'] +
-              ' ' +
+          debugPrint('추천 후 유튜브에서 다운로드 한 곡의 정보: ' +
+              '곡 ID- '+item['key'] +
+              ' // 곡 명- ' +
               item['title'] +
-              ' ' +
+              ' // 아티스트 명- ' +
               item['artist'] +
-              ' ' +
+              ' // 연도- ' +
               item['year'] +
-              ' ' +
+              ' // 감정- ' +
               item['emotions'].keys.toList().toString() +
-              ' ' +
+              ' // 장르- ' +
               item['genre'].keys.toList().toString() +
-              ' ' +
+              ' // 태그- ' +
               item['tags'].keys.toList().toString() +
-              ' ' +
+              ' // 좋아요 수- ' +
               item['favorite'].toString());
         });
       }
     });
   }
 
-  /// TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW
-  /// 에러나는 코드라 주석처리해놈
   getRecommendedSongs() async {
     var metadata = _playlist.sequence[_player.currentIndex]
         .tag as AudioMetadata;
     List<Map> ret = [];
     var url = Uri.parse('http://3.38.93.39:5000/peep/ml/get_data');
     try {
-      // Secret secret = await SecretLoader(secretPath: "secrets.json").load();
-      // Dio dio = new Dio();
       var response = await http.post(
-          // secret.webUrl+ ?? , //TODO: recommender.py 돌릴 주소
           url,
           body: json.encode({
             'emotion': json.encode(emotion),
@@ -351,56 +347,6 @@ class AudioManager {
     await fileStream.flush();
     await fileStream.close();
 
-    // Show that the file was downloaded.
-    // await showDialog(
-    //   context: context,
-    //   builder: (context) {
-    //     return AlertDialog(
-    //       content: Text(
-    //           'Download completed and saved to: ${filePath}'),
-    //     );
-    //   },
-    //
-    // );
-  }
-
-  _getByTag() async {
-    var metadata =
-    _playlist.sequence[_player.currentIndex].tag as AudioMetadata;
-    var tags = metadata.tags;
-    var randomTag = tags[Random().nextInt(metadata.tags.length)];
-    debugPrint(randomTag);
-
-    var value =
-    await ref.orderByChild("tags/" + randomTag).equalTo(true).once();
-
-    Map queryResult = value.value;
-    queryResult = _removeByPass(queryResult);
-    // value.value type: _InternalLinkedHashMap
-    // debugPrint("now genre:"+genre+", year"+year);
-    if (genre != "모든 장르") {
-      queryResult = _getByGenre(queryResult);
-    }
-    if (year != "모든 연도") {
-      queryResult = _getByYear(queryResult);
-    }
-
-    List tmp = [];
-    queryResult.forEach((key, values) {
-      List list = values['emotions'].keys.toList();
-      if (list.contains(emotion)) {
-        values['key'] = key;
-        tmp.add(values);
-      }
-    });
-
-    List res = [];
-    for (int i = 0; i < 5; i++) {
-      int random = Random().nextInt(tmp.length);
-      res.add(tmp[random]);
-    }
-
-    return res;
   }
 
   Map _getByGenre(Map map) {
