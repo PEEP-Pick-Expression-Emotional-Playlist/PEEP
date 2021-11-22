@@ -37,7 +37,6 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
   };
 
   bool _isExpanding = false;
-  double rate = 0;
 
   List<Animation<double>> _animations = [];
   AnimationController _controller;
@@ -280,7 +279,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
                               Text("${_songMeta?.favorite ?? "좋아요 정보가 없어요"}")
                             ]),
                             RatingBar.builder(
-                              initialRating: rate,
+                              initialRating: _songMeta?.rating ?? 0.0,
                               minRating: 0.5,
                               direction: Axis.horizontal,
                               allowHalfRating: true,
@@ -337,19 +336,9 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
 
   void _setRating(double rating) {
   userRatingRef.child(_songMeta.key).set(rating);
+  _updateRating();
   debugPrint('##### 평점 매긴 음악 정보: key- '+_songMeta.key+' // 곡 명-'+_songMeta.title+' // 평점-'+rating.toString()+' #####');
 }
-
-  void _getRating() {
-    userRatingRef.get().then((DataSnapshot snapshot){
-      final data = new Map<String, dynamic>.from(snapshot.value);
-      setState(() {
-        rate = data[_songMeta.key].toDouble();
-      });
-      print(rate);
-    });
-  }
-
 
   void _favoriteHandling() {
     // debugPrint(FirebaseAuth.instance.currentUser.uid);
@@ -387,6 +376,14 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
     }).catchError((error, stackTrace) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("다시 시도해 주시기 바랍니다")));
+    });
+  }
+
+  void _updateRating(){
+    userRatingRef.child(_songMeta.key).get().then((value) {
+      setState(() {
+        _songMeta.rating = value.value;
+      });
     });
   }
 

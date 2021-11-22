@@ -4,16 +4,11 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:audio_session/audio_session.dart';
-import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:peep/login/user_manager.dart';
-import 'package:peep/secret/secret.dart';
-import 'package:peep/secret/secret_loader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -59,6 +54,10 @@ class AudioManager {
   List<String> sendingData = [];
 
   static YoutubeExplode yt = YoutubeExplode(); //유튜브에 검색하고 다운로드하는 라이브러리
+
+  final userRatingRef = DBManager.instance.ref
+      .child("ratings")
+      .child(UserManager.instance.user.uid);
 
   AudioManager._() {
     _init();
@@ -132,6 +131,12 @@ class AudioManager {
         break;
     }
 
+    if(items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("조건에 맞는 곡이 없습니다")));
+      debugPrint('##### 조건에 맞는 곡이 없습니다 #####');
+    }
+
     items.forEach((item) async {
       var query = item['title'] + ' ' + item['artist'];
 
@@ -161,6 +166,7 @@ class AudioManager {
         throwResultException();
       } else {
         var path = await getPath(audioInfo, query);
+        var rating = await getRating(item['key']);
         //다운로드 되면 플레이리스트에 정보 추가
         _playlist
             .add(AudioSource.uri(
@@ -175,7 +181,9 @@ class AudioManager {
               item['genre'].keys.toList(),
               item['tags'].keys.toList(),
               item['favorite'],
-              duration),
+              duration,
+              rating
+          ),
         ))
             .then((value) {
           //처음으로 넣으면 플레이리스트 변수를 등록
@@ -225,7 +233,10 @@ class AudioManager {
               ' // 태그- ' +
               item['tags'].keys.toList().toString() +
               ' // 좋아요 수- ' +
-              item['favorite'].toString());
+              item['favorite'].toString()+
+              ' // 평점 -'+
+              rating.toString()
+          );
         });
       }
     });
@@ -317,7 +328,14 @@ class AudioManager {
           .get(audioInfo)
           .map((s) {
         received += s.length;
-        var percentage = ((received / length) * 100).toInt();
+        var percentage;
+        if(length < 1){
+          percentage = 0;
+        } else
+          {
+            percentage = ((received / length) * 100).toInt();
+          }
+
         var checkList = [1, 5, 10, 20, 40, 50, 70, 90, 99];
         if (checkList.contains(percentage)) {
           streamController.add(percentage);
@@ -349,34 +367,34 @@ class AudioManager {
 
   }
 
-  Map _getByGenre(Map map) {
+  _getByGenre(Map map) {
     Map res = Map();
-    map.forEach((key, value) {
-      List list = value['genre'].keys.toList();
+    for (var entry in map.entries){
+      List list = entry.value['genre'].keys.toList();
       if (list.contains(genre)) {
-        res[key] = value;
+        res[entry.key] = entry.value;
       }
-    });
-    return map;
+    }
+    return res;
   }
 
-  Map _getByYear(Map map) {
+  _getByYear(Map map) {
     Map res = Map();
-    map.forEach((key, value) {
-      if (value['year'] == year) {
-        res[key] = value;
+    for (var entry in map.entries) {
+      if (entry.value['year'] == year) {
+        res[entry.key] = entry.value;
       }
-    });
-    return map;
+    }
+    return res;
   }
 
-  Map _removeByPass(Map map) {
+  _removeByPass(Map map) {
     Map res = Map();
-    map.forEach((key, value) {
-      if (!passList.contains(value['key'])) {
-        res[key] = value;
+    for (var entry in map.entries){
+      if (!passList.contains(entry.value['key'])) {
+        res[entry.key] = entry.value;
       }
-    });
+    }
     return map;
   }
 
@@ -397,17 +415,31 @@ class AudioManager {
 
     List tmp = [];
     // debugPrint("value.value type is..."+value.value.runtimeType.toString());
-    queryResult.forEach((key, values) {
-      values['key'] = key;
-      tmp.add(values);
-    });
+    for (var entry in queryResult.entries) {
+      entry.value['key'] = entry.key;
+      tmp.add(entry.value);
+    }
 
     List res = [];
-    for (int i = 0; i < 5; i++) {
-      int random = Random().nextInt(tmp.length);
-      res.add(tmp[random]);
+    if (tmp.length>0){
+      for (int i = 0; i < 5; i++) {
+        int random = Random().nextInt(tmp.length);
+        res.add(tmp[random]);
+      }
     }
 
     return res;
+  }
+
+  getRating(songKey) async {
+    var value = await userRatingRef.child(songKey).get();
+    if (!value.exists) {
+      // debugPrint('평점 정보 없음');
+      return 0.0;
+    } else {
+      // debugPrint('평점 정보 키'+songKey);
+      // debugPrint('평점 정보'+value.value.toDouble().toString());
+      return value.value.toDouble();
+    }
   }
 }
