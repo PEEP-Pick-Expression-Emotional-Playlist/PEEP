@@ -401,7 +401,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
         AnimationController(duration: Duration(seconds: 10), vsync: this);
     _controller.repeat(reverse: true);
 
-    _getRating();
+    // _getRating();
 
     final CurvedAnimation curvedAnimation = CurvedAnimation(
         parent: _controller, curve: Curves.linear, reverseCurve: Curves.linear);
@@ -415,10 +415,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage>
     ]);
   }
 
-  @override
-  void didChangeDependencies() {
-    _getRating();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   _getRating();
+  // }
 
   @override
   void dispose() {

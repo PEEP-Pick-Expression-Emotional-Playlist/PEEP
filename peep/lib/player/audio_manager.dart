@@ -18,6 +18,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:path/path.dart' as path;
+import 'package:http/http.dart' as http;
 
 import '../db_manager.dart';
 import 'model/audio_metadata.dart';
@@ -121,9 +122,7 @@ class AudioManager {
         break;
       case RecommendationType.RANDOM_TAG:
         try {
-          items = await _getByTag();
-          /// TODO NOW BELOW
-          // items = await getRecommendedSongs();
+          items = await getRecommendedSongs();
         } catch (e) {
           items = await _getByRandom();
         }
@@ -233,86 +232,44 @@ class AudioManager {
 
   /// TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW
   /// 에러나는 코드라 주석처리해놈
-  // Future<List> getRecommendedSongs() async{
-  //
-  //   print("getRecommended in");
-  //   String localIP = "3.38.93.39";
-  //   int port = 9999;
-  //   Socket clientSocket;
-  //
-  //   print(localIP);
-  //   try{
-  //      await Socket.connect(localIP, port, timeout: Duration(seconds: 5))
-  //     .then((socket){
-  //         clientSocket = socket;
-  //     });
-  //     print("Connected");
-  //
-  //     await putData();
-  //     for(int i=0; i < sendingData.length; i++) {
-  //       clientSocket.add(utf8.encode(sendingData[i]));
-  //     }
-  //
-  //     // await Future.delayed(Duration(seconds: 5));
-  //     clientSocket.close();
-  //   }catch(e){
-  //     print(e);
-  //   }
-  // }
-  //
-  // Future<void> putData() async{
-  //   var metadata = _playlist.sequence[_player.currentIndex]
-  //       .tag as AudioMetadata;
-  //   sendingData[0] = emotion;
-  //   sendingData[1] = genre;
-  //   sendingData[2]= year;
-  //   sendingData[3] = metadata.key;
-  //   sendingData[4] = UserManager.instance.uid;
-  // }
+  getRecommendedSongs() async {
+    var metadata = _playlist.sequence[_player.currentIndex]
+        .tag as AudioMetadata;
+    List<Map> ret = [];
+    var url = Uri.parse('http://3.38.93.39:5000/peep/ml/get_data');
+    try {
+      // Secret secret = await SecretLoader(secretPath: "secrets.json").load();
+      // Dio dio = new Dio();
+      var response = await http.post(
+          // secret.webUrl+ ?? , //TODO: recommender.py 돌릴 주소
+          url,
+          body: json.encode({
+            'emotion': json.encode(emotion),
+            'genre': json.encode(genre),
+            'year': json.encode(year),
+            'target_id': json.encode(metadata.key),
+            'user_id': json.encode(UserManager.instance.uid),
+          }),
+        headers: {"Content-Type" : "application/json"},
+      );
 
+      Map res = json.decode(response.body);
 
-  // Future<List> getRecommendedSongs() async {
-  //   var metadata = _playlist.sequence[_player.currentIndex]
-  //       .tag as AudioMetadata;
-  //   try {
-  //     // Secret secret = await SecretLoader(secretPath: "secrets.json").load();
-  //     Dio dio = new Dio();
-  //     await dio.post(
-  //         // secret.webUrl+ ?? , //TODO: recommender.py 돌릴 주소
-  //         "http://3.38.93.39:9999/peep/ml/data_read",
-  //         data: {
-  //           'emotion': json.encode(emotion),
-  //           'genre': json.encode(genre),
-  //           'year': json.encode(year),
-  //           'target_id': json.encode(metadata.key),
-  //           'user_id': json.encode(UserManager.instance.uid),
-  //         }
-  //     ).then((value) {
-  //       dio.close();
-  //
-  //       //
-  //     });
-  //     //TODO: 곡 정보를 받아서 반환
-  //     var response = await dio.get("http://3.38.93.39:9999/ml/result");
-  //     print(response);
-  //     //받아온 결과가 곡 아이디 문자열로 이루어진 list라 가정
-  //     List<String> res = [];
-  //     res = response.data;
-  //     List<Map> ret = [];
-  //     res.forEach((element) async {
-  //       var value = await DBManager.instance.ref.child("songs/" + element)
-  //           .get();
-  //       Map val = value.value;
-  //       val['key'] = element;
-  //       //TODO: 잘 들어갔는지 확인 필요
-  //       ret.add(val);
-  //     });
-  //     return ret;
-  //   } catch (e) {
-  //     Exception(e);
-  //   }
-  // }
-  /// TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW TODO NOW
+     for (String k in res.keys){
+       var value = await DBManager.instance.ref.child("songs/" + k)
+           .get();
+       Map val = value.value;
+       val['key'] = k;
+       ret.add(val);
+     }
+      return ret;
+    } catch (e) {
+      print("server connect failed");
+      Exception(e);
+    }
+
+    return ret;
+  }
 
   Future<List> getAudioInfo(query) async {
     var resList = await yt.search.getVideos(query);

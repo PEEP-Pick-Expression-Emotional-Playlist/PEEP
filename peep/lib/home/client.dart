@@ -18,9 +18,7 @@ class ClientTest {
     try {
       Secret secret = await SecretLoader(secretPath: "secrets.json").load();
       var response = await dio.get(secret.webUrl+ '/result');
-      print(response);
       testData = response.data;
-      print(testData);
       emotionResult = await SaveEmotion().setData(testData).then((value) =>
       AudioManager.emotion = value
       );
@@ -42,7 +40,6 @@ class ClientTest {
     } catch (e) {
       Exception(e);
     } finally {
-      print("post done");
       await getResult();
 
       await emotionManger.readWriteEmotion(emotionResult);

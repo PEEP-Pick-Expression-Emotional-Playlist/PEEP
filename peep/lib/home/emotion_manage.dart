@@ -35,9 +35,9 @@ class EmotionManger{
       freqValue = 0;
     }
 
-    ///테스트를 위해 빈도수 기본 + 10
-    freqValue = freqValue.toInt() + 10;
-    print(freqValue);
+    ///테스트를 위해 빈도수 기본 + 1
+    freqValue = freqValue.toInt() + 1;
+
 
     ///빈도수 값 업데이트
     await databaseReference.child("freq").update({
