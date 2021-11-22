@@ -67,6 +67,7 @@ class _SearchScreenState extends State<SearchScreen> {
             prefixIcon: IconButton(
               icon: Icon(Icons.search, color: Colors.grey),
               onPressed: () {
+                SongList.clear();
                 controlSearching(_searchText);
               },
             ),
