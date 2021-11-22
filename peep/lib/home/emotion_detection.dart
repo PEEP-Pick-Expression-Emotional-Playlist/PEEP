@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:peep/player/audio_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import 'client.dart';
@@ -100,6 +100,7 @@ class _EmotionDetect extends State<EmotionDetect>{
       //getImage(ImageSource.camera);
         context,
         MaterialPageRoute(builder: (context) => MusicPlayerPage()));
+    AudioManager.instance.addSong(RecommendationType.RANDOM_TAG,context);
     print("init state done");
   }
 

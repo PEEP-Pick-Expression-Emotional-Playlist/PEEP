@@ -272,7 +272,7 @@ class AudioManager {
       return ret;
     } catch (e) {
       print("server connect failed");
-      Exception(e);
+      throwResultException();
     }
 
     return ret;

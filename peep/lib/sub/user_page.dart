@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:peep/login/user_manager.dart';
 import 'package:peep/sub/search_screen.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 import '../db_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -32,6 +31,7 @@ class _UserPageState extends State<UserPage> {
         Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => MusicPlayerPage()));
+        AudioManager.instance.addSong(RecommendationType.RANDOM_TAG,context);
         print("init state done");
       });
     });

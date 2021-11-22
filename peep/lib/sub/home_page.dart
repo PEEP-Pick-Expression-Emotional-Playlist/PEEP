@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
         Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => MusicPlayerPage()));
+        AudioManager.instance.addSong(RecommendationType.RANDOM_TAG,context);
       });
     });
   }
@@ -148,6 +149,7 @@ class _HomePageState extends State<HomePage> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(builder: (context) => MusicPlayerPage()));
+                                        AudioManager.instance.addSong(RecommendationType.RANDOM_TAG,context);
                                         print("init state done");
                                       });
                                       //클릭 시 감정 분석 카메라로 이동
@@ -197,6 +199,7 @@ class _HomePageState extends State<HomePage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => MusicPlayerPage()));
+                                AudioManager.instance.addSong(RecommendationType.RANDOM_TAG,context);
                               },
                             )),
                           SizedBox(width: 0),
@@ -217,6 +220,7 @@ class _HomePageState extends State<HomePage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => MusicPlayerPage()));
+                                  AudioManager.instance.addSong(RecommendationType.RANDOM_TAG,context);
                                   },
                               )),
                         ],
@@ -244,6 +248,7 @@ class _HomePageState extends State<HomePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => MusicPlayerPage()));
+                                AudioManager.instance.addSong(RecommendationType.RANDOM_TAG,context);
                                 },
                             )),
                         SizedBox(
@@ -266,6 +271,7 @@ class _HomePageState extends State<HomePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => MusicPlayerPage()));
+                                AudioManager.instance.addSong(RecommendationType.RANDOM_TAG,context);
                                 },
                             )),
                       ],
@@ -293,6 +299,7 @@ class _HomePageState extends State<HomePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => MusicPlayerPage()));
+                                AudioManager.instance.addSong(RecommendationType.RANDOM_TAG,context);
                                 },
                             )),
                       ],

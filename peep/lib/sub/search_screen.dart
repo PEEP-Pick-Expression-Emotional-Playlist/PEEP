@@ -1,13 +1,10 @@
-import 'dart:collection';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:peep/db_manager.dart';
 import 'package:peep/home/emotion_detection.dart';
 import 'package:peep/login/user_manager.dart';
+import 'package:peep/player/audio_manager.dart';
 import 'package:peep/player/music_player_page.dart';
 import 'package:shake/shake.dart';
 import 'package:flutter_svg/svg.dart';
@@ -41,6 +38,7 @@ class _SearchScreenState extends State<SearchScreen> {
       DetectEmotion().readFile().then((value) {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => MusicPlayerPage()));
+        AudioManager.instance.addSong(RecommendationType.RANDOM_TAG,context);
       });
     });
   }
@@ -54,7 +52,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ref = fb.reference();
+    // final ref = fb.reference();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
